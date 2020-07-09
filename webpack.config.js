@@ -13,17 +13,18 @@ module.exports = {
       },
       {
         test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader',
-          },
-        ],
+        use: ['html-loader'],
       },
+      {
+        test: /\.json$/,
+        use: ['json-x-loader?exclude=bytecode+deployedBytecode+ast+legacyAST+sourceMap+deployedSourceMap+source+sourcePath+ast+legacyAST+compiler+schemaVersion+updatedAt+devdoc+userdoc']
+      }
     ]
   },
   resolve: {
     modules: [
       'src', // allows absolute imports like `import "components/App"`
+      'build',
       'node_modules'
     ],
     alias: {

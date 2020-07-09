@@ -1,19 +1,16 @@
-import React, { useState } from 'react'
-import { hot } from 'react-hot-loader/root';
+import React from "react";
+import { hot } from "react-hot-loader/root";
 
-import Test from './Test'
-import Web3Provider from './Web3Provider'
+import Web3Provider from "./Web3Provider";
 
-import initSdk from '@gnosis.pm/safe-apps-sdk';
+import Strategies from "./Strategies";
 
 const App = () => {
-  const [appsSdk] = useState(initSdk());
-  
   return (
     <Web3Provider>
-      <Test sdk={appsSdk} />
+      <Strategies />
     </Web3Provider>
-  )
-}
+  );
+};
 
 export default hot(App);
