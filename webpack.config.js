@@ -46,6 +46,7 @@ module.exports = {
       template: path.resolve(__dirname, 'src', 'html', 'index.html')
     }),
     new webpack.EnvironmentPlugin({
+      NODE_ENV: 'development',
       NETWORK: 'local',
       INFURA_API_KEY: null,
     })
