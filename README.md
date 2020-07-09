@@ -1,6 +1,6 @@
-# Safe Gnosis Protocol Conditional Market Maker App
+# Safe Gnosis Protocol Custom Market Maker App
 
-This Repository includes the Gnosis Safe App for Gnosis Protocol
+This Repository includes the Gnosis Safe App Integration for deploying Gnosis Protocol Custom Market Makers
 
 # Development
 
