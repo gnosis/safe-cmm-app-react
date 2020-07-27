@@ -12,6 +12,13 @@ module.exports = {
         use: ["babel-loader"],
       },
       {
+        test: /\.woff2?/,
+        loader: "file-loader",
+        options: {
+          name: "[path][name].[ext]",
+        },
+      },
+      {
         test: /\.html$/,
         use: ["html-loader"],
       },
@@ -33,6 +40,7 @@ module.exports = {
     alias: {
       "react-dom": "@hot-loader/react-dom",
     },
+    symlinks: true,
   },
   devServer: {
     historyApiFallback: true,

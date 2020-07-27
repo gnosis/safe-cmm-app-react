@@ -10,10 +10,14 @@ export const Web3Context = React.createContext({
   status: "UNKNOWN",
 });
 
+// Saves artifacts on a contract name base, allows us to re-use previously initialized contracts
+const contractArtifacts = {};
+
 const Web3Provider = ({ children }) => {
   const [status, setStatus] = useState("UNKNOWN");
   const [instance, setInstance] = useState(null);
   const [sdk, setSdk] = useState(null);
+  const [safeInfo, setSafeInfo] = useState({});
 
   const handleInit = useCallback(async () => {
     setStatus("LOADING");
@@ -30,31 +34,91 @@ const Web3Provider = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    if (sdk) {
+      sdk.addListeners({
+        onSafeInfo: setSafeInfo,
+      });
+
+      return () => {
+        sdk.removeListeners();
+      };
+    }
+  }, [sdk]);
+
   const handleAsyncInit = useCallback(() => {
     handleInit();
   }, [handleInit]);
 
+  const handleGetArtifact = useCallback(async (contractName) => {
+    let contractArtifact = contractArtifacts[contractName];
+    if (!contractArtifact) {
+      // Load from default folder with contractName.json
+      console.log(`contracts/${contractName}.json`)
+      contractArtifact = await import(
+        /* webpackInclude: /\.json$/ */
+        /* webpackPreload: true */
+        /* webpackPrefetch: true */
+        /* webpackMode: "eager" */
+        `contracts/${contractName}.json`
+      );
+
+      contractArtifacts[contractName] = contractArtifact;
+    }
+
+    return contractArtifact;
+  }, []);
+
+  /**
+   * Instance a web3 contract instance for the contract with the supplied name.
+   *
+   * @param {String} contractName - Name of contract to be loaded. Will be opened from `/build/contracts/<contractName>.json`
+   * @param {String} contractAddress - Address of the contract to load. If not applicable, leave undefined or null.
+   * @returns {web3.eth.Contract} Contractinstance
+   */
   const handleGetContract = useCallback(
-    async (contractName, address) => {
-      const contractArtifact = await import(`contracts/${contractName}.json`);
+    async (contractName, contractAddress = null) => {
+      const contractArtifact = await handleGetArtifact(contractName);
 
-      let contractAddress = address;
-      if (!address) {
-        const networkId = await instance.eth.net.getId();
+      const contractInstance = new instance.eth.Contract(
+        contractArtifact.abi,
+        contractAddress
+      );
+      contractInstance.setProvider(instance.currentProvider); // Connected to Infura
 
-        if (!contractArtifact.networks[networkId]) {
-          throw new Error(
-            "Not deployed on current network according to build artifacts. Add address or update artifact"
-          );
-        }
-
-        contractAddress = contractArtifact.networks[networkId].address;
-      }
-
-      return new instance.eth.Contract(contractArtifact.abi, contractAddress);
+      // FIXME: Bad Monkeypatching
+      // Allows us to access the contracts saved artifact later by referencing it by the contractname. Contractnames need to be unique.
+      contractInstance.contractName = contractName;
+      return contractInstance;
     },
     [instance]
   );
+
+  /**
+   * Loads a contract instance with the current networks deployed address
+   *
+   * @param {string} contractName - Contractname to load the deployed instance for
+   * @returns {web3.eth.Contract} - Contractinstance
+   */
+  const handleGetDeployed = useCallback(
+    async (contractName) => {
+      const contractArtifact = await handleGetArtifact(contractName);
+
+      const networkId = await instance.eth.net.getId();
+      console.log(contractArtifact);
+      const networkDeploymentInfo = contractArtifact.networks[networkId];
+      if (!networkDeploymentInfo) {
+        throw new Error(
+          "Not deployed on current network according to build artifacts. Add address or update artifact"
+        );
+      }
+      return handleGetContract(contractName, networkDeploymentInfo.address);
+    },
+    [handleGetContract, instance]
+  );
+
+  /*
+   */
 
   useEffect(handleAsyncInit, [handleAsyncInit]);
 
@@ -63,9 +127,11 @@ const Web3Provider = ({ children }) => {
       status,
       instance,
       sdk,
+      safeInfo,
       getContract: handleGetContract,
+      getDeployed: handleGetDeployed,
     }),
-    [status, instance, sdk, handleGetContract]
+    [status, instance, safeInfo, sdk, handleGetContract, handleGetDeployed]
   );
 
   return (

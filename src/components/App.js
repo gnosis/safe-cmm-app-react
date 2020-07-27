@@ -1,15 +1,36 @@
 import React from "react";
 import { hot } from "react-hot-loader/root";
 
+import { ThemeProvider } from "styled-components";
+import { theme } from "@gnosis.pm/safe-react-components";
+
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
+
 import Web3Provider from "./Web3Provider";
 
-import Strategies from "./Strategies";
+import GlobalStyle from "./GlobalStyle";
+import Active from "routes/Active";
+import Deploy from "routes/Deploy";
 
 const App = () => {
   return (
-    <Web3Provider>
-      <Strategies />
-    </Web3Provider>
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <Web3Provider>
+        <Router>
+          <Switch>
+            <Route path="/active" component={Active} />
+            <Route path="/deploy" component={Deploy} />
+            <Redirect to="/active" />
+          </Switch>
+        </Router>
+      </Web3Provider>
+    </ThemeProvider>
   );
 };
 
