@@ -80,7 +80,7 @@ const Deploy = ({ history }) => {
   );
 
   const handleDeploy = useCallback(async () => {
-    const deployedBrackets = await deployStrategy(
+    await deployStrategy(
       web3Context,
       numBrackets,
       tokenAddressBase,

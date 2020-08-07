@@ -3,11 +3,12 @@ import getLogger from "utils/logger";
 const logger = getLogger("deploy-strategy");
 
 import verifyBalance from "api/utils/verifyBalance";
+import deployAndProvision from "../utils/progressiveTx/deployAndProvision";
 
 export class ValidationError extends Error {}
 
 const deployStrategy = async (
-  { sdk, getContract, getDeployed, safeInfo: { safeAddress } },
+  context,
   numBrackets,
   tokenAddressBase,
   tokenAddressQuote,
@@ -26,6 +27,8 @@ const deployStrategy = async (
     investmentBaseWei,
     investmentQuoteWei,
   ]);
+
+  const { sdk, instance, getContract, getDeployed, safeInfo: { safeAddress } } = context;
 
   //const ERC20Contract = await getContract("ERC20Detailed");
 
@@ -63,28 +66,15 @@ const deployStrategy = async (
     );
   }
 
-  logger.log(`==> Deploying safe fleet`);
-  const safeFleetContract = await getDeployed("FleetFactory");
-  const masterSafe = await getDeployed("GnosisSafe");
-  const exchangePromise = await getDeployed("dex-contracts/BatchExchange");
-  console.log(masterSafe);
-  console.log(exchangePromise);
-
-  console.log(safeFleetContract);
-  const deploymentTx = safeFleetContract.methods
-    .deployFleet(safeAddress, numBrackets, masterSafe.options.address)
-    .encodeABI();
-  const safeTx = await sdk.sendTransactions([
-    {
-      to: safeFleetContract.options.address,
-      value: 0,
-      data: deploymentTx,
-    },
-  ]);
-
-  console.log(safeTx);
-
-  logger.log(`==> Building orders`);
+  await deployAndProvision(context, {
+    numBrackets,
+    tokenBaseContract,
+    tokenQuoteContract,
+    boundsLowerWei,
+    boundsUpperWei,
+    investmentBaseWei,
+    investmentQuoteWei,
+  });
 };
 
 export default deployStrategy;

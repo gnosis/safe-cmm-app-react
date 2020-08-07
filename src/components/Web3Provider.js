@@ -54,15 +54,8 @@ const Web3Provider = ({ children }) => {
     let contractArtifact = contractArtifacts[contractName];
     if (!contractArtifact) {
       // Load from default folder with contractName.json
-      console.log(`contracts/${contractName}.json`)
-      contractArtifact = await import(
-        /* webpackInclude: /\.json$/ */
-        /* webpackPreload: true */
-        /* webpackPrefetch: true */
-        /* webpackMode: "eager" */
-        `contracts/${contractName}.json`
-      );
-
+      const response = await fetch(`contracts/${contractName}.json`);
+      contractArtifact = await response.json();
       contractArtifacts[contractName] = contractArtifact;
     }
 

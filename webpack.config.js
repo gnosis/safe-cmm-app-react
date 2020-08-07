@@ -45,7 +45,10 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     disableHostCheck: true,
-    contentBase: [path.resolve(__dirname, "assets")],
+    contentBase: [
+      path.resolve(__dirname, "assets"),
+      path.resolve(__dirname, "build"),
+    ],
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
