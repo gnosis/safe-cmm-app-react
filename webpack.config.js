@@ -1,4 +1,5 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
 
@@ -10,6 +11,23 @@ module.exports = {
         test: /\.(jsx?)$/,
         exclude: /(node_modules)/,
         use: ["babel-loader"],
+      },
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: { cacheDirectory: true },
+          },
+          {
+            loader: "ts-loader",
+            options: {
+              // disable type checker - we will use it in fork plugin
+              transpileOnly: true,
+            },
+          },
+        ],
       },
       {
         test: /\.woff2?/,
@@ -41,6 +59,7 @@ module.exports = {
       "react-dom": "@hot-loader/react-dom",
     },
     symlinks: true,
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
   devServer: {
     historyApiFallback: true,
@@ -60,5 +79,6 @@ module.exports = {
       NETWORK: "local",
       INFURA_API_KEY: null,
     }),
+    new ForkTsCheckerWebpackPlugin(),
   ],
 };
