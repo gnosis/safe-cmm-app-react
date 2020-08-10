@@ -1,8 +1,8 @@
-import React from 'react'
-import { Point } from './dummyTsFile'
+import React from "react";
+import { Point } from "./dummyTsFile";
 
 interface Props {
-  p: Point
+  p: Point;
 }
 
 // TODO: remove this dummy component once a real TS file is added.
@@ -21,5 +21,5 @@ export const TestTs: React.FC<Props> = ({ p }) => {
         </li>
       </ul>
     </div>
-  )
-}
+  );
+};
