@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { action } from "@storybook/addon-actions";
 
 import { TextFieldWithCustomLabel } from ".";
 
@@ -26,10 +25,6 @@ export const textFieldData = {
       <a href="#">link</a>
     </div>
   ),
-};
-
-export const actionsData = {
-  onChange: action("onChange"),
 };
 
 export const Default = () => {
