@@ -3,10 +3,10 @@ module.exports = ({ config }) => {
     test: /\.(ts|tsx)$/,
     use: [
       {
-        loader: require.resolve("awesome-typescript-loader"),
+        loader: "ts-loader",
       },
       {
-        loader: require.resolve("react-docgen-typescript-loader"),
+        loader: "react-docgen-typescript-loader",
       },
     ],
   });
