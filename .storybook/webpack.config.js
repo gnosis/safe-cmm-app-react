@@ -37,6 +37,8 @@ module.exports = ({ config }) => {
 
   config.resolve.extensions.push(".ts", ".tsx", "woff2");
 
+  config.resolve.modules.push("src");
+
   config.node = {
     fs: "empty",
     child_process: "empty",
