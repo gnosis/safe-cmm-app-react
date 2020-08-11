@@ -40,6 +40,20 @@ export const Default = () => {
   );
 };
 
+export const CustomWidth = () => {
+  const [value, setValue] = useState("");
+  return (
+    <form noValidate autoComplete="off" onSubmit={onSubmit}>
+      <TextFieldWithCustomLabel
+        {...textFieldData}
+        width={200}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    </form>
+  );
+};
+
 export const VeryLongValue = () => {
   const [value, setValue] = useState(
     "564897654165765132578645325746146254890849084089"
