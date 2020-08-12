@@ -16,6 +16,10 @@ const Wrapper = styled.div<{ width?: string | number }>`
     padding 19px 12px 18px;
   }
 
+  .MuiInputAdornment-filled.MuiInputAdornment-positionStart:not(.MuiInputAdornment-hiddenLabel) {
+    margin-top:0;
+  }
+
   .MuiFormControl-root {
     ${({ width }) => (width ? `width: ${pxOrCustomCssUnits(width)}` : "")}
   }
