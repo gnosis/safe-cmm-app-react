@@ -26,7 +26,7 @@ export interface Props
   customLabel: React.ReactElement;
 }
 
-export const TextFieldWithCustomLabel: React.FC<Props> = (props) => {
+export const TextFieldWithCustomLabel = (props: Props): JSX.Element => {
   const { customLabel, width } = props;
 
   return (
