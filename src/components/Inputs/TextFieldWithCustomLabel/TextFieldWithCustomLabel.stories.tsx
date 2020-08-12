@@ -69,13 +69,16 @@ export const VeryLongValue = () => {
   );
 };
 
-export const NoLabel = () => {
-  const [value, setValue] = useState("");
+export const WithAdornmentsAndLongInput = () => {
+  const [value, setValue] = useState(
+    "38798749879879879543574.2468165735484657465"
+  );
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
       <TextFieldWithCustomLabel
         {...textFieldData}
-        customLabel={undefined}
+        startAdornment={<strong>Buy</strong>}
+        endAdornment={<strong>DAI</strong>}
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
