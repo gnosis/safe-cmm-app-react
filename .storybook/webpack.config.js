@@ -11,31 +11,7 @@ module.exports = ({ config }) => {
     ],
   });
 
-  config.module.rules.push({
-    test: /\.(woff|woff2|eot|ttf)$/,
-    use: [
-      {
-        loader: "file-loader",
-        query: {
-          name: "[name].[ext]",
-        },
-      },
-    ],
-  });
-
-  config.module.rules.push({
-    test: /\.(svg|png|jpg)$/i,
-    use: [
-      {
-        loader: "url-loader",
-        query: {
-          name: "[name].[ext]",
-        },
-      },
-    ],
-  });
-
-  config.resolve.extensions.push(".ts", ".tsx", "woff2");
+  config.resolve.extensions.push(".ts", ".tsx");
 
   config.resolve.modules.push("src");
 
