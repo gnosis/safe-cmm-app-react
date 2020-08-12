@@ -13,7 +13,7 @@ const Wrapper = styled.div<{ width?: string | number }>`
 
   // Adjust input padding which is normally pushed down to accommodate default label 
   .MuiFilledInput-input {
-    padding 11px 12px 9px;
+    padding 19px 12px 18px;
   }
 
   .MuiFormControl-root {
