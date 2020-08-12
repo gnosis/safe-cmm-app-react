@@ -107,7 +107,7 @@ const Web3Provider = ({ children }) => {
       }
       return handleGetContract(contractName, networkDeploymentInfo.address);
     },
-    [handleGetContract, instance]
+    [handleGetContract, handleGetArtifact, instance]
   );
 
   /*
