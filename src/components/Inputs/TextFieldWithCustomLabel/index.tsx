@@ -11,13 +11,13 @@ const WIDTH = 400;
 const Wrapper = styled.div<{ width?: string | number }>`
   width: ${({ width }) => pxOrCustomCssUnits(width || WIDTH)};
 
-  // Adjust input padding which is normally pushed down to accommodate default label 
+  // Adjust input padding which is normally pushed down to accommodate default label
   .MuiFilledInput-input {
-    padding 19px 12px 18px;
+    padding: 19px 12px 18px;
   }
 
   .MuiInputAdornment-filled.MuiInputAdornment-positionStart:not(.MuiInputAdornment-hiddenLabel) {
-    margin-top:0;
+    margin-top: 0;
   }
 
   .MuiFormControl-root {
