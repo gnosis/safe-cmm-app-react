@@ -35,9 +35,9 @@ const Wrapper = styled.div<WrapperProps>`
       width ? `width: ${pxOrCustomCssUnits(width)};` : ""}
   }
 
-  // <label> is used to display the field label as well as the error messages. We don't want to display either
+  // We don't want to display the field label neither the error messages.
   // https://github.com/gnosis/safe-react-components/blob/development/src/inputs/TextField/index.tsx#L57
-  label {
+  .MuiFormLabel-filled {
     display: none;
   }
 
