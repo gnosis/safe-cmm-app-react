@@ -85,3 +85,20 @@ export const WithAdornmentsAndLongInput = () => {
     </form>
   );
 };
+
+export const WithErrorMessage = () => {
+  const [value, setValue] = useState("kajsdla");
+  return (
+    <form noValidate autoComplete="off" onSubmit={onSubmit}>
+      <TextFieldWithCustomLabel
+        {...textFieldData}
+        startAdornment={<strong>Buy</strong>}
+        endAdornment={<strong>DAI</strong>}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        meta={{ error: "Invalid input" }}
+        width="150px"
+      />
+    </form>
+  );
+};
