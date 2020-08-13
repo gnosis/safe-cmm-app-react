@@ -46,7 +46,7 @@ export const FundingInput = (props: Props): JSX.Element => {
     <Wrapper width={width}>
       <TextFieldWithCustomLabel
         {...rest}
-        customLabel={<Label onClick={onMaxClick} />}
+        customLabel={<Label onClick={onMaxClick} error={props.error} />}
         width={width}
         endAdornment={tokenDisplay}
       />

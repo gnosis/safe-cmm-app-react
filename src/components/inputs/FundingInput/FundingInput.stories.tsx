@@ -53,7 +53,7 @@ export const VeryLongValue = () => {
   );
 };
 
-export const InvalidInput = () => {
+export const ErrorInput = () => {
   const [value, setValue] = useState("sdf");
 
   return (
@@ -62,6 +62,23 @@ export const InvalidInput = () => {
         {...fundingInputData}
         {...actionData}
         value={value}
+        error
+        onChange={(e) => setValue(e.target.value)}
+      />
+    </form>
+  );
+};
+
+export const WarningInput = () => {
+  const [value, setValue] = useState("sdf");
+
+  return (
+    <form noValidate autoComplete="off" onSubmit={onSubmit}>
+      <FundingInput
+        {...fundingInputData}
+        {...actionData}
+        value={value}
+        warn
         onChange={(e) => setValue(e.target.value)}
       />
     </form>

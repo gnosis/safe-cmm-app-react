@@ -23,13 +23,14 @@ const Wrapper = styled.div`
 
 interface Props {
   onClick: (e: React.SyntheticEvent) => void;
+  error?: boolean;
 }
 
 export const Label = (props: Props): JSX.Element => {
-  const { onClick } = props;
+  const { onClick, error } = props;
   return (
-    <Wrapper>
-      <Text size="lg" strong>
+    <Wrapper {...props}>
+      <Text size="lg" strong color={error ? "error" : null}>
         Funding
       </Text>
       <ButtonLink color="primary" textSize="lg" onClick={onClick}>
