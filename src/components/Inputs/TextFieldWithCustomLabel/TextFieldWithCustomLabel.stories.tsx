@@ -92,12 +92,37 @@ export const WithErrorMessage = () => {
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
       <TextFieldWithCustomLabel
         {...textFieldData}
-        startAdornment={<strong>Buy</strong>}
-        endAdornment={<strong>DAI</strong>}
         value={value}
         onChange={(e) => setValue(e.target.value)}
         meta={{ error: "Invalid input" }}
-        width="150px"
+      />
+    </form>
+  );
+};
+
+export const WithErrorHighlightWithoutMessage = () => {
+  const [value, setValue] = useState("");
+  return (
+    <form noValidate autoComplete="off" onSubmit={onSubmit}>
+      <TextFieldWithCustomLabel
+        {...textFieldData}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        error
+      />
+    </form>
+  );
+};
+
+export const WithWarningHighlight = () => {
+  const [value, setValue] = useState("");
+  return (
+    <form noValidate autoComplete="off" onSubmit={onSubmit}>
+      <TextFieldWithCustomLabel
+        {...textFieldData}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        warn
       />
     </form>
   );

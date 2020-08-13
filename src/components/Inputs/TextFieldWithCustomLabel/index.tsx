@@ -2,14 +2,24 @@ import React from "react";
 import styled from "styled-components";
 
 import { InputLabel } from "@material-ui/core";
-import { TextField } from "@gnosis.pm/safe-react-components";
+import { TextField, theme } from "@gnosis.pm/safe-react-components";
 import { pxOrCustomCssUnits } from "utils/cssUtils";
 
 // To match parent's width https://github.com/gnosis/safe-react-components/blob/development/src/inputs/TextField/index.tsx#L24
 const WIDTH = 400;
 
-const Wrapper = styled.div<{ width?: string | number }>`
-  width: ${({ width }) => pxOrCustomCssUnits(width || WIDTH)};
+// Local alias for proper typing
+type Theme = typeof theme;
+
+interface WrapperProps {
+  width?: string | number;
+  error?: boolean;
+  warn?: boolean;
+}
+
+const Wrapper = styled.div<WrapperProps>`
+  width: ${({ width }: WrapperProps): string =>
+    pxOrCustomCssUnits(width || WIDTH)};
 
   // Adjust input padding which is normally pushed down to accommodate default label
   .MuiFilledInput-input {
@@ -21,7 +31,8 @@ const Wrapper = styled.div<{ width?: string | number }>`
   }
 
   .MuiFormControl-root {
-    ${({ width }) => (width ? `width: ${pxOrCustomCssUnits(width)}` : "")}
+    ${({ width }: WrapperProps): string =>
+      width ? `width: ${pxOrCustomCssUnits(width)};` : ""}
   }
 
   // <label> is used to display the field label as well as the error messages. We don't want to display either
@@ -29,18 +40,32 @@ const Wrapper = styled.div<{ width?: string | number }>`
   label {
     display: none;
   }
+
+  // Set's WARN/ERROR based on boolean
+  // Parent doesn't provide WARN, and requires error message for ERROR
+  ${({ theme, error, warn }: { theme: Theme } & WrapperProps): string => {
+    if (!error && !warn) {
+      return "";
+    }
+    return `
+    .MuiFilledInput-root.MuiFilledInput-underline::after {
+      border-bottom-color: ${error ? theme.colors.error : theme.colors.warning};
+      transform: scaleX(1);
+    }`;
+  }}
 `;
 
 export interface Props
-  extends Omit<React.ComponentProps<typeof TextField>, "label"> {
+  extends Omit<React.ComponentProps<typeof TextField>, "label">,
+    WrapperProps {
   customLabel: React.ReactElement;
 }
 
 export const TextFieldWithCustomLabel = (props: Props): JSX.Element => {
-  const { customLabel, width } = props;
+  const { customLabel } = props;
 
   return (
-    <Wrapper width={width}>
+    <Wrapper {...props}>
       <InputLabel htmlFor={props.id}>{customLabel}</InputLabel>
       <TextField {...props} label={null} />
     </Wrapper>
