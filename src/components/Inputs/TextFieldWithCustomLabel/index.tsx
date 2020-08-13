@@ -23,6 +23,12 @@ const Wrapper = styled.div<{ width?: string | number }>`
   .MuiFormControl-root {
     ${({ width }) => (width ? `width: ${pxOrCustomCssUnits(width)}` : "")}
   }
+
+  // <label> is used to display the field label as well as the error messages. We don't want to display either
+  // https://github.com/gnosis/safe-react-components/blob/development/src/inputs/TextField/index.tsx#L57
+  label {
+    display: none;
+  }
 `;
 
 export interface Props
