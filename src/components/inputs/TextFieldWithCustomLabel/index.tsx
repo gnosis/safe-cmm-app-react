@@ -53,6 +53,10 @@ const Wrapper = styled.div<WrapperProps>`
       transform: scaleX(1);
     }`;
   }}
+
+  .MuiInputAdornment-positionEnd {
+    margin-left: 0;
+  }
 `;
 
 export interface Props
