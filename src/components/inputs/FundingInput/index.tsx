@@ -65,10 +65,7 @@ export const FundingInput = (props: Props): JSX.Element => {
         width={width}
         endAdornment={tokenDisplay}
       />
-      <PerBracketAmount
-        amount={amountPerBracket}
-        tokenDisplayName={tokenDetails ? tokenDetails.symbol : "..."}
-      />
+      <PerBracketAmount amount={amountPerBracket} tokenDetails={tokenDetails} />
     </Wrapper>
   );
 };
