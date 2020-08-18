@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 
 import { Text, Loader } from "@gnosis.pm/safe-react-components";
@@ -35,6 +35,8 @@ export interface Props
 export const FundingInput = (props: Props): JSX.Element => {
   const {
     onMaxClick,
+    onChange,
+    error,
     amountPerBracket,
     tokenAddress,
     width = DEFAULT_INPUT_WIDTH,
@@ -42,12 +44,27 @@ export const FundingInput = (props: Props): JSX.Element => {
   } = props;
 
   const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
+  const [isInvalidInput, setIsInvalidInput] = useState(false);
 
   const { getErc20Details } = useContext(Web3Context);
 
   useEffect(() => {
     getErc20Details(tokenAddress).then(setTokenDetails);
   }, [tokenAddress]);
+
+  const validateInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (isNaN(+e.target.value)) {
+        setIsInvalidInput(true);
+      } else {
+        setIsInvalidInput(false);
+        onChange(e);
+      }
+    },
+    []
+  );
+
+  const _error = error || isInvalidInput;
 
   const tokenDisplay = tokenDetails ? (
     <Text size="md" strong>
@@ -61,7 +78,9 @@ export const FundingInput = (props: Props): JSX.Element => {
     <Wrapper width={width}>
       <TextFieldWithCustomLabel
         {...rest}
-        customLabel={<Label onClick={onMaxClick} error={props.error} />}
+        onChange={validateInput}
+        error={_error}
+        customLabel={<Label onClick={onMaxClick} error={_error} />}
         width={width}
         endAdornment={tokenDisplay}
       />
