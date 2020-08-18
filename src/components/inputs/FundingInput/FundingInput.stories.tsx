@@ -1,13 +1,40 @@
 import React, { useState, useCallback } from "react";
 import { action } from "@storybook/addon-actions";
 
-import { FundingInput } from ".";
+import Web3Provider, { Web3Context } from "components/Web3Provider";
+import getLoggerOrCreate from "utils/logger";
+
+const logger = getLoggerOrCreate("FundingInput.stories");
+
+logger.log(`story context`, Web3Provider);
+
+import { FundingInput, TokenDetails } from ".";
+
+const context = {
+  getErc20Details: async (address: string): Promise<TokenDetails> => {
+    return {
+      decimals: 18,
+      name: "Token",
+      symbol: "TKN",
+      address,
+    };
+  },
+};
+
+const Story = ({ storyFn }) => storyFn();
 
 export default {
   component: FundingInput,
   title: "FundingInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
+  decorators: [
+    (storyFn) => (
+      <Web3Context.Provider value={context}>
+        <Story storyFn={storyFn} />
+      </Web3Context.Provider>
+    ),
+  ],
 };
 
 const onSubmit = (e: React.FormEvent) => e.preventDefault();
@@ -15,7 +42,7 @@ const onSubmit = (e: React.FormEvent) => e.preventDefault();
 export const fundingInputData = {
   id: "fundingId",
   amountPerBracket: "5",
-  tokenDisplayName: "ETH",
+  tokenAddress: "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
 };
 
 export const actionData = {

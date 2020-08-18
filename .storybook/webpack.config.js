@@ -11,7 +11,7 @@ module.exports = ({ config }) => {
     ],
   });
 
-  config.resolve.extensions.push(".ts", ".tsx");
+  config.resolve.extensions.push(".ts", ".tsx", ".js");
 
   config.resolve.modules.push("src");
 

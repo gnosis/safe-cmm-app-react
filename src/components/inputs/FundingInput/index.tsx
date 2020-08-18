@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 
 import { Text } from "@gnosis.pm/safe-react-components";
+
+import { Web3Context } from "components/Web3Provider";
 
 import { pxOrCustomCssUnits } from "utils/cssUtils";
 
@@ -12,6 +14,14 @@ import {
 
 import { PerBracketAmount } from "./PerBracketAmount";
 import { Label } from "./Label";
+
+// todo: move to central type definition file
+export interface TokenDetails {
+  address: string;
+  decimals: number;
+  symbol: string;
+  name: string;
+}
 
 const DEFAULT_INPUT_WIDTH = "120px";
 
@@ -24,22 +34,33 @@ const Wrapper = styled.div<{ width: string | number }>`
 interface Props extends Omit<TextFieldWithCustomLabelProps, "customLabel"> {
   onMaxClick: (e: React.SyntheticEvent) => void;
   amountPerBracket: string;
-  tokenDisplayName: string;
+  tokenAddress: string;
 }
 
 export const FundingInput = (props: Props): JSX.Element => {
   const {
     onMaxClick,
     amountPerBracket,
-    tokenDisplayName,
+    tokenAddress,
     width = DEFAULT_INPUT_WIDTH,
     ...rest
   } = props;
 
-  const tokenDisplay = (
+  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
+
+  const { getErc20Details } = useContext(Web3Context);
+
+  useEffect(() => {
+    console.log(`tokenAddress`, tokenAddress, tokenDetails);
+    getErc20Details(tokenAddress).then(setTokenDetails);
+  }, [tokenAddress]);
+
+  const tokenDisplay = tokenDetails ? (
     <Text size="md" strong>
-      {tokenDisplayName}
+      {tokenDetails.symbol}
     </Text>
+  ) : (
+    <div>...</div>
   );
 
   return (
@@ -52,7 +73,7 @@ export const FundingInput = (props: Props): JSX.Element => {
       />
       <PerBracketAmount
         amount={amountPerBracket}
-        tokenDisplayName={tokenDisplayName}
+        tokenDisplayName={tokenDetails ? tokenDetails.symbol : "..."}
       />
     </Wrapper>
   );
