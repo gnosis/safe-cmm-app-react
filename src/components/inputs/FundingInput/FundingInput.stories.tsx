@@ -1,17 +1,14 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
+import { Meta } from "@storybook/react/types-6-0";
 
-import Web3Provider, { Web3Context } from "components/Web3Provider";
-import getLoggerOrCreate from "utils/logger";
 import { TokenDetails } from "types";
 
-const logger = getLoggerOrCreate("FundingInput.stories");
+import { Web3Context } from "components/Web3Provider";
 
-logger.log(`story context`, Web3Provider);
+import { FundingInput, Props } from ".";
 
-import { FundingInput, TokenDetails } from ".";
-
-const context = {
+const mockContext = {
   getErc20Details: async (address: string): Promise<TokenDetails> => {
     return {
       decimals: 18,
@@ -22,26 +19,21 @@ const context = {
   },
 };
 
-const Story = ({ storyFn }) => storyFn();
-
 export default {
   component: FundingInput,
   title: "FundingInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
   decorators: [
-    (storyFn) => (
-      <Web3Context.Provider value={context}>
-        <Story storyFn={storyFn} />
+    (Story: any): JSX.Element => (
+      <Web3Context.Provider value={mockContext}>
+        <Story />
       </Web3Context.Provider>
     ),
   ],
-};
-
-const onSubmit = (e: React.FormEvent) => e.preventDefault();
+} as Meta;
 
 export const fundingInputData = {
-  id: "fundingId",
   amountPerBracket: "5",
   tokenAddress: "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
 };
@@ -50,14 +42,16 @@ export const actionData = {
   onMaxClick: action("onMaxClick"),
 };
 
-export const Default = () => {
-  const [value, setValue] = useState("");
+// Template pattern: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
+const Template = (args: Props) => {
+  const [value, setValue] = useState(args.value);
+
+  const onSubmit = (e: React.FormEvent) => e.preventDefault();
 
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
       <FundingInput
-        {...fundingInputData}
-        {...actionData}
+        {...args}
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
@@ -65,72 +59,18 @@ export const Default = () => {
   );
 };
 
-export const VeryLongValue = () => {
-  const [value, setValue] = useState("54894321689901283.3337");
+export const Default = Template.bind({});
+Default.args = { ...fundingInputData, ...actionData };
 
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <FundingInput
-        {...fundingInputData}
-        amountPerBracket="91028309701253.5123"
-        {...actionData}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-    </form>
-  );
+export const VeryLongValue = Template.bind({});
+VeryLongValue.args = {
+  ...Default.args,
+  value: "1231231231235345345.312",
+  amountPerBracket: "12351514625333.3",
 };
 
-export const ErrorInput = () => {
-  const [value, setValue] = useState("sdf");
+export const ErrorInput = Template.bind({});
+ErrorInput.args = { ...Default.args, error: true };
 
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <FundingInput
-        {...fundingInputData}
-        {...actionData}
-        value={value}
-        error
-        onChange={(e) => setValue(e.target.value)}
-      />
-    </form>
-  );
-};
-
-export const WarningInput = () => {
-  const [value, setValue] = useState("sdf");
-
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <FundingInput
-        {...fundingInputData}
-        {...actionData}
-        value={value}
-        warn
-        onChange={(e) => setValue(e.target.value)}
-      />
-    </form>
-  );
-};
-
-export const SetMaxTo100 = () => {
-  const [value, setValue] = useState("");
-  const onMaxClick = useCallback(
-    (_: React.ChangeEvent<HTMLInputElement>) => {
-      setValue("100");
-    },
-    [setValue]
-  );
-
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <FundingInput
-        {...fundingInputData}
-        {...actionData}
-        onMaxClick={onMaxClick}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-    </form>
-  );
-};
+export const WarningInput = Template.bind({});
+WarningInput.args = { ...Default.args, warn: true };

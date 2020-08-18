@@ -25,7 +25,8 @@ const Wrapper = styled.div<{ width: string | number }>`
   flex-direction: column;
 `;
 
-interface Props extends Omit<TextFieldWithCustomLabelProps, "customLabel"> {
+export interface Props
+  extends Omit<TextFieldWithCustomLabelProps, "customLabel"> {
   onMaxClick: (e: React.SyntheticEvent) => void;
   amountPerBracket: string;
   tokenAddress: string;
