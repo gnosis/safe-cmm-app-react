@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 import { Text } from "@gnosis.pm/safe-react-components";
 
+import { TokenDetails } from "types";
+
 import { Web3Context } from "components/Web3Provider";
 
 import { pxOrCustomCssUnits } from "utils/cssUtils";
@@ -14,14 +16,6 @@ import {
 
 import { PerBracketAmount } from "./PerBracketAmount";
 import { Label } from "./Label";
-
-// todo: move to central type definition file
-export interface TokenDetails {
-  address: string;
-  decimals: number;
-  symbol: string;
-  name: string;
-}
 
 const DEFAULT_INPUT_WIDTH = "120px";
 

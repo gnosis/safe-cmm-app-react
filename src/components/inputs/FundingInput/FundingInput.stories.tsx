@@ -3,6 +3,7 @@ import { action } from "@storybook/addon-actions";
 
 import Web3Provider, { Web3Context } from "components/Web3Provider";
 import getLoggerOrCreate from "utils/logger";
+import { TokenDetails } from "types";
 
 const logger = getLoggerOrCreate("FundingInput.stories");
 
