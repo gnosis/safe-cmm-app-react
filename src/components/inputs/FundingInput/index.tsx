@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 
-import { Text } from "@gnosis.pm/safe-react-components";
+import { Text, Loader } from "@gnosis.pm/safe-react-components";
 
 import { TokenDetails } from "types";
 
@@ -45,7 +45,6 @@ export const FundingInput = (props: Props): JSX.Element => {
   const { getErc20Details } = useContext(Web3Context);
 
   useEffect(() => {
-    console.log(`tokenAddress`, tokenAddress, tokenDetails);
     getErc20Details(tokenAddress).then(setTokenDetails);
   }, [tokenAddress]);
 
@@ -54,7 +53,7 @@ export const FundingInput = (props: Props): JSX.Element => {
       {tokenDetails.symbol}
     </Text>
   ) : (
-    <div>...</div>
+    <Loader size="md" />
   );
 
   return (
