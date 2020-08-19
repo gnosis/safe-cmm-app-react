@@ -112,14 +112,6 @@ const Deploy = ({ history }) => {
 
   return (
     <Box>
-      <Heading
-        title="Deploy new Strategy"
-        navigationItems={
-          <ButtonLink onClick={handleNavigateToActive} color="primary">
-            Back to overview
-          </ButtonLink>
-        }
-      />
       <FormBox>
         <Text size="md">Pick a token pair</Text>
         <HorizontalBox>
