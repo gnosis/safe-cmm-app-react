@@ -22,13 +22,14 @@ export interface Props {
   tooltip: string;
   size: ThemeTextSize;
   color?: ThemeColors;
+  className?: string;
 }
 
 export const LabelWithTooltip = (props: Props): JSX.Element => {
-  const { text, tooltip, size, color } = props;
+  const { text, tooltip, size, color, className } = props;
 
   return (
-    <Wrapper>
+    <Wrapper className={className}>
       <Text size={size} strong color={color}>
         {text}
       </Text>
