@@ -1,9 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-import { Text, Loader } from "@gnosis.pm/safe-react-components";
+import { Text } from "@gnosis.pm/safe-react-components";
 
-import { TokenDetails } from "types";
+import { useTokenDetails } from "hooks/useTokenDetails";
+
+import { TokenDisplay } from "components/misc/TokenDisplay";
 
 const Wrapper = styled.div`
   display: flex;
@@ -18,24 +20,22 @@ const Wrapper = styled.div`
 
 export interface Props {
   amount: string;
-  tokenDetails: TokenDetails | null;
+  tokenAddress: string;
 }
 
 export const PerBracketAmount = (props: Props): JSX.Element => {
-  const { amount, tokenDetails } = props;
+  const { amount, tokenAddress } = props;
+
+  const tokenDetails = useTokenDetails(tokenAddress);
 
   return (
     <Wrapper>
       <Text size="sm" center strong color="shadow">
         per bracket
       </Text>
-      {tokenDetails ? (
-        <Text size="sm" center strong>
-          {amount} {tokenDetails.symbol}
-        </Text>
-      ) : (
-        <Loader size="sm" />
-      )}
+      <Text size="sm" center strong>
+        {amount} <TokenDisplay tokenDetails={tokenDetails} size="sm" />
+      </Text>
     </Wrapper>
   );
 };
