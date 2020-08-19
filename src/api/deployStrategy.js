@@ -3,7 +3,7 @@ import getLogger from "utils/logger";
 const logger = getLogger("deploy-strategy");
 
 import verifyBalance from "api/utils/verifyBalance";
-import deployAndProvision from "../utils/progressiveTx/deployAndProvision";
+import deployFleet from "api/eth/deployFleet";
 
 export class ValidationError extends Error {}
 
@@ -18,7 +18,6 @@ const deployStrategy = async (
   investmentQuoteWei
 ) => {
   console.log([
-    safeAddress,
     numBrackets,
     tokenAddressBase,
     tokenAddressQuote,
@@ -31,7 +30,7 @@ const deployStrategy = async (
   const { sdk, instance, getContract, getDeployed, safeInfo: { safeAddress } } = context;
 
   //const ERC20Contract = await getContract("ERC20Detailed");
-
+  console.log(safeAddress)
   const tokenBaseContract = await getContract(
     "ERC20Detailed",
     tokenAddressBase
@@ -66,7 +65,7 @@ const deployStrategy = async (
     );
   }
 
-  await deployAndProvision(context, {
+  const deployFleetData = await deployFleet(context, {
     numBrackets,
     tokenBaseContract,
     tokenQuoteContract,
@@ -75,6 +74,10 @@ const deployStrategy = async (
     investmentBaseWei,
     investmentQuoteWei,
   });
+
+  sdk.sendTransactions([
+    deployFleetData.tx
+  ])
 };
 
 export default deployStrategy;

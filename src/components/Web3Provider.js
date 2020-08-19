@@ -19,13 +19,17 @@ const Web3Provider = ({ children }) => {
   const [sdk, setSdk] = useState(null);
   const [safeInfo, setSafeInfo] = useState({});
 
+  const handleSafeInfo = useCallback((safeInfo) => {
+    setSafeInfo(safeInfo)
+    setStatus("SUCCESS");
+  })
+
   const handleInit = useCallback(async () => {
     setStatus("LOADING");
 
     try {
       const newInstance = await initWeb3();
       setInstance(newInstance);
-      setStatus("SUCCESS");
       setSdk(initSdk());
     } catch (err) {
       console.error(err);
@@ -37,7 +41,7 @@ const Web3Provider = ({ children }) => {
   useEffect(() => {
     if (sdk) {
       sdk.addListeners({
-        onSafeInfo: setSafeInfo,
+        onSafeInfo: handleSafeInfo,
       });
 
       return () => {
@@ -84,7 +88,7 @@ const Web3Provider = ({ children }) => {
       contractInstance.contractName = contractName;
       return contractInstance;
     },
-    [instance]
+    [handleGetArtifact, instance]
   );
 
   /**
@@ -109,9 +113,6 @@ const Web3Provider = ({ children }) => {
     },
     [handleGetContract, handleGetArtifact, instance]
   );
-
-  /*
-   */
 
   useEffect(handleAsyncInit, [handleAsyncInit]);
 

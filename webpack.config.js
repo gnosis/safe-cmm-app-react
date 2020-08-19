@@ -26,7 +26,7 @@ module.exports = {
         test: /\.json$/,
         use: [
           // allows artifact loading with a lower filesize by omitting all keys except abi, network and events
-          "json-x-loader?exclude=bytecode+deployedBytecode+ast+legacyAST+sourceMap+deployedSourceMap+source+sourcePath+ast+legacyAST+compiler+schemaVersion+updatedAt+devdoc+userdoc",
+          "json-x-loader?exclude=ast+legacyAST+sourceMap+deployedSourceMap+source+sourcePath+ast+legacyAST+compiler+schemaVersion+updatedAt+devdoc+userdoc",
         ],
       },
     ],
