@@ -9,7 +9,12 @@ const custom = require("../webpack.config.js");
 
 module.exports = {
   stories: ["../src/**/*.stories.tsx"],
-  addons: ["@storybook/addon-actions", "@storybook/addon-links"],
+  addons: [
+    "@storybook/addon-actions",
+    "@storybook/addon-links",
+    "@storybook/addon-controls",
+    "@storybook/addon-docs",
+  ],
   webpackFinal: (config) => {
     return {
       ...config,
