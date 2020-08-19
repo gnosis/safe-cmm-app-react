@@ -10,6 +10,7 @@ import { Text, Icon } from "@gnosis.pm/safe-react-components";
 const Wrapper = styled.div`
   display: flex;
   flex-wrap: nowrap;
+  align-items: center;
 
   svg {
     padding-left: 0.25em;
@@ -27,11 +28,11 @@ export const LabelWithTooltip = (props: Props): JSX.Element => {
   const { text, tooltip, size, color } = props;
 
   return (
-    <Text size={size} strong color={color}>
-      <Wrapper>
+    <Wrapper>
+      <Text size={size} strong color={color}>
         {text}
-        <Icon size="sm" type="question" tooltip={tooltip} />
-      </Wrapper>
-    </Text>
+      </Text>
+      <Icon size="sm" type="question" tooltip={tooltip} />
+    </Wrapper>
   );
 };

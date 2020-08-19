@@ -20,6 +20,9 @@ const Template = (args: Props): JSX.Element => <LabelWithTooltip {...args} />;
 export const Default = Template.bind({});
 Default.args = { ...labelWithTooltipData };
 
+export const Small = Template.bind({});
+Small.args = { ...Default.args, size: "sm" };
+
 export const Error = Template.bind({});
 Error.args = { ...Default.args, color: "error" };
 
