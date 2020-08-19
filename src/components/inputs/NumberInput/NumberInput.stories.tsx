@@ -55,3 +55,9 @@ const Template = (args: Props) => {
 
 export const Default = Template.bind({});
 Default.args = { ...numberInputData };
+
+export const CustomWidth = Template.bind({});
+CustomWidth.args = { ...numberInputData, width: "120px" };
+
+export const WithoutToken = Template.bind({});
+WithoutToken.args = { ...numberInputData, tokenAddress: undefined };
