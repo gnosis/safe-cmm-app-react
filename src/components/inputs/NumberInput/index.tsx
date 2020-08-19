@@ -1,12 +1,11 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 
-import { Web3Context } from "components/Web3Provider";
+import { useTokenDetails } from "hooks/useTokenDetails";
 
 import {
   Props as TextFieldWithCustomLabelProps,
   TextFieldWithCustomLabel,
 } from "components/inputs/TextFieldWithCustomLabel";
-import { TokenDetails } from "types";
 import { TokenDisplay } from "components/misc/TokenDisplay";
 
 export interface Props
@@ -23,15 +22,7 @@ export interface Props
 export const NumberInput = (props: Props): JSX.Element => {
   const { onChange, tokenAddress, ...rest } = props;
 
-  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
-
-  const { getErc20Details } = useContext(Web3Context);
-
-  useEffect(() => {
-    if (tokenAddress) {
-      getErc20Details(tokenAddress).then(setTokenDetails);
-    }
-  }, [tokenAddress]);
+  const tokenDetails = useTokenDetails(tokenAddress);
 
   const endAdornment = tokenDetails && (
     <TokenDisplay size="md" tokenDetails={tokenDetails} />
