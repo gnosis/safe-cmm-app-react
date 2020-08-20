@@ -5,6 +5,8 @@ import PropTypes from "prop-types";
 
 import initSdk from "@gnosis.pm/safe-apps-sdk";
 
+import { getTokenAddressesForNetwork } from "../api/tokenAddresses";
+
 export const Web3Context = React.createContext({
   instance: null,
   status: "UNKNOWN",
@@ -18,6 +20,7 @@ const Web3Provider = ({ children }) => {
   const [instance, setInstance] = useState(null);
   const [sdk, setSdk] = useState(null);
   const [safeInfo, setSafeInfo] = useState({});
+  const [erc20Cache, setErc20Cache] = useState({});
 
   const handleInit = useCallback(async () => {
     setStatus("LOADING");
@@ -84,7 +87,7 @@ const Web3Provider = ({ children }) => {
       contractInstance.contractName = contractName;
       return contractInstance;
     },
-    [instance]
+    [handleGetArtifact, instance]
   );
 
   /**
@@ -110,10 +113,77 @@ const Web3Provider = ({ children }) => {
     [handleGetContract, handleGetArtifact, instance]
   );
 
+  /**
+   * Fetches erc20 token details from contract
+   *
+   * @param {string} address - The erc20 token address
+   * @returns {object} - Erc20 token details (decimals, name, symbol, address)
+   */
+  const handleGetErc20Details = useCallback(
+    async (address) => {
+      const contractInstance = await handleGetContract(
+        "ERC20Detailed",
+        address
+      );
+
+      const [decimals, symbol, name] = await Promise.all([
+        contractInstance.methods.decimals().call(),
+        contractInstance.methods.symbol().call(),
+        contractInstance.methods.name().call(),
+      ]);
+
+      console.log(`details`, decimals, symbol, name);
+      return { address, decimals, symbol, name };
+    },
+    [handleGetContract]
+  );
+
+  /**
+   * Fetches erc20 token details from local cache if existing or contract if not
+   *
+   * @param {string} address - The erc20 token address
+   * @returns {object} - Erc20 token details (decimals, name, symbol, address)
+   */
+  const handleGetErc20FromCache = useCallback(
+    async (address) => {
+      if (erc20Cache[address]) {
+        return erc20Cache[address];
+      }
+      const details = await handleGetErc20Details(address);
+
+      setErc20Cache((cache) => ({ ...cache, [address]: details }));
+
+      return details;
+    },
+    [erc20Cache, handleGetErc20Details]
+  );
+
   /*
    */
 
   useEffect(handleAsyncInit, [handleAsyncInit]);
+
+  // Loads erc20 details for all tokens addresses for given network on load
+  useEffect(() => {
+    if (!instance) {
+      return;
+    }
+
+    async function loadErc20Details() {
+      const tokenAddresses = await getTokenAddressesForNetwork(
+        await instance.eth.net.getId()
+      );
+
+      const erc20Details = await Promise.all(
+        tokenAddresses.map((address) => handleGetErc20Details(address))
+      );
+      setErc20Cache(erc20Details);
+    }
+
+    loadErc20Details();
+  }, [handleGetErc20Details, instance]);
+
+  const tokenList = useMemo(() => Object.values(erc20Cache), [erc20Cache]);
 
   const contextState = useMemo(
     () => ({
@@ -121,10 +191,21 @@ const Web3Provider = ({ children }) => {
       instance,
       sdk,
       safeInfo,
+      tokenList,
       getContract: handleGetContract,
       getDeployed: handleGetDeployed,
+      getErc20Details: handleGetErc20FromCache,
     }),
-    [status, instance, safeInfo, sdk, handleGetContract, handleGetDeployed]
+    [
+      status,
+      instance,
+      sdk,
+      safeInfo,
+      tokenList,
+      handleGetContract,
+      handleGetDeployed,
+      handleGetErc20FromCache,
+    ]
   );
 
   return (

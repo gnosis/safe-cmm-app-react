@@ -3,6 +3,23 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
 
+// Make sure required envs are set
+if (!process.env.INFURA_API_KEY) {
+  throw new Error(
+    "Missing Infura key - please define the env variable `INFURA_API_KEY`"
+  );
+}
+
+const ALLOWED_NETWORKS = ["mainnet", "rinkeby", "local"];
+
+if (!ALLOWED_NETWORKS.includes(process.env.NETWORK)) {
+  throw new Error(
+    `Invalid or missing Network defined - please set NETWORK env variable with one of: ${ALLOWED_NETWORKS.join(
+      ", "
+    )}`
+  );
+}
+
 module.exports = {
   devtool: "eval-source-map",
   module: {
