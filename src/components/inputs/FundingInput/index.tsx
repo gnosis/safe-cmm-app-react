@@ -1,23 +1,13 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
+import React from "react";
 import styled from "styled-components";
 
-import { Text, Loader } from "@gnosis.pm/safe-react-components";
-
-import { TokenDetails } from "types";
-
-import { Web3Context } from "components/Web3Provider";
-
 import { pxOrCustomCssUnits } from "utils/cssUtils";
+import { DEFAULT_INPUT_WIDTH } from "utils/constants";
 
-import {
-  TextFieldWithCustomLabel,
-  Props as TextFieldWithCustomLabelProps,
-} from "components/inputs/TextFieldWithCustomLabel";
+import { NumberInput, Props as NumberInputPros } from "../NumberInput";
 
 import { PerBracketAmount } from "./PerBracketAmount";
 import { Label } from "./Label";
-
-const DEFAULT_INPUT_WIDTH = "120px";
 
 const Wrapper = styled.div<{ width: string | number }>`
   width: ${({ width }) => pxOrCustomCssUnits(width)};
@@ -25,8 +15,7 @@ const Wrapper = styled.div<{ width: string | number }>`
   flex-direction: column;
 `;
 
-export interface Props
-  extends Omit<TextFieldWithCustomLabelProps, "customLabel"> {
+export interface Props extends Omit<NumberInputPros, "customLabel"> {
   onMaxClick: (e: React.SyntheticEvent) => void;
   amountPerBracket: string;
   tokenAddress: string;
@@ -35,7 +24,6 @@ export interface Props
 export const FundingInput = (props: Props): JSX.Element => {
   const {
     onMaxClick,
-    onChange,
     error,
     amountPerBracket,
     tokenAddress,
@@ -43,48 +31,16 @@ export const FundingInput = (props: Props): JSX.Element => {
     ...rest
   } = props;
 
-  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
-  const [isInvalidInput, setIsInvalidInput] = useState(false);
-
-  const { getErc20Details } = useContext(Web3Context);
-
-  useEffect(() => {
-    getErc20Details(tokenAddress).then(setTokenDetails);
-  }, [tokenAddress]);
-
-  const validateInput = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (isNaN(+e.target.value)) {
-        setIsInvalidInput(true);
-      } else {
-        setIsInvalidInput(false);
-        onChange(e);
-      }
-    },
-    []
-  );
-
-  const _error = error || isInvalidInput;
-
-  const tokenDisplay = tokenDetails ? (
-    <Text size="md" strong>
-      {tokenDetails.symbol}
-    </Text>
-  ) : (
-    <Loader size="md" />
-  );
-
   return (
     <Wrapper width={width}>
-      <TextFieldWithCustomLabel
+      <NumberInput
         {...rest}
-        onChange={validateInput}
-        error={_error}
-        customLabel={<Label onClick={onMaxClick} error={_error} />}
+        error={error}
+        customLabel={<Label onClick={onMaxClick} error={error} />}
         width={width}
-        endAdornment={tokenDisplay}
+        tokenAddress={tokenAddress}
       />
-      <PerBracketAmount amount={amountPerBracket} tokenDetails={tokenDetails} />
+      <PerBracketAmount amount={amountPerBracket} tokenAddress={tokenAddress} />
     </Wrapper>
   );
 };
