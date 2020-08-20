@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import styled from "styled-components";
 
-import { Text } from "@gnosis.pm/safe-react-components";
+import { Text, Loader } from "@gnosis.pm/safe-react-components";
+
+import { TokenDetails } from "types";
+
+import { Web3Context } from "components/Web3Provider";
 
 import { pxOrCustomCssUnits } from "utils/cssUtils";
 
@@ -21,39 +25,66 @@ const Wrapper = styled.div<{ width: string | number }>`
   flex-direction: column;
 `;
 
-interface Props extends Omit<TextFieldWithCustomLabelProps, "customLabel"> {
+export interface Props
+  extends Omit<TextFieldWithCustomLabelProps, "customLabel"> {
   onMaxClick: (e: React.SyntheticEvent) => void;
   amountPerBracket: string;
-  tokenDisplayName: string;
+  tokenAddress: string;
 }
 
 export const FundingInput = (props: Props): JSX.Element => {
   const {
     onMaxClick,
+    onChange,
+    error,
     amountPerBracket,
-    tokenDisplayName,
+    tokenAddress,
     width = DEFAULT_INPUT_WIDTH,
     ...rest
   } = props;
 
-  const tokenDisplay = (
+  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
+  const [isInvalidInput, setIsInvalidInput] = useState(false);
+
+  const { getErc20Details } = useContext(Web3Context);
+
+  useEffect(() => {
+    getErc20Details(tokenAddress).then(setTokenDetails);
+  }, [tokenAddress]);
+
+  const validateInput = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (isNaN(+e.target.value)) {
+        setIsInvalidInput(true);
+      } else {
+        setIsInvalidInput(false);
+        onChange(e);
+      }
+    },
+    []
+  );
+
+  const _error = error || isInvalidInput;
+
+  const tokenDisplay = tokenDetails ? (
     <Text size="md" strong>
-      {tokenDisplayName}
+      {tokenDetails.symbol}
     </Text>
+  ) : (
+    <Loader size="md" />
   );
 
   return (
     <Wrapper width={width}>
       <TextFieldWithCustomLabel
         {...rest}
-        customLabel={<Label onClick={onMaxClick} error={props.error} />}
+        onChange={validateInput}
+        error={_error}
+        customLabel={<Label onClick={onMaxClick} error={_error} />}
         width={width}
         endAdornment={tokenDisplay}
       />
-      <PerBracketAmount
-        amount={amountPerBracket}
-        tokenDisplayName={tokenDisplayName}
-      />
+      <PerBracketAmount amount={amountPerBracket} tokenDetails={tokenDetails} />
     </Wrapper>
   );
 };

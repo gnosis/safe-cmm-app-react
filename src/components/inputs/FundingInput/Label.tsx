@@ -33,7 +33,7 @@ export const Label = (props: Props): JSX.Element => {
       <Text size="lg" strong color={error ? "error" : null}>
         Funding
       </Text>
-      <ButtonLink color="primary" textSize="lg" onClick={onClick}>
+      <ButtonLink type="button" color="primary" textSize="lg" onClick={onClick}>
         max
       </ButtonLink>
     </Wrapper>
