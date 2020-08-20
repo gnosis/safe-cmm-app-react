@@ -8,7 +8,7 @@ const uuidAsInt = () => {
   uuid(null, uuidBuffer);
 
   let uuidInt = new BN();
-  for (let i = uuidBuffer.length-1; i > 0; i--) {
+  for (let i = uuidBuffer.length - 1; i > 0; i--) {
     //console.log(`${uuidBuffer[i]} << ${i * 8}`);
     //console.log(
     //  toBN(uuidBuffer[i])

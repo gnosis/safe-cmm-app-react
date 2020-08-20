@@ -1,1 +1,1 @@
-export { default as deployFleet } from './deployFleet'
+export { default as deployFleet } from "./deployFleet";

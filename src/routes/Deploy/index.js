@@ -1,15 +1,15 @@
 import React, { useMemo, useState, useCallback, useContext } from "react";
 import styled from "styled-components";
 
+// import { useHistory } from "react-router-dom"
+
 import deployStrategy from "api/deployStrategy";
 
 import asWei from "utils/asWei";
 
 import { Web3Context } from "components/Web3Provider";
 import { Box } from "@material-ui/core";
-import Heading from "components/Heading";
 import {
-  ButtonLink,
   Text,
   Select,
   TextField,
@@ -46,19 +46,23 @@ const TOKENS_AVAILABLE = [
   {
     name: "GNO",
     address: "0x333EDe87B78D89D8F7B670488Efe96B9797dB635",
-  }
+  },
 ];
 
 const FormBox = styled(Box)`
   max-width: 600px;
 `;
 
-const Deploy = ({ history }) => {
+const Deploy = () => {
   const web3Context = useContext(Web3Context);
+
+  /*
+  const history = useHistory();
 
   const handleNavigateToActive = useCallback(() => {
     history.replace("/active");
   }, [history]);
+  */
 
   const [tokenAddressBase, setTokenAddressBase] = useFormField(null);
   const [tokenAddressQuote, setTokenAddressQuote] = useFormField(null);

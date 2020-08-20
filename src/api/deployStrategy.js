@@ -27,10 +27,14 @@ const deployStrategy = async (
     investmentQuoteWei,
   ]);
 
-  const { sdk, instance, getContract, getDeployed, safeInfo: { safeAddress } } = context;
+  const {
+    sdk,
+    getContract,
+    safeInfo: { safeAddress },
+  } = context;
 
   //const ERC20Contract = await getContract("ERC20Detailed");
-  console.log(safeAddress)
+  console.log(safeAddress);
   const tokenBaseContract = await getContract(
     "ERC20Detailed",
     tokenAddressBase
@@ -75,9 +79,7 @@ const deployStrategy = async (
     investmentQuoteWei,
   });
 
-  sdk.sendTransactions([
-    deployFleetData.tx
-  ])
+  sdk.sendTransactions([deployFleetData.tx]);
 };
 
 export default deployStrategy;

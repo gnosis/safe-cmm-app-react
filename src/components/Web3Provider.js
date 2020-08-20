@@ -19,10 +19,13 @@ const Web3Provider = ({ children }) => {
   const [sdk, setSdk] = useState(null);
   const [safeInfo, setSafeInfo] = useState({});
 
-  const handleSafeInfo = useCallback((safeInfo) => {
-    setSafeInfo(safeInfo)
-    setStatus("SUCCESS");
-  })
+  const handleSafeInfo = useCallback(
+    (safeInfo) => {
+      setSafeInfo(safeInfo);
+      setStatus("SUCCESS");
+    },
+    [setSafeInfo, setStatus]
+  );
 
   const handleInit = useCallback(async () => {
     setStatus("LOADING");
@@ -48,7 +51,7 @@ const Web3Provider = ({ children }) => {
         sdk.removeListeners();
       };
     }
-  }, [sdk]);
+  }, [sdk, handleSafeInfo]);
 
   const handleAsyncInit = useCallback(() => {
     handleInit();

@@ -5,8 +5,8 @@ const { toBN } = web3.utils;
 const verifyBalance = async (tokenContract, ownerAddress, amount) => {
   const balance = await tokenContract.methods.balanceOf(ownerAddress).call();
   const amountBN = toBN(amount);
-  console.log(balance.toString())
-  console.log(amountBN.toString())
+  console.log(balance.toString());
+  console.log(amountBN.toString());
   return toBN(balance).gte(amountBN);
 };
 

@@ -21,7 +21,7 @@ export const getTransactions = async (safeAddress) => {
     `${API_URL}/api/v1/safes/${safeAddress}/transactions`
   );
   const txs = await response.json();
-  console.log(txs)
+  console.log(txs);
 
   return txs.results;
 };
