@@ -16,11 +16,11 @@ matrix:
 cache:
   yarn: true
 before_install:
-  - yarn install
+  - npm install
   # Needed to deploy pull request and releases
   - pip install awscli --upgrade --user
 before_script:
-- yarn build
+- npm run build
 script:
   - echo "Skip tests" # no test cases for the project
 deploy:
@@ -29,8 +29,7 @@ deploy:
     bucket: $DEV_BUCKET_NAME
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
-    local_dir: build
-    upload-dir: app
+    local_dir: dist
     region: $AWS_DEFAULT_REGION
     on:
       branch: development
@@ -40,8 +39,8 @@ deploy:
     bucket: $STAGING_BUCKET_NAME
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
-    local_dir: build
-    upload-dir: current/app
+    local_dir: dist
+    upload-dir: current/
     region: $AWS_DEFAULT_REGION
     on:
       branch: master
@@ -51,7 +50,7 @@ deploy:
     bucket: $STAGING_BUCKET_NAME
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     access_key_id: $AWS_ACCESS_KEY_ID
-    local_dir: build
+    local_dir: dist
     upload-dir: releases/$TRAVIS_TAG
     region: $AWS_DEFAULT_REGION
     on:
