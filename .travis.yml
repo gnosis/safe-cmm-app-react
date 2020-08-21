@@ -8,12 +8,11 @@ matrix:
   include:
     - env:
         - REACT_APP_NETWORK='mainnet'
-        - STAGING_BUCKET_NAME=${STAGING_MAINNET_BUCKET_NAME}
         - INFURA_API_KEY=${INFURA_API_KEY}
         if: (branch = master AND NOT type = pull_request) OR tag IS present
     - env:
         - REACT_APP_NETWORK='rinkeby'
-        - REACT_APP_GNOSIS_APPS_URL=${REACT_APP_GNOSIS_APPS_URL_STAGING}
+        - INFURA_API_KEY=${INFURA_API_KEY}
         if: (branch != master) OR tag IS NOT present
 cache:
   yarn: true
