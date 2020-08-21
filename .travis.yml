@@ -1,0 +1,72 @@
+if: (branch = development) OR (branch = master) OR (type = pull_request) OR (tag IS present)
+sudo: required
+dist: xenial
+language: node_js
+node_js:
+  - 'node'
+matrix:
+  include:
+    - env:
+        - REACT_APP_NETWORK='mainnet'
+        - STAGING_BUCKET_NAME=${STAGING_MAINNET_BUCKET_NAME}
+        - INFURA_API_KEY=${INFURA_API_KEY}
+        if: (branch = master AND NOT type = pull_request) OR tag IS present
+    - env:
+        - REACT_APP_NETWORK='rinkeby'
+        - REACT_APP_GNOSIS_APPS_URL=${REACT_APP_GNOSIS_APPS_URL_STAGING}
+        if: (branch != master) OR tag IS NOT present
+cache:
+  yarn: true
+before_install:
+  - yarn install
+  # Needed to deploy pull request and releases
+  - pip install awscli --upgrade --user
+before_script:
+- yarn build
+script:
+  - echo "Skip tests" # no test cases for the project
+after_success:
+  # Pull Request - Deploy it to a review environment
+  # Travis doesn't do deploy step with pull requests builds
+  # - ./config/travis/deploy_pull_request.sh
+
+deploy:
+  # Development environment
+  - provider: s3
+    bucket: $DEV_BUCKET_NAME
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    skip_cleanup: true
+    local_dir: build
+    upload-dir: app
+    region: $AWS_DEFAULT_REGION
+    on:
+      branch: development
+
+    # Staging environment
+  - provider: s3
+    bucket: $STAGING_BUCKET_NAME
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    skip_cleanup: true
+    local_dir: build
+    upload-dir: current/app
+    region: $AWS_DEFAULT_REGION
+    on:
+      branch: master
+
+    # Prepare production deployment
+  - provider: s3
+    bucket: $STAGING_BUCKET_NAME
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    access_key_id: $AWS_ACCESS_KEY_ID
+    skip_cleanup: true
+    local_dir: build
+    upload-dir: releases/$TRAVIS_TAG
+    region: $AWS_DEFAULT_REGION
+    on:
+      tags: true
+  - provider: script
+    script: ./config/travis/prepare_production_deployment.sh
+    on:
+      tags: true
