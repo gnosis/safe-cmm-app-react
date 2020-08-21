@@ -1,5 +1,4 @@
 if: (branch = development) OR (branch = master) OR (type = pull_request) OR (tag IS present)
-sudo: required
 dist: xenial
 language: node_js
 node_js:
@@ -9,11 +8,11 @@ matrix:
     - env:
         - REACT_APP_NETWORK='mainnet'
         - INFURA_API_KEY=${INFURA_API_KEY}
-        if: (branch = master AND NOT type = pull_request) OR tag IS present
+      if: (branch = master AND NOT type = pull_request) OR tag IS present
     - env:
         - REACT_APP_NETWORK='rinkeby'
         - INFURA_API_KEY=${INFURA_API_KEY}
-        if: (branch != master) OR tag IS NOT present
+      if: (branch != master) OR tag IS NOT present
 cache:
   yarn: true
 before_install:
@@ -30,7 +29,6 @@ deploy:
     bucket: $DEV_BUCKET_NAME
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
-    skip_cleanup: true
     local_dir: build
     upload-dir: app
     region: $AWS_DEFAULT_REGION
@@ -42,7 +40,6 @@ deploy:
     bucket: $STAGING_BUCKET_NAME
     access_key_id: $AWS_ACCESS_KEY_ID
     secret_access_key: $AWS_SECRET_ACCESS_KEY
-    skip_cleanup: true
     local_dir: build
     upload-dir: current/app
     region: $AWS_DEFAULT_REGION
@@ -54,7 +51,6 @@ deploy:
     bucket: $STAGING_BUCKET_NAME
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     access_key_id: $AWS_ACCESS_KEY_ID
-    skip_cleanup: true
     local_dir: build
     upload-dir: releases/$TRAVIS_TAG
     region: $AWS_DEFAULT_REGION
