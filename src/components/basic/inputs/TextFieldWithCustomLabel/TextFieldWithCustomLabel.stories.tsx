@@ -4,7 +4,7 @@ import { TextFieldWithCustomLabel } from ".";
 
 export default {
   component: TextFieldWithCustomLabel,
-  title: "TextFieldWithCustomLabel",
+  title: "basic/input/TextFieldWithCustomLabel",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
 };

@@ -6,7 +6,7 @@ import { action } from "@storybook/addon-actions";
 
 export default {
   component: BracketsInput,
-  title: "BracketsInput",
+  title: "basic/input/BracketsInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
 } as Meta;

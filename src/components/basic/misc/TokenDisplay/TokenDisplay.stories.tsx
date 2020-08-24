@@ -20,7 +20,7 @@ const mockContext = {
 
 export default {
   component: TokenDisplay,
-  title: "TokenDisplay",
+  title: "basic/misc/TokenDisplay",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
   decorators: [

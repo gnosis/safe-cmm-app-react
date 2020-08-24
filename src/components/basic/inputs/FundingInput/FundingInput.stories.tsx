@@ -21,7 +21,7 @@ const mockContext = {
 
 export default {
   component: FundingInput,
-  title: "FundingInput",
+  title: "basic/input/FundingInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
   decorators: [

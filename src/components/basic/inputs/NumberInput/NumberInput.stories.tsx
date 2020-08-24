@@ -20,7 +20,7 @@ const mockContext = {
 
 export default {
   component: NumberInput,
-  title: "NumberInput",
+  title: "basic/input/NumberInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
   decorators: [
