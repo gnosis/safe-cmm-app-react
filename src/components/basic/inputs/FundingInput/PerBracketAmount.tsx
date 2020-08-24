@@ -1,7 +1,7 @@
 import React from "react";
 
-import { TokenDisplay } from "components/misc/TokenDisplay";
-import { SubtextAmount } from "components/misc/SubtextAmount";
+import { TokenDisplay } from "components/basic/misc/TokenDisplay";
+import { SubtextAmount } from "components/basic/misc/SubtextAmount";
 
 export interface Props {
   amount: string;

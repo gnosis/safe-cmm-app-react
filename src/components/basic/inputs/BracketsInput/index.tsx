@@ -6,7 +6,7 @@ import { theme } from "@gnosis.pm/safe-react-components";
 import {
   NumberInput,
   Props as NumberInputProps,
-} from "components/inputs/NumberInput";
+} from "components/basic/inputs/NumberInput";
 
 // TODO: can't get the text to center vertically
 // As far I could find out, the font is the culprit.

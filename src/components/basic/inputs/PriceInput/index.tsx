@@ -5,7 +5,8 @@ import { ThemeTextSize } from "@gnosis.pm/safe-react-components/dist/theme";
 
 import { DEFAULT_INPUT_WIDTH } from "utils/constants";
 
-import { LabelWithTooltip } from "components/labels/LabelWithTooltip";
+import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
+
 import { NumberInput, Props as NumberInputProps } from "../NumberInput";
 
 const CenteredLabel = styled(LabelWithTooltip)`

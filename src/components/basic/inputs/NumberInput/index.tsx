@@ -3,8 +3,8 @@ import React, { useCallback } from "react";
 import {
   Props as TextFieldWithCustomLabelProps,
   TextFieldWithCustomLabel,
-} from "components/inputs/TextFieldWithCustomLabel";
-import { TokenDisplay } from "components/misc/TokenDisplay";
+} from "components/basic/inputs/TextFieldWithCustomLabel";
+import { TokenDisplay } from "components/basic/misc/TokenDisplay";
 
 export interface Props
   extends Omit<
