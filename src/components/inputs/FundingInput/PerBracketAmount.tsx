@@ -1,20 +1,7 @@
 import React from "react";
-import styled from "styled-components";
-
-import { Text } from "@gnosis.pm/safe-react-components";
 
 import { TokenDisplay } from "components/misc/TokenDisplay";
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  padding-top: 0.4em;
-
-  p:first-of-type {
-    padding-bottom: 0.2em;
-  }
-`;
+import { SubtextAmount } from "components/misc/SubtextAmount";
 
 export interface Props {
   amount: string;
@@ -25,13 +12,13 @@ export const PerBracketAmount = (props: Props): JSX.Element => {
   const { amount, tokenAddress } = props;
 
   return (
-    <Wrapper>
-      <Text size="sm" center strong color="shadow">
-        per bracket
-      </Text>
-      <Text size="sm" center strong>
-        {amount} <TokenDisplay tokenAddress={tokenAddress} size="sm" />
-      </Text>
-    </Wrapper>
+    <SubtextAmount
+      subtext="per bracket"
+      amount={
+        <>
+          {amount} <TokenDisplay tokenAddress={tokenAddress} size="sm" />
+        </>
+      }
+    />
   );
 };
