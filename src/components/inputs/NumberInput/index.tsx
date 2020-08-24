@@ -11,7 +11,7 @@ import { TokenDisplay } from "components/misc/TokenDisplay";
 export interface Props
   extends Omit<
     TextFieldWithCustomLabelProps,
-    "startAdornment" | "endAdornment" | "input"
+    "startAdornment" | "endAdornment"
   > {
   tokenAddress?: string;
 }
