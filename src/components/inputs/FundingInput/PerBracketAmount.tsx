@@ -3,8 +3,6 @@ import styled from "styled-components";
 
 import { Text } from "@gnosis.pm/safe-react-components";
 
-import { useTokenDetails } from "hooks/useTokenDetails";
-
 import { TokenDisplay } from "components/misc/TokenDisplay";
 
 const Wrapper = styled.div`
@@ -26,15 +24,13 @@ export interface Props {
 export const PerBracketAmount = (props: Props): JSX.Element => {
   const { amount, tokenAddress } = props;
 
-  const tokenDetails = useTokenDetails(tokenAddress);
-
   return (
     <Wrapper>
       <Text size="sm" center strong color="shadow">
         per bracket
       </Text>
       <Text size="sm" center strong>
-        {amount} <TokenDisplay tokenDetails={tokenDetails} size="sm" />
+        {amount} <TokenDisplay tokenAddress={tokenAddress} size="sm" />
       </Text>
     </Wrapper>
   );
