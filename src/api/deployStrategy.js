@@ -4,6 +4,7 @@ const logger = getLogger("deploy-strategy");
 
 import verifyBalance from "api/utils/verifyBalance";
 import deployFleet from "api/eth/deployFleet";
+import orderAndFund from "api/eth/orderAndFund";
 
 export class ValidationError extends Error {}
 
@@ -30,22 +31,23 @@ const deployStrategy = async (
   const {
     sdk,
     getContract,
+    getDeployed,
     safeInfo: { safeAddress },
   } = context;
 
   //const ERC20Contract = await getContract("ERC20Detailed");
-  console.log(safeAddress);
-  const tokenBaseContract = await getContract(
-    "ERC20Detailed",
-    tokenAddressBase
-  );
-  const tokenQuoteContract = await getContract(
-    "ERC20Detailed",
-    tokenAddressQuote
-  );
-
-  //console.log({ tokenBaseContract, tokenQuoteContract })
-
+  logger.log(`==> Fetching all contracts`);
+  const [
+    tokenBaseContract,
+    tokenQuoteContract,
+    masterSafeContract,
+  ] = await Promise.all([
+    getContract("ERC20Detailed", tokenAddressBase),
+    getContract("ERC20Detailed", tokenAddressQuote),
+    getDeployed("GnosisSafe"),
+  ]);
+  const masterSafeAddress = masterSafeContract.options.address;
+  console.log(masterSafeContract)
   logger.log(`==> Running sanity checks`);
   const hasEnoughBalanceBase = await verifyBalance(
     tokenBaseContract,
@@ -69,8 +71,14 @@ const deployStrategy = async (
     );
   }
 
-  const deployFleetData = await deployFleet(context, {
+  const { tx: deployFleetTx, safeAddresses } = await deployFleet(context, {
     numBrackets,
+    masterSafeAddress,
+  });
+
+  const { tx: orderAndFundTx } = await orderAndFund(context, {
+    safeAddresses,
+    masterSafeAddress,
     tokenBaseContract,
     tokenQuoteContract,
     boundsLowerWei,
@@ -79,7 +87,7 @@ const deployStrategy = async (
     investmentQuoteWei,
   });
 
-  sdk.sendTransactions([deployFleetData.tx]);
+  sdk.sendTransactions([deployFleetTx, orderAndFundTx]);
 };
 
 export default deployStrategy;

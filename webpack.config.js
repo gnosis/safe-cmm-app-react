@@ -4,12 +4,25 @@ const webpack = require("webpack");
 
 module.exports = {
   devtool: "eval-source-map",
+  target: "web",
   module: {
     rules: [
       {
         test: /\.(jsx?)$/,
-        exclude: /(node_modules)/,
-        use: ["babel-loader"],
+        exclude: /node_modules\/(?!@gnosis\.pm\/dex-.*).*/,
+        loader: "babel-loader",
+        options: {
+          // Unfortunately babelrc is causing issues when trying to
+          // force it to transpile something inside node_modules
+          // thus the config has been moved here. Don't use .babelrc
+          presets: ["@babel/preset-env", "@babel/preset-react"],
+          plugins: [
+            "@babel/plugin-proposal-nullish-coalescing-operator",
+            "react-hot-loader/babel",
+            "@babel/plugin-syntax-dynamic-import",
+            "@babel/plugin-proposal-optional-chaining",
+          ],
+        }
       },
       {
         test: /\.woff2?/,
@@ -39,6 +52,7 @@ module.exports = {
     ],
     alias: {
       "react-dom": "@hot-loader/react-dom",
+      fs: path.resolve(__dirname, "src", "mock", "fs-mock.js"),
     },
     symlinks: true,
   },
@@ -52,6 +66,8 @@ module.exports = {
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
+    public: "cmm-safe-app.ngrok.io/",
+    port: 8080,
     host: "0.0.0.0",
   },
   plugins: [

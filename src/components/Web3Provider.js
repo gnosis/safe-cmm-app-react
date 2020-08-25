@@ -47,6 +47,10 @@ const Web3Provider = ({ children }) => {
         onSafeInfo: handleSafeInfo,
       });
 
+      if (safeInfo) {
+        setStatus("SUCCESS");
+      }
+
       return () => {
         sdk.removeListeners();
       };
@@ -61,12 +65,22 @@ const Web3Provider = ({ children }) => {
     let contractArtifact = contractArtifacts[contractName];
     if (!contractArtifact) {
       // Load from default folder with contractName.json
-      const response = await fetch(`contracts/${contractName}.json`);
+      const cleanedContractName = contractName.replace(/\.sol/, "");
+      const response = await fetch(`contracts/${cleanedContractName}.json`);
       contractArtifact = await response.json();
       contractArtifacts[contractName] = contractArtifact;
     }
 
     return contractArtifact;
+  }, []);
+
+  const handleGetCachedArtifact = useCallback((contractName) => {
+    if (!contractArtifacts[contractName]) {
+      throw new Error(
+        `${contractName} has not been fetched previously. Please fetch it before running the part of the application that is using artifacts.require`
+      );
+    }
+    return contractArtifacts[contractName];
   }, []);
 
   /**
@@ -125,11 +139,24 @@ const Web3Provider = ({ children }) => {
       instance,
       sdk,
       safeInfo,
+      getArtifact: handleGetArtifact,
+      getCachedArtifact: handleGetCachedArtifact,
       getContract: handleGetContract,
       getDeployed: handleGetDeployed,
     }),
-    [status, instance, safeInfo, sdk, handleGetContract, handleGetDeployed]
+    [
+      status,
+      instance,
+      safeInfo,
+      sdk,
+      handleGetContract,
+      handleGetArtifact,
+      handleGetCachedArtifact,
+      handleGetDeployed,
+    ]
   );
+
+  console.log(safeInfo);
 
   return (
     <Web3Context.Provider value={contextState}>

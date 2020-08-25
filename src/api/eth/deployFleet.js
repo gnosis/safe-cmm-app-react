@@ -1,14 +1,13 @@
 import calcSafeAddresses from "./utils/calcSafeAddresses";
 import uuidAsInt from "./utils/uuidAsInt";
 
-const deployFleet = async (context, { numBrackets }) => {
+const deployFleet = async (context, { numBrackets, masterSafeAddress }) => {
   const {
     safeInfo: { safeAddress: from },
     getDeployed,
   } = context;
 
   const fleetFactory = await getDeployed("FleetFactoryDeterministic");
-  const masterSafe = await getDeployed("GnosisSafe");
 
   const saltNonce = uuidAsInt();
 
@@ -16,24 +15,13 @@ const deployFleet = async (context, { numBrackets }) => {
     context,
     fleetFactory,
     numBrackets,
-    masterSafe.options.address,
+    masterSafeAddress,
     saltNonce
   );
 
   const transactionData = fleetFactory.methods
-    .deployFleetWithNonce(
-      from,
-      numBrackets,
-      masterSafe.options.address,
-      saltNonce
-    )
+    .deployFleetWithNonce(from, numBrackets, masterSafeAddress, saltNonce)
     .encodeABI();
-
-  /*
-  console.log(
-    `deployFleetWithNonce("${from}", ${numBrackets}, "${masterSafe.options.address}", "${saltNonce}")`
-  );
-  */
 
   return {
     safeAddresses: predictedAddresses,

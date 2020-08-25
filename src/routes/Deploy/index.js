@@ -7,8 +7,9 @@ import deployStrategy from "api/deployStrategy";
 
 import asWei from "utils/asWei";
 
+import HorizontalBox from "components/HorizontalBox";
 import { Web3Context } from "components/Web3Provider";
-import { Box } from "@material-ui/core";
+import { Box, Grid } from "@material-ui/core";
 import {
   Text,
   Select,
@@ -16,8 +17,6 @@ import {
   Button,
   Divider,
 } from "@gnosis.pm/safe-react-components";
-
-import HorizontalBox from "components/HorizontalBox";
 
 const useFormField = (defaultValue) => {
   const [fieldValue, setFieldValue] = useState(defaultValue);
@@ -47,10 +46,18 @@ const TOKENS_AVAILABLE = [
     name: "GNO",
     address: "0x333EDe87B78D89D8F7B670488Efe96B9797dB635",
   },
+  {
+    name: "USDT",
+    address: "0x0000000000085d4780B73119b644AE5ecd22b376",
+  },
 ];
 
 const FormBox = styled(Box)`
   max-width: 600px;
+  padding: 18px 12px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  display: flex;
 `;
 
 const Deploy = () => {
@@ -72,6 +79,7 @@ const Deploy = () => {
   const [boundsUpperEth, setBoundsUpperEth] = useFormField(null);
   const [investmentBaseEth, setInvestmentBaseEth] = useFormField(null);
   const [investmentQuoteEth, setInvestmentQuoteEth] = useFormField(null);
+  const [currentPrice, setCurrentPrice] = useState(100);
 
   const tokenSelectValues = useMemo(
     () =>
@@ -117,74 +125,118 @@ const Deploy = () => {
   return (
     <Box>
       <FormBox>
-        <Text size="md">Pick a token pair</Text>
-        <HorizontalBox>
-          <Select
-            activeItemId={tokenAddressBase || ""}
-            onItemClick={setTokenAddressBase}
-            items={tokenSelectValues}
-          />
-          <Text size="md">&nbsp;{"<->"}&nbsp;</Text>
-          <Select
-            activeItemId={tokenAddressQuote || ""}
-            onItemClick={setTokenAddressQuote}
-            items={tokenSelectValues}
-          />
-        </HorizontalBox>
-        <Text size="md">Price of Base Token</Text>
-      </FormBox>
-      <FormBox>
-        <HorizontalBox>
-          <TextField
-            label="Lowest Price"
-            name="boundaryLowestPrice"
-            value={boundsLowerEth || ""}
-            onChange={setBoundsLowerEth}
-            endAdornment={<Text size="md">USDC</Text>}
-          />
-
-          <TextField
-            label="Brackets"
-            name="numBrackets"
-            onChange={setNumBrackets}
-            value={numBrackets}
-          />
-
-          <TextField
-            label="Highest Price"
-            name="boundaryHighestPrice"
-            value={boundsUpperEth || ""}
-            onChange={setBoundsUpperEth}
-            endAdornment={<Text size="md">USDC</Text>}
-          />
-        </HorizontalBox>
-        <HorizontalBox>
-          <TextField
-            label="Investment of Base Tokens"
-            name="investmentBaseEth"
-            value={investmentBaseEth || ""}
-            onChange={setInvestmentBaseEth}
-            endAdornment={<Text size="md">USDC</Text>}
-          />
-          <TextField
-            label="Investment of Quote Tokens"
-            name="investmentQuoteEth"
-            value={investmentQuoteEth || ""}
-            onChange={setInvestmentQuoteEth}
-            endAdornment={<Text size="md">USDC</Text>}
-          />
-        </HorizontalBox>
-      </FormBox>
-      <FormBox>
-        <Divider />
-        <Button
-          size="lg"
-          color="primary"
-          variant="contained"
-          onClick={handleDeploy}
-        >
-          Deploy
-        </Button>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <HorizontalBox>
+              <Select
+                activeItemId={tokenAddressBase || ""}
+                onItemClick={setTokenAddressBase}
+                items={tokenSelectValues}
+              />
+              <Text size="md">&nbsp;{"<->"}&nbsp;</Text>
+              <Select
+                activeItemId={tokenAddressQuote || ""}
+                onItemClick={setTokenAddressQuote}
+                items={tokenSelectValues}
+              />
+            </HorizontalBox>
+          </Grid>
+          <Grid item xs={12}>
+            <HorizontalBox>
+              <Text size="md">
+                Market price: a good price <strong>DAI</strong> per{" "}
+                <strong>ETH</strong>
+              </Text>
+            </HorizontalBox>
+          </Grid>
+          <Grid container item xs={12}>
+            <Grid container item xs={4}>
+              <Grid item xs={12}>
+                <Box>
+                  <TextField
+                    label="Lowest Price"
+                    name="boundaryLowestPrice"
+                    value={boundsLowerEth || ""}
+                    onChange={setBoundsLowerEth}
+                    endAdornment={<Text size="md">USDC</Text>}
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Box>
+                  <TextField
+                    label="Funding"
+                    name="investmentBaseEth"
+                    value={investmentBaseEth || ""}
+                    onChange={setInvestmentBaseEth}
+                    endAdornment={<Text size="md">USDC</Text>}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+            <Grid container item xs={4}>
+              <Grid item xs={12}>
+                <Box>
+                  <TextField
+                    label="Current Price"
+                    name="currentPrice"
+                    value={currentPrice || ""}
+                    onChange={setCurrentPrice}
+                    readOnly
+                    endAdornment={<Text size="md">USDC</Text>}
+                  />
+                </Box>
+              </Grid>
+              <Grid container item xs={12}>
+                <Box>
+                  <TextField
+                    label="Total Brackets"
+                    name="numBrackets"
+                    type="number"
+                    step="1"
+                    value={numBrackets || ""}
+                    onChange={setNumBrackets}
+                    endAdornment={<Text size="md">USDC</Text>}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+            <Grid container item xs={4}>
+              <Grid item xs={12}>
+                <Box>
+                  <TextField
+                    label="Highest Price"
+                    name="boundsUpperEth"
+                    value={boundsUpperEth || ""}
+                    onChange={setBoundsUpperEth}
+                    endAdornment={<Text size="md">USDC</Text>}
+                  />
+                </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <Box>
+                  <TextField
+                    label="Funding"
+                    name="investmentQuoteEth"
+                    value={investmentQuoteEth || ""}
+                    onChange={setInvestmentQuoteEth}
+                    endAdornment={<Text size="md">USDC</Text>}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                size="lg"
+                color="primary"
+                variant="contained"
+                onClick={handleDeploy}
+              >
+                Deploy
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
       </FormBox>
     </Box>
   );
