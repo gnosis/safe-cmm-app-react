@@ -17,8 +17,11 @@ const Wrapper = styled(NumberInput)`
   }
 
   .MuiFilledInput-input {
-    padding: 12.5px 12px;
-    font-size: 30px;
+    padding: 12.5px 11px;
+    // center the text, but decreases the size
+    font-variant: small-caps;
+    // increase the size back up
+    font-size: 35px;
     line-height: 30px;
     heigh: 30px;
     text-align: center;
