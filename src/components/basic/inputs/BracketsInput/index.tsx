@@ -8,9 +8,6 @@ import {
   Props as NumberInputProps,
 } from "components/basic/inputs/NumberInput";
 
-// TODO: can't get the text to center vertically
-// As far I could find out, the font is the culprit.
-// There seems to be a bottom padding pushing the text up
 const Wrapper = styled(NumberInput)`
   .MuiInputBase-input {
     height: 30px;
@@ -18,7 +15,7 @@ const Wrapper = styled(NumberInput)`
 
   .MuiFilledInput-input {
     padding: 12.5px 11px;
-    // center the text, but decreases the size
+    // centers the text, but decreases the size
     font-variant: small-caps;
     // increase the size back up
     font-size: 35px;
