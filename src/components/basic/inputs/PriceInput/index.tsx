@@ -10,8 +10,8 @@ import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
 import { NumberInput, Props as NumberInputProps } from "../NumberInput";
 
 const CenteredLabel = styled(LabelWithTooltip)`
-  justify-content: center;
   padding-bottom: 0.4em;
+  // justify-content: center;
 `;
 
 export interface Props extends Omit<NumberInputProps, "customLabel"> {
@@ -38,6 +38,7 @@ export const PriceInput = (props: Props): JSX.Element => {
       width={width}
       error={error}
       tokenAddress={tokenAddress}
+      center
       customLabel={
         <CenteredLabel
           size={labelSize}

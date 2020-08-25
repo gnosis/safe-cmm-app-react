@@ -14,6 +14,7 @@ type Theme = typeof theme;
 interface WrapperProps {
   width?: string | number;
   inputWidth?: string | number;
+  center?: boolean;
   error?: boolean;
   warn?: boolean;
 }
@@ -22,9 +23,14 @@ const Wrapper = styled.div<WrapperProps>`
   width: ${({ width }: WrapperProps): string =>
     pxOrCustomCssUnits(width || WIDTH)};
 
+  ${({ center }: WrapperProps): string =>
+    !center
+      ? ""
+      : `
   display: flex;
   flex-direction: column;
   align-items: center;
+  `}
 
   // Adjust input padding which is normally pushed down to accommodate default label
   .MuiFilledInput-input {
@@ -74,12 +80,12 @@ export interface Props
 }
 
 export const TextFieldWithCustomLabel = (props: Props): JSX.Element => {
-  const { customLabel } = props;
+  const { customLabel, inputWidth, center, ...rest } = props;
 
   return (
-    <Wrapper {...props}>
-      <InputLabel htmlFor={props.id}>{customLabel}</InputLabel>
-      <TextField {...props} label={null} />
+    <Wrapper {...rest} inputWidth={inputWidth} center={center}>
+      <InputLabel htmlFor={rest.id}>{customLabel}</InputLabel>
+      <TextField {...rest} label={null} />
     </Wrapper>
   );
 };
