@@ -23,6 +23,10 @@ const Wrapper = styled.div<WrapperProps>`
   width: ${({ width }: WrapperProps): string =>
     pxOrCustomCssUnits(width || WIDTH)};
 
+  > label {
+    padding-bottom: 0.4em;
+  }
+
   ${({ center }: WrapperProps): string =>
     !center
       ? ""

@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "styled-components";
 
 import { ThemeTextSize } from "@gnosis.pm/safe-react-components/dist/theme";
 
@@ -8,11 +7,6 @@ import { DEFAULT_INPUT_WIDTH } from "utils/constants";
 import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
 
 import { NumberInput, Props as NumberInputProps } from "../NumberInput";
-
-const CenteredLabel = styled(LabelWithTooltip)`
-  padding-bottom: 0.4em;
-  // justify-content: center;
-`;
 
 export interface Props extends Omit<NumberInputProps, "customLabel"> {
   tokenAddress: string;
@@ -40,7 +34,7 @@ export const PriceInput = (props: Props): JSX.Element => {
       tokenAddress={tokenAddress}
       center
       customLabel={
-        <CenteredLabel
+        <LabelWithTooltip
           size={labelSize}
           text={labelText}
           tooltip={labelTooltip}

@@ -8,8 +8,6 @@ const Wrapper = styled.div`
   justify-content: space-between;
   flex-wrap: nowrap;
 
-  padding-bottom: 0.4em;
-
   button {
     padding: 0;
 
