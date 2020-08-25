@@ -1,6 +1,24 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
+
+// Make sure required envs are set
+if (!process.env.INFURA_API_KEY) {
+  throw new Error(
+    "Missing Infura key - please define the env variable `INFURA_API_KEY`"
+  );
+}
+
+const ALLOWED_NETWORKS = ["mainnet", "rinkeby", "local"];
+
+if (!ALLOWED_NETWORKS.includes(process.env.NETWORK)) {
+  throw new Error(
+    `Invalid or missing Network defined - please set NETWORK env variable with one of: ${ALLOWED_NETWORKS.join(
+      ", "
+    )}`
+  );
+}
 
 module.exports = {
   devtool: "eval-source-map",
@@ -23,6 +41,23 @@ module.exports = {
             "@babel/plugin-proposal-optional-chaining",
           ],
         }
+      },
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: { cacheDirectory: true },
+          },
+          {
+            loader: "ts-loader",
+            options: {
+              // disable type checker - we will use it in fork plugin
+              transpileOnly: true,
+            },
+          },
+        ],
       },
       {
         test: /\.woff2?/,
@@ -55,6 +90,7 @@ module.exports = {
       fs: path.resolve(__dirname, "src", "mock", "fs-mock.js"),
     },
     symlinks: true,
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
   },
   devServer: {
     historyApiFallback: true,
@@ -79,5 +115,6 @@ module.exports = {
       NETWORK: "local",
       INFURA_API_KEY: null,
     }),
+    new ForkTsCheckerWebpackPlugin(),
   ],
 };

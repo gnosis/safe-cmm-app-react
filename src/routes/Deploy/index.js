@@ -33,24 +33,6 @@ const useFormField = (defaultValue) => {
 };
 
 const DEFAULT_NUM_SAFES = 10;
-const TOKENS_AVAILABLE = [
-  {
-    name: "WETH9",
-    address: "0xc778417E063141139Fce010982780140Aa0cD5Ab",
-  },
-  {
-    name: "DAI",
-    address: "0xeF77ce798401dAc8120F77dc2DebD5455eDdACf9",
-  },
-  {
-    name: "GNO",
-    address: "0x333EDe87B78D89D8F7B670488Efe96B9797dB635",
-  },
-  {
-    name: "USDT",
-    address: "0x0000000000085d4780B73119b644AE5ecd22b376",
-  },
-];
 
 const FormBox = styled(Box)`
   max-width: 600px;
@@ -83,12 +65,12 @@ const Deploy = () => {
 
   const tokenSelectValues = useMemo(
     () =>
-      TOKENS_AVAILABLE.map(({ name, address, icon }) => ({
+      web3Context.tokenList.map(({ name, address, icon }) => ({
         id: address,
         label: name,
         iconUrl: icon,
       })),
-    []
+    [web3Context]
   );
 
   const handleDeploy = useCallback(async () => {
