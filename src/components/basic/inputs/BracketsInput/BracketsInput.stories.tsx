@@ -35,4 +35,4 @@ export const Default = Template.bind({});
 Default.args = { ...bracketsInputData, ...actionData };
 
 export const Filled = Template.bind({});
-Filled.args = { ...Default.args, width: 70, value: "7" };
+Filled.args = { ...Default.args, width: 75, value: "7" };
