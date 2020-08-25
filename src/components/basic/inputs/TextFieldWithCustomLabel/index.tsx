@@ -24,6 +24,7 @@ const Wrapper = styled.div<WrapperProps>`
   // Adjust input padding which is normally pushed down to accommodate default label
   .MuiFilledInput-input {
     padding: 19px 12px 18px;
+    font-family: "Averta";
   }
 
   .MuiInputAdornment-filled.MuiInputAdornment-positionStart:not(.MuiInputAdornment-hiddenLabel) {
