@@ -13,6 +13,7 @@ type Theme = typeof theme;
 
 interface WrapperProps {
   width?: string | number;
+  inputWidth?: string | number;
   error?: boolean;
   warn?: boolean;
 }
@@ -20,6 +21,10 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   width: ${({ width }: WrapperProps): string =>
     pxOrCustomCssUnits(width || WIDTH)};
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   // Adjust input padding which is normally pushed down to accommodate default label
   .MuiFilledInput-input {
@@ -32,8 +37,10 @@ const Wrapper = styled.div<WrapperProps>`
   }
 
   .MuiFormControl-root {
-    ${({ width }: WrapperProps): string =>
-      width ? `width: ${pxOrCustomCssUnits(width)};` : ""}
+    ${({ width, inputWidth }: WrapperProps): string =>
+      inputWidth || width
+        ? `width: ${pxOrCustomCssUnits(inputWidth || width)};`
+        : ""}
   }
 
   // We don't want to display the field label neither the error messages.
