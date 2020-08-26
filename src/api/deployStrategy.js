@@ -47,7 +47,7 @@ const deployStrategy = async (
     getDeployed("GnosisSafe"),
   ]);
   const masterSafeAddress = masterSafeContract.options.address;
-  console.log(masterSafeContract)
+  console.log(masterSafeContract);
   logger.log(`==> Running sanity checks`);
   const hasEnoughBalanceBase = await verifyBalance(
     tokenBaseContract,

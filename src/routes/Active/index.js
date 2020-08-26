@@ -30,12 +30,9 @@ const Active = () => {
   console.log(strategies);
 
   const makeHandleWithdraw = useCallback(
-    (strategy) => async (e) => {
+    (strategy) => async () => {
       console.log(strategy.blockHash);
-      await withdrawFunds(
-        context,
-        strategy,
-      );
+      await withdrawFunds(context, strategy);
     },
     [context]
   );

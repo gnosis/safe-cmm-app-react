@@ -15,7 +15,6 @@ import {
   Select,
   TextField,
   Button,
-  Divider,
 } from "@gnosis.pm/safe-react-components";
 
 const useFormField = (defaultValue) => {

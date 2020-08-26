@@ -52,7 +52,7 @@ const orderAndFund = async (
   } = runInitializerIfNotRan(context);
 
   const batchExchangeContract = await context.getDeployed("BatchExchange");
-  console.log(batchExchangeContract)
+  console.log(batchExchangeContract);
   const [tokenBaseId, tokenQuoteId] = await Promise.all([
     batchExchangeContract.methods
       .tokenAddressToIdMap(tokenBaseContract.options.address)
