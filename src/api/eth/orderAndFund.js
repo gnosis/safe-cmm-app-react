@@ -23,7 +23,6 @@ const orderAndFund = async (
   context,
   {
     safeAddresses,
-    masterSafeAddress,
     currentPrice,
     tokenBaseContract,
     tokenQuoteContract,
@@ -81,7 +80,7 @@ const orderAndFund = async (
     tokenQuoteContract.options.address,
     boundsLowerWei,
     boundsUpperWei,
-    100,
+    currentPrice,
     investmentQuoteWei,
     investmentBaseWei,
     false
