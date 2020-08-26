@@ -7,7 +7,7 @@ import { TokenSelectorView, TokenSelectorViewProps } from ".";
 
 export default {
   component: TokenSelectorView,
-  title: "dddddd",
+  title: "Not showing up at all!!",
   excludeStories: /.*Data$/,
 } as Meta;
 
@@ -55,7 +55,7 @@ export const tokenSelectorData = {
   },
 };
 
-export const actionData = { onChange: action("onChange") };
+export const actionData = { onSelect: action("onSelect") };
 
 const Template = (args: TokenSelectorViewProps): JSX.Element => {
   const onSubmit = (e: React.FormEvent) => e.preventDefault();
