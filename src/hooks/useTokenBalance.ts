@@ -14,6 +14,9 @@ export function useTokenBalance(tokenAddress?: string): BN | null {
 
   const { safeInfo, getContract } = useContext(Web3Context);
 
+  // TODO: cache responses so we don't have to query the network on every single change
+  // TODO: also, we should subscribe to new block header if available and query the balance
+  // on every change
   useEffect(() => {
     async function getBalance(): Promise<void> {
       if (!tokenAddress || !safeInfo.safeAddress) {
