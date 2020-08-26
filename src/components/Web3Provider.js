@@ -12,8 +12,16 @@ export const Web3Context = React.createContext({
   status: "UNKNOWN",
 });
 
-// Saves artifacts on a contract name base, allows us to re-use previously initialized contracts
-const contractArtifacts = {};
+let globalArtifacts = {}; // Cache of artifacts for getCachedArtifact
+let globalArtifactPromises = {}; // Cache of promises for getArtifact
+let globalDeployedContracts = {}; // Cache of Contracts by NetworkID for getDeployed
+let globalContractsByAddress = {}; // Cache of Contracts by Address for getContract
+
+const readContractJSON = async (contractName) => {
+  const response = await fetch(`contracts/${contractName}.json`);
+  const contractArtifact = await response.json();
+  return contractArtifact;
+};
 
 const Web3Provider = ({ children }) => {
   const [status, setStatus] = useState("UNKNOWN");
@@ -58,32 +66,34 @@ const Web3Provider = ({ children }) => {
         sdk.removeListeners();
       };
     }
-  }, [sdk, handleSafeInfo]);
+  }, [sdk, safeInfo, handleSafeInfo]);
 
   const handleAsyncInit = useCallback(() => {
     handleInit();
   }, [handleInit]);
 
-  const handleGetArtifact = useCallback(async (contractName) => {
-    let contractArtifact = contractArtifacts[contractName];
-    if (!contractArtifact) {
+  const handleGetArtifact = useCallback(async (dirtyContractName) => {
+    const contractName = dirtyContractName.replace(/\..*/, "");
+    if (!globalArtifacts[contractName]) {
       // Load from default folder with contractName.json
-      const cleanedContractName = contractName.replace(/\.sol/, "");
-      const response = await fetch(`contracts/${cleanedContractName}.json`);
-      contractArtifact = await response.json();
-      contractArtifacts[contractName] = contractArtifact;
-    }
+      globalArtifactPromises[contractName] = readContractJSON(contractName);
 
-    return contractArtifact;
+      // Await the result to make sure it gets added the globalArtifacts
+      globalArtifacts[contractName] = await globalArtifactPromises[
+        contractName
+      ];
+    }
+    return await globalArtifacts[contractName];
   }, []);
 
   const handleGetCachedArtifact = useCallback((contractName) => {
-    if (!contractArtifacts[contractName]) {
+    if (!globalArtifacts[contractName]) {
       throw new Error(
         `${contractName} has not been fetched previously. Please fetch it before running the part of the application that is using artifacts.require`
       );
     }
-    return contractArtifacts[contractName];
+
+    return globalArtifacts[contractName];
   }, []);
 
   /**
@@ -97,16 +107,28 @@ const Web3Provider = ({ children }) => {
     async (contractName, contractAddress = null) => {
       const contractArtifact = await handleGetArtifact(contractName);
 
-      const contractInstance = new instance.eth.Contract(
-        contractArtifact.abi,
-        contractAddress
-      );
-      contractInstance.setProvider(instance.currentProvider); // Connected to Infura
+      if (!globalContractsByAddress[contractName]) {
+        globalContractsByAddress[contractName] = {};
+      }
 
-      // FIXME: Bad Monkeypatching
-      // Allows us to access the contracts saved artifact later by referencing it by the contractname. Contractnames need to be unique.
-      contractInstance.contractName = contractName;
-      return contractInstance;
+      if (!globalContractsByAddress[contractName][contractAddress]) {
+        const contractInstance = new instance.eth.Contract(
+          contractArtifact.abi,
+          contractAddress
+        );
+
+        contractInstance.setProvider(instance.currentProvider);
+
+        // FIXME: Bad Monkeypatching
+        // Allows us to access the contracts saved artifact later by referencing it by the contractname. Contractnames need to be unique.
+        contractInstance.contractName = contractName;
+
+        globalContractsByAddress[contractName][
+          contractAddress
+        ] = contractInstance;
+      }
+
+      return globalContractsByAddress[contractName][contractAddress];
     },
     [handleGetArtifact, instance]
   );
@@ -122,14 +144,24 @@ const Web3Provider = ({ children }) => {
       const contractArtifact = await handleGetArtifact(contractName);
 
       const networkId = await instance.eth.net.getId();
-      console.log(contractArtifact);
-      const networkDeploymentInfo = contractArtifact.networks[networkId];
-      if (!networkDeploymentInfo) {
-        throw new Error(
-          "Not deployed on current network according to build artifacts. Add address or update artifact"
+
+      if (!globalDeployedContracts[networkId]) {
+        globalDeployedContracts[networkId] = {};
+      }
+
+      if (!globalDeployedContracts[networkId][contractName]) {
+        const networkDeploymentInfo = contractArtifact.networks[networkId];
+        if (!networkDeploymentInfo) {
+          throw new Error(
+            "Not deployed on current network according to build artifacts. Add address or update artifact"
+          );
+        }
+        globalDeployedContracts[networkId][contractName] = handleGetContract(
+          contractName,
+          networkDeploymentInfo.address
         );
       }
-      return handleGetContract(contractName, networkDeploymentInfo.address);
+      return globalDeployedContracts[networkId][contractName];
     },
     [handleGetContract, handleGetArtifact, instance]
   );

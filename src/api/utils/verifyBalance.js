@@ -7,7 +7,7 @@ const verifyBalance = async (tokenContract, ownerAddress, amount) => {
   const amountBN = toBN(amount);
   console.log(balance.toString());
   console.log(amountBN.toString());
-  return toBN(balance).gte(amountBN);
+  return toBN(balance).gt(amountBN);
 };
 
 export default verifyBalance;

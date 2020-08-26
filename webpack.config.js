@@ -20,6 +20,19 @@ if (!ALLOWED_NETWORKS.includes(process.env.NETWORK)) {
   );
 }
 
+const BABELRC = {
+  // Unfortunately babelrc is causing issues when trying to
+  // force it to transpile something inside node_modules
+  // thus the config has been moved here. Don't use .babelrc
+  presets: ["@babel/preset-env", "@babel/preset-react"],
+  plugins: [
+    "@babel/plugin-proposal-nullish-coalescing-operator",
+    "react-hot-loader/babel",
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-proposal-optional-chaining",
+  ],
+};
+
 module.exports = {
   devtool: "eval-source-map",
   target: "web",
@@ -29,27 +42,12 @@ module.exports = {
         test: /\.(jsx?)$/,
         exclude: /node_modules\/(?!@gnosis\.pm\/dex-.*).*/,
         loader: "babel-loader",
-        options: {
-          // Unfortunately babelrc is causing issues when trying to
-          // force it to transpile something inside node_modules
-          // thus the config has been moved here. Don't use .babelrc
-          presets: ["@babel/preset-env", "@babel/preset-react"],
-          plugins: [
-            "@babel/plugin-proposal-nullish-coalescing-operator",
-            "react-hot-loader/babel",
-            "@babel/plugin-syntax-dynamic-import",
-            "@babel/plugin-proposal-optional-chaining",
-          ],
-        }
+        options: BABELRC,
       },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: [
-          {
-            loader: "babel-loader",
-            options: { cacheDirectory: true },
-          },
           {
             loader: "ts-loader",
             options: {
@@ -81,16 +79,16 @@ module.exports = {
   },
   resolve: {
     modules: [
-      "src", // allows absolute imports like `import "components/App"`
-      "build",
-      "node_modules",
+      path.resolve(__dirname, "src"), // allows absolute imports like `import "components/App"`
+      path.resolve(__dirname, "node_modules"),
+      path.resolve(__dirname, "build"),
     ],
     alias: {
       "react-dom": "@hot-loader/react-dom",
       fs: path.resolve(__dirname, "src", "mock", "fs-mock.js"),
     },
     symlinks: true,
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
   },
   devServer: {
     historyApiFallback: true,

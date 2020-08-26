@@ -9,17 +9,17 @@
     "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
-    "resolveJsonModule": true,
+    "resolveJsonModule": false,
     "allowJs": false,
     "checkJs": false,
     "lib": ["dom", "es2015", "es2016", "es2017", "esnext"],
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "noImplicitAny": false, // TODO: Re-enable once whole project is moved to TS
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "noImplicitReturns": true,
     "noImplicitThis": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "skipLibCheck": true,
     "strictNullChecks": false, // TODO: Re-enable once whole project is moved to TS
     "suppressImplicitAnyIndexErrors": true,
@@ -28,5 +28,6 @@
     "paths": {
       "*": ["src/*"]
     }
-  }
+  },
+  "exclude": ["./node_modules/"]
 }

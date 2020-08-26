@@ -76,7 +76,7 @@ const deployStrategy = async (
     masterSafeAddress,
   });
 
-  const { tx: orderAndFundTx } = await orderAndFund(context, {
+  const { txs: orderAndFundTxs } = await orderAndFund(context, {
     safeAddresses,
     masterSafeAddress,
     tokenBaseContract,
@@ -87,7 +87,7 @@ const deployStrategy = async (
     investmentQuoteWei,
   });
 
-  sdk.sendTransactions([deployFleetTx, orderAndFundTx]);
+  sdk.sendTransactions([deployFleetTx, ...orderAndFundTxs]);
 };
 
 export default deployStrategy;

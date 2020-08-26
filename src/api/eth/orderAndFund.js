@@ -1,8 +1,7 @@
 import tradingHelperInit from "@gnosis.pm/dex-liquidity-provision/scripts/utils/trading_strategy_helpers";
 import makeFakeArtifacts from "utils/makeFakeArtifacts";
-import TruffleContract from "@truffle/contract";
 
-//const { buildTransferApproveDepositFromOrders } = initializerFunc()
+import Decimal from "decimal.js";
 
 let initializedTradingStrategyHelpers;
 /**
@@ -25,6 +24,7 @@ const orderAndFund = async (
   {
     safeAddresses,
     masterSafeAddress,
+    currentPrice,
     tokenBaseContract,
     tokenQuoteContract,
     boundsLowerWei,
@@ -33,26 +33,49 @@ const orderAndFund = async (
     investmentQuoteWei,
   }
 ) => {
+  // We need to load these contracts before entering buildTransferApproveDepositFromOrders
+  // because it uses artifacts.require - even though it's a shim, it still expects to receive
+  // contract artifacts without delay (no promises), so we need to preload them here.
   const contracts = await Promise.all([
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
     context.getArtifact("IProxy"),
+    context.getArtifact("IProxy.sol"),
     context.getArtifact("MultiSend"),
     context.getArtifact("BatchExchange"),
-    //context.getArtifact("FleetFactoryDeterministic"),
+    context.getArtifact("FleetFactoryDeterministic"),
   ]);
-  console.log(contracts)
+  console.log(contracts);
 
-  const { buildTransferApproveDepositFromOrders } = runInitializerIfNotRan(
-    context
+  const {
+    buildTransferApproveDepositFromOrders,
+    buildOrders,
+  } = runInitializerIfNotRan(context);
+
+  const batchExchangeContract = await context.getDeployed("BatchExchange");
+  console.log(batchExchangeContract)
+  const [tokenBaseId, tokenQuoteId] = await Promise.all([
+    batchExchangeContract.methods
+      .tokenAddressToIdMap(tokenBaseContract.options.address)
+      .call(),
+    batchExchangeContract.methods
+      .tokenAddressToIdMap(tokenQuoteContract.options.address)
+      .call(),
+  ]);
+
+  const orderTransactions = await buildOrders(
+    context.safeInfo.safeAddress,
+    safeAddresses,
+    tokenBaseId,
+    tokenQuoteId,
+    new Decimal(boundsLowerWei.toString()).div(1e18).toString(),
+    new Decimal(boundsUpperWei.toString()).div(1e18).toString(),
+    true
   );
+  console.log(orderTransactions);
 
-  // We need to load these contracts before entering buildTransferApproveDepositFromOrders
-  // because it uses artifacts.require - even though it's a shim, it still expects to receive
-  // contract artifacts without delay (no promises), so we need to preload them here.
-
-  const transactions = await buildTransferApproveDepositFromOrders(
-    masterSafeAddress,
+  const fundTransactions = await buildTransferApproveDepositFromOrders(
+    context.safeInfo.safeAddress,
     safeAddresses,
     tokenBaseContract.options.address,
     tokenQuoteContract.options.address,
@@ -63,10 +86,10 @@ const orderAndFund = async (
     investmentBaseWei,
     false
   );
-  console.log(transactions);
+  console.log(fundTransactions);
 
   return {
-    tx: transactions,
+    txs: [...orderTransactions, ...fundTransactions],
   };
 };
 
