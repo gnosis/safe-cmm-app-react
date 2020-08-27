@@ -53,6 +53,8 @@ export const TokenSelector = (props: Props): JSX.Element => {
     tokenDetails,
   ]);
 
+  // TODO: I think this is useless. Has the same effect as passing in the context
+  // as props
   return (
     <TokenSelectorContext.Provider value={context}>
       <TokenSelectorContainer {...props} />

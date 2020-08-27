@@ -9,6 +9,7 @@ import { SubtextAmount } from "components/basic/misc/SubtextAmount";
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
 `;
 
 export interface TokenSelectorContainerProps {
