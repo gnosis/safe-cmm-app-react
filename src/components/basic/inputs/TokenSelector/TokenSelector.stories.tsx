@@ -1,17 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import BN from "bn.js";
 import { Meta } from "@storybook/react/types-6-0";
-import { action } from "@storybook/addon-actions";
 
-import { TokenSelectorView, TokenSelectorViewProps } from ".";
+import {
+  TokenSelectorContainer,
+  TokenSelectorContainerProps,
+} from "./container";
+import { TokenSelectorContext } from "./context";
 
-export default {
-  component: TokenSelectorView,
-  title: "Not showing up at all!!",
-  excludeStories: /.*Data$/,
-} as Meta;
-
-export const tokenSelectorData = {
+const mockContext = {
   items: [
     {
       id: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -44,8 +41,6 @@ export const tokenSelectorData = {
       iconUrl: "",
     }, // owl
   ],
-  label: "Pick Token A",
-  tooltip: "You should pick a token",
   tokenBalance: new BN(10000000000000000000000),
   tokenDetails: {
     address: "0x1A5F9352Af8aF974bFC03399e3767DF6370d82e4",
@@ -55,17 +50,46 @@ export const tokenSelectorData = {
   },
 };
 
-export const actionData = { onSelect: action("onSelect") };
+export default {
+  component: TokenSelectorContainer,
+  title: "basic/input/TokenSelector",
+  excludeStories: /.*Data$/,
+  decorators: [
+    (Story: any): JSX.Element => (
+      <TokenSelectorContext.Provider value={mockContext}>
+        <Story />
+      </TokenSelectorContext.Provider>
+    ),
+  ],
+} as Meta;
 
-const Template = (args: TokenSelectorViewProps): JSX.Element => {
+export const tokenSelectorData = {
+  label: "Pick Token A",
+  tooltip: "You should pick a token",
+};
+
+const Template = (args: TokenSelectorContainerProps): JSX.Element => {
   const onSubmit = (e: React.FormEvent) => e.preventDefault();
+  const [selectedTokenAddress, setSelectedTokenAddress] = useState<
+    typeof args.selectedTokenAddress
+  >(args.selectedTokenAddress);
 
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <TokenSelectorView {...args} />
+      <TokenSelectorContainer
+        {...args}
+        selectedTokenAddress={selectedTokenAddress}
+        onSelect={setSelectedTokenAddress}
+      />
     </form>
   );
 };
 
 export const Default = Template.bind({});
-Default.args = { ...tokenSelectorData, ...actionData };
+Default.args = { ...tokenSelectorData };
+
+export const PreSelectedToken = Template.bind({});
+PreSelectedToken.args = {
+  ...Default.args,
+  selectedTokenAddress: "0x1A5F9352Af8aF974bFC03399e3767DF6370d82e4",
+};
