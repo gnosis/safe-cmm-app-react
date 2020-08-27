@@ -6,11 +6,11 @@ node_js:
 matrix:
   include:
     - env:
-        - REACT_APP_NETWORK='mainnet'
+        - NETWORK='mainnet'
         - INFURA_API_KEY=${INFURA_API_KEY}
       if: (branch = master AND NOT type = pull_request) OR tag IS present
     - env:
-        - REACT_APP_NETWORK='rinkeby'
+        - NETWORK='rinkeby'
         - INFURA_API_KEY=${INFURA_API_KEY}
       if: (branch != master) OR tag IS NOT present
 cache:
