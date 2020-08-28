@@ -41,7 +41,7 @@ const mockContext = {
       iconUrl: "",
     }, // owl
   ],
-  tokenBalance: new BN(10000000000000000000000),
+  tokenBalance: new BN('10000000000000000000000'),
   tokenDetails: {
     address: "0x1A5F9352Af8aF974bFC03399e3767DF6370d82e4",
     name: "",
