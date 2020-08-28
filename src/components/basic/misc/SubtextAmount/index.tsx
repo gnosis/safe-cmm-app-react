@@ -9,6 +9,7 @@ interface WrapperProps {
 
 const Wrapper = styled.div<WrapperProps>`
   padding-top: 0.4em;
+  display: flex;
 
   ${({ inline }: WrapperProps): string =>
     inline
@@ -17,7 +18,6 @@ const Wrapper = styled.div<WrapperProps>`
     padding-right: 0.5em;
   }`
       : `
-  display: flex;
   flex-direction: column;
 
   p:first-of-type {
