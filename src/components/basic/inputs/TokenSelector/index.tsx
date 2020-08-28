@@ -7,14 +7,14 @@ import { TokenDetails } from "types";
 import { useTokenList } from "hooks/useTokenList";
 import { useTokenBalance } from "hooks/useTokenBalance";
 
-import {
-  TokenSelectorContainerProps,
-  TokenSelectorContainer,
-} from "./container";
-import { TokenSelectorContext } from "./context";
+import { TokenSelectorViewer } from "./viewer";
 
-export interface Props extends TokenSelectorContainerProps {}
-
+export interface Props {
+  selectedTokenAddress?: string;
+  label: string;
+  tooltip: string;
+  onSelect: (tokenAddress: string) => void;
+}
 /**
  * Token Selector (state) component
  *
@@ -22,7 +22,7 @@ export interface Props extends TokenSelectorContainerProps {}
  * To be used externally in other components
  */
 export const TokenSelector = (props: Props): JSX.Element => {
-  const { selectedTokenAddress } = props;
+  const { selectedTokenAddress, ...rest } = props;
 
   const tokenList = useTokenList();
   const tokenBalance = useTokenBalance(selectedTokenAddress);
@@ -53,11 +53,5 @@ export const TokenSelector = (props: Props): JSX.Element => {
     tokenDetails,
   ]);
 
-  // TODO: I think this is useless. Has the same effect as passing in the context
-  // as props
-  return (
-    <TokenSelectorContext.Provider value={context}>
-      <TokenSelectorContainer {...props} />
-    </TokenSelectorContext.Provider>
-  );
+  return <TokenSelectorViewer {...rest} {...context} />;
 };
