@@ -29,6 +29,7 @@ deploy:
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     local_dir: dist
     region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
     on:
       branch: development
 
@@ -40,6 +41,7 @@ deploy:
     local_dir: dist
     upload-dir: current/
     region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
     on:
       branch: master
 
@@ -51,6 +53,7 @@ deploy:
     local_dir: dist
     upload-dir: releases/$TRAVIS_TAG
     region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
     on:
       tags: true
   - provider: script
