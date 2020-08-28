@@ -26,7 +26,6 @@ const BABELRC = {
   // thus the config has been moved here. Don't use .babelrc
   presets: ["@babel/preset-env", "@babel/preset-react"],
   plugins: [
-    "@babel/plugin-proposal-nullish-coalescing-operator",
     "react-hot-loader/babel",
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-proposal-optional-chaining",

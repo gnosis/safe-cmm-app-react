@@ -38,8 +38,6 @@ const orderAndFund = async (
   const contracts = await Promise.all([
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
-    context.getArtifact("IProxy"),
-    context.getArtifact("IProxy.sol"),
     context.getArtifact("MultiSend"),
     context.getArtifact("BatchExchange"),
     context.getArtifact("FleetFactoryDeterministic"),
