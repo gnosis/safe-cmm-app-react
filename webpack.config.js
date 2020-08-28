@@ -98,6 +98,19 @@ module.exports = {
           "json-x-loader?exclude=ast+legacyAST+sourceMap+deployedSourceMap+source+sourcePath+ast+legacyAST+compiler+schemaVersion+updatedAt+devdoc+userdoc",
         ],
       },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [
+          "file-loader",
+          {
+            loader: "image-webpack-loader",
+            options: {
+              // bypassOnDebug: true,
+              // disable: !isProduction,
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {
@@ -117,7 +130,7 @@ module.exports = {
     historyApiFallback: true,
     disableHostCheck: true,
     contentBase: [
-      path.resolve(__dirname, "assets"),
+      path.resolve(__dirname, "src/assets"),
       path.resolve(__dirname, "build"),
     ],
     headers: {
