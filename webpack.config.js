@@ -20,23 +20,33 @@ if (!ALLOWED_NETWORKS.includes(process.env.NETWORK)) {
   );
 }
 
+const BABELRC = {
+  // Unfortunately babelrc is causing issues when trying to
+  // force it to transpile something inside node_modules
+  // thus the config has been moved here. Don't use .babelrc
+  presets: ["@babel/preset-env", "@babel/preset-react"],
+  plugins: [
+    "react-hot-loader/babel",
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-proposal-optional-chaining",
+  ],
+};
+
 module.exports = {
   devtool: "eval-source-map",
+  target: "web",
   module: {
     rules: [
       {
         test: /\.(jsx?)$/,
-        exclude: /(node_modules)/,
-        use: ["babel-loader"],
+        exclude: /node_modules\/(?!@gnosis\.pm\/dex-.*).*/,
+        loader: "babel-loader",
+        options: BABELRC,
       },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: [
-          {
-            loader: "babel-loader",
-            options: { cacheDirectory: true },
-          },
           {
             loader: "ts-loader",
             options: {
@@ -61,22 +71,23 @@ module.exports = {
         test: /\.json$/,
         use: [
           // allows artifact loading with a lower filesize by omitting all keys except abi, network and events
-          "json-x-loader?exclude=bytecode+deployedBytecode+ast+legacyAST+sourceMap+deployedSourceMap+source+sourcePath+ast+legacyAST+compiler+schemaVersion+updatedAt+devdoc+userdoc",
+          "json-x-loader?exclude=ast+legacyAST+sourceMap+deployedSourceMap+source+sourcePath+ast+legacyAST+compiler+schemaVersion+updatedAt+devdoc+userdoc",
         ],
       },
     ],
   },
   resolve: {
     modules: [
-      "src", // allows absolute imports like `import "components/App"`
-      "build",
-      "node_modules",
+      path.resolve(__dirname, "src"), // allows absolute imports like `import "components/App"`
+      path.resolve(__dirname, "node_modules"),
+      path.resolve(__dirname, "build"),
     ],
     alias: {
       "react-dom": "@hot-loader/react-dom",
+      fs: path.resolve(__dirname, "src", "mock", "fs-mock.js"),
     },
     symlinks: true,
-    extensions: [".ts", ".tsx", ".js", ".jsx"],
+    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
   },
   devServer: {
     historyApiFallback: true,
@@ -88,6 +99,8 @@ module.exports = {
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
+    public: "cmm-safe-app.ngrok.io/",
+    port: 8080,
     host: "0.0.0.0",
   },
   plugins: [

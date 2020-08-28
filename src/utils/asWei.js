@@ -1,5 +1,5 @@
 import web3 from "web3";
-import Decimal from "decimal.js"
+import Decimal from "decimal.js";
 
 const { toBN } = web3.utils;
 

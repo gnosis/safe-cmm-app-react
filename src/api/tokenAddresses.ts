@@ -14,6 +14,7 @@ const tokenAddresses: { [networkId: number]: string[] } = {
   [Network.rinkeby]: [
     "0xc778417E063141139Fce010982780140Aa0cD5Ab", // weth
     "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b", // usdc
+    "0x0000000000085d4780B73119b644AE5ecd22b376", // tusd
     "0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa", // dai
     "0xd0Dab4E640D95E9E8A47545598c33e31bDb53C7c", // gno
     "0xa7D1C04fAF998F9161fC9F800a99A809b84cfc9D", // owl

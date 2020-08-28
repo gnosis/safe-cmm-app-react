@@ -4,3 +4,19 @@ export interface TokenDetails {
   symbol: string;
   name: string;
 }
+
+export interface SafeInfo {
+  safeAddress: string;
+  ethBalance: string;
+}
+
+export interface Web3Context {
+  instance: any; // Web3
+  safeInfo: SafeInfo;
+  sdk: any; // SafeSDK
+  getContract: (contractName : string, contractAddress : string) => Promise<any>;
+  getDeployed: (contractName : string) => Promise<any>;
+  getArtifact: (contractName : string) => Promise<any>;
+  getCachedArtifact: (contractName : string) => any; // TruffleContract
+  getErc20Details: (tokenName : string) => Promise<any>;
+}
