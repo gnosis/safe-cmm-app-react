@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const webpack = require("webpack");
 
@@ -111,6 +112,13 @@ module.exports = {
       NODE_ENV: "development",
       NETWORK: "local",
       INFURA_API_KEY: null,
+    }),
+    // Add assets and build artifacts to the dist/ folder on build
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: "build", to: "." },
+        { from: "assets", to: "." },
+      ],
     }),
     new ForkTsCheckerWebpackPlugin(),
   ],

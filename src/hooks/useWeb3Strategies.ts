@@ -23,7 +23,7 @@ const useWeb3Strategies = () : any => {
     }
   }, [context])
 
-  useEffect(() => { handleFindStrategies() }, [handleFindStrategies])
+  useEffect(() => { handleFindStrategies() }, [])
   console.log(status)
   return {
     status,

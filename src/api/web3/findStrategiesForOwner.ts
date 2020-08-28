@@ -9,7 +9,6 @@ const findStrategiesForOwner = async (context : Web3Context) : Promise<Strategy[
     instance: web3
   } = context
   const fleetFactory = await getDeployed('FleetFactoryDeterministic');
-  const exchange = await getDeployed('BatchExchange');
   const fleetDeployEvents = await fleetFactory.getPastEvents('FleetDeployed', { fromBlock: 0, toBlock: "latest" })
 
   const strategies : Strategy[] = await Promise.all(
