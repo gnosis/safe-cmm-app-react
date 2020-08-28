@@ -25,7 +25,9 @@ export const TokenSelector = (props: Props): JSX.Element => {
   const { selectedTokenAddress, ...rest } = props;
 
   const tokenList = useTokenList();
-  const tokenBalance = useTokenBalance(selectedTokenAddress);
+  const { balance: tokenBalance, isLoading } = useTokenBalance(
+    selectedTokenAddress
+  );
 
   const tokenDetails = useMemo(
     (): TokenDetails | undefined =>
@@ -47,11 +49,10 @@ export const TokenSelector = (props: Props): JSX.Element => {
     [tokenList]
   );
 
-  const context = useMemo(() => ({ items, tokenBalance, tokenDetails }), [
-    items,
-    tokenBalance,
-    tokenDetails,
-  ]);
+  const context = useMemo(
+    () => ({ items, tokenBalance, tokenDetails, isBalanceLoading: isLoading }),
+    [items, tokenBalance, isLoading, tokenDetails]
+  );
 
   return <TokenSelectorViewer {...rest} {...context} />;
 };

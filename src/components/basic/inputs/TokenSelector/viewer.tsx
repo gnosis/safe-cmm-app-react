@@ -35,18 +35,29 @@ export interface TokenSelectorViewerProps {
   onSelect: (tokenAddress: string) => void;
   items: SelectItem[];
   tokenBalance: BN | null;
+  isBalanceLoading: boolean;
   tokenDetails?: TokenDetails;
 }
 
 export const TokenSelectorViewer = (
   props: TokenSelectorViewerProps
 ): JSX.Element => {
-  const { label, tooltip, items, tokenBalance, tokenDetails, onSelect } = props;
+  const {
+    label,
+    tooltip,
+    items,
+    tokenBalance,
+    isBalanceLoading,
+    tokenDetails,
+    onSelect,
+  } = props;
 
   const amount = useMemo((): string | React.ReactElement => {
     // TODO: expose loading from tokenBalance
-    if (!tokenDetails || !tokenBalance) {
+    if (isBalanceLoading) {
       return <Loader size="xs" />;
+    } else if (!tokenDetails || !tokenBalance) {
+      return "-";
     }
 
     const formattedAmount = formatSmart({
@@ -55,7 +66,7 @@ export const TokenSelectorViewer = (
     });
 
     return `${formattedAmount} ${tokenDetails.symbol}`;
-  }, [tokenBalance, tokenDetails]);
+  }, [tokenBalance, tokenDetails, isBalanceLoading]);
 
   return (
     <Wrapper>

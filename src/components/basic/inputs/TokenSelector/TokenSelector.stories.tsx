@@ -90,16 +90,18 @@ const Template = (args: TokenSelectorViewerProps): JSX.Element => {
   const [tokenBalance, setTokenBalance] = useState<typeof args.tokenBalance>(
     args.tokenBalance
   );
+  const [isLoading, setIsLoading] = useState(false);
 
   const onChange = useCallback((tokenAddress: string): void => {
     setTokenDetails(mockTokenDetails[tokenAddress]);
     setTokenBalance(null);
+    setIsLoading(true);
 
     // simulate balance loading
-    setTimeout(
-      (): void => setTokenBalance(new BN("10000000000000000000000")),
-      500
-    );
+    setTimeout((): void => {
+      setTokenBalance(new BN("10000000000000000000000"));
+      setIsLoading(false);
+    }, 500);
   }, []);
 
   return (
@@ -109,6 +111,7 @@ const Template = (args: TokenSelectorViewerProps): JSX.Element => {
         onSelect={onChange}
         tokenDetails={tokenDetails}
         tokenBalance={tokenBalance}
+        isBalanceLoading={isLoading}
       />
     </form>
   );
