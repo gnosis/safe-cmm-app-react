@@ -58,7 +58,7 @@ const Web3Provider = ({ children }) => {
         onSafeInfo: handleSafeInfo,
       });
 
-      if (safeInfo) {
+      if (safeInfo?.safeAddress) {
         setStatus("SUCCESS");
       }
 
