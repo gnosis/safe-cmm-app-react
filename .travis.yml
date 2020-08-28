@@ -19,10 +19,8 @@ before_install:
   - npm install
   # Needed to deploy pull request and releases
   - pip install awscli --upgrade --user
-before_script:
-- npm run build
 script:
-  - echo "Skip tests" # no test cases for the project
+  - npm run build
 deploy:
   # Development environment
   - provider: s3
