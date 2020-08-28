@@ -2,7 +2,7 @@ if: (branch = development) OR (branch = master) OR (type = pull_request) OR (tag
 dist: xenial
 language: node_js
 node_js:
-  - 'node'
+  - '12.4.0'
 matrix:
   include:
     - env:
