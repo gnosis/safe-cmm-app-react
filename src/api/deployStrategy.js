@@ -16,7 +16,8 @@ const deployStrategy = async (
   boundsLowerWei,
   boundsUpperWei,
   investmentBaseWei,
-  investmentQuoteWei
+  investmentQuoteWei,
+  currentPriceWei
 ) => {
   console.log([
     numBrackets,
@@ -81,6 +82,7 @@ const deployStrategy = async (
     masterSafeAddress,
     tokenBaseContract,
     tokenQuoteContract,
+    currentPriceWei,
     boundsLowerWei,
     boundsUpperWei,
     investmentBaseWei,

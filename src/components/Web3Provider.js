@@ -180,7 +180,12 @@ const Web3Provider = ({ children }) => {
       );
 
       const [decimals, symbol, name] = await Promise.all([
-        contractInstance.methods.decimals().call(),
+        (async () => {
+          const decimalsString = await contractInstance.methods
+            .decimals()
+            .call();
+          return parseInt(decimalsString, 10);
+        })(),
         contractInstance.methods.symbol().call(),
         contractInstance.methods.name().call(),
       ]);

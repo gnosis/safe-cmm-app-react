@@ -23,7 +23,7 @@ const orderAndFund = async (
   context,
   {
     safeAddresses,
-    currentPrice,
+    currentPriceWei,
     tokenBaseContract,
     tokenQuoteContract,
     boundsLowerWei,
@@ -36,6 +36,7 @@ const orderAndFund = async (
   // because it uses artifacts.require - even though it's a shim, it still expects to receive
   // contract artifacts without delay (no promises), so we need to preload them here.
   const contracts = await Promise.all([
+    context.getArtifact("IProxy.sol"),
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
     context.getArtifact("MultiSend"),
@@ -78,7 +79,7 @@ const orderAndFund = async (
     tokenQuoteContract.options.address,
     boundsLowerWei,
     boundsUpperWei,
-    currentPrice,
+    currentPriceWei,
     investmentQuoteWei,
     investmentBaseWei,
     false
