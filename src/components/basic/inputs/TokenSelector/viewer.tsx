@@ -18,6 +18,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
 
+  & > :first-child {
+    padding-bottom: 0.4em;
+  }
+
   width: ${COMPONENT_WIDTH};
 `;
 
