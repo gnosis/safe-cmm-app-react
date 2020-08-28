@@ -55,6 +55,13 @@ const mockTokenDetails: { [address: string]: TokenDetails } = {
     name: "Fake token without an image",
     decimals: 5,
   },
+  "0x000F9352Af8aF974bFC03399e3767DF6370d8200": {
+    address: "0x000F9352Af8aF974bFC03399e3767DF6370d8200",
+    symbol: "FAKE2",
+    name: "Fake token with non existent image",
+    decimals: 22,
+    imageUrl: "https://this.link.should.go.nowhere",
+  },
 };
 
 export default {
