@@ -80,6 +80,8 @@ export const tokenSelectorData = {
   ],
   label: "Pick Token A",
   tooltip: "You should pick a token",
+  tokenBalance: null,
+  isBalanceLoading: false,
 } as TokenSelectorViewerProps;
 
 const Template = (args: TokenSelectorViewerProps): JSX.Element => {
@@ -90,17 +92,19 @@ const Template = (args: TokenSelectorViewerProps): JSX.Element => {
   const [tokenBalance, setTokenBalance] = useState<typeof args.tokenBalance>(
     args.tokenBalance
   );
-  const [isLoading, setIsLoading] = useState(false);
+  const [isBalanceLoading, setIsBalanceLoading] = useState(
+    args.isBalanceLoading
+  );
 
   const onChange = useCallback((tokenAddress: string): void => {
     setTokenDetails(mockTokenDetails[tokenAddress]);
-    setTokenBalance(null);
-    setIsLoading(true);
+    // setTokenBalance(null);
+    setIsBalanceLoading(true);
 
     // simulate balance loading
     setTimeout((): void => {
       setTokenBalance(new BN("10000000000000000000000"));
-      setIsLoading(false);
+      setIsBalanceLoading(false);
     }, 500);
   }, []);
 
@@ -111,7 +115,7 @@ const Template = (args: TokenSelectorViewerProps): JSX.Element => {
         onSelect={onChange}
         tokenDetails={tokenDetails}
         tokenBalance={tokenBalance}
-        isBalanceLoading={isLoading}
+        isBalanceLoading={isBalanceLoading}
       />
     </form>
   );

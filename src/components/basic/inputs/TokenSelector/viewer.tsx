@@ -10,6 +10,7 @@ import { TokenDetails } from "types";
 
 import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
 import { SubtextAmount } from "components/basic/misc/SubtextAmount";
+import { Props } from ".";
 
 const COMPONENT_WIDTH = "305px";
 
@@ -29,10 +30,8 @@ const SelectWrapper = styled(Select)`
   width: ${COMPONENT_WIDTH};
 `;
 
-export interface TokenSelectorViewerProps {
-  label: string;
-  tooltip: string;
-  onSelect: (tokenAddress: string) => void;
+export interface TokenSelectorViewerProps
+  extends Omit<Props, "selectedTokenAddress"> {
   items: SelectItem[];
   tokenBalance: BN | null;
   isBalanceLoading: boolean;
@@ -53,7 +52,6 @@ export const TokenSelectorViewer = (
   } = props;
 
   const amount = useMemo((): string | React.ReactElement => {
-    // TODO: expose loading from tokenBalance
     if (isBalanceLoading) {
       return <Loader size="xs" />;
     } else if (!tokenDetails || !tokenBalance) {

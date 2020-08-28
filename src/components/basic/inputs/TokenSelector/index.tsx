@@ -15,6 +15,7 @@ export interface Props {
   tooltip: string;
   onSelect: (tokenAddress: string) => void;
 }
+
 /**
  * Token Selector (state) component
  *
@@ -49,10 +50,13 @@ export const TokenSelector = (props: Props): JSX.Element => {
     [tokenList]
   );
 
-  const context = useMemo(
-    () => ({ items, tokenBalance, tokenDetails, isBalanceLoading: isLoading }),
-    [items, tokenBalance, isLoading, tokenDetails]
+  return (
+    <TokenSelectorViewer
+      {...rest}
+      items={items}
+      tokenBalance={tokenBalance}
+      tokenDetails={tokenDetails}
+      isBalanceLoading={isLoading}
+    />
   );
-
-  return <TokenSelectorViewer {...rest} {...context} />;
 };
