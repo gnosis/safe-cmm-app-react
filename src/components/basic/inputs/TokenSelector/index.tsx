@@ -8,6 +8,7 @@ import { useTokenList } from "hooks/useTokenList";
 import { useTokenBalance } from "hooks/useTokenBalance";
 
 import { TokenSelectorViewer } from "./viewer";
+import { tokenDetailsToSelectItem } from "utils/misc";
 
 export interface Props {
   selectedTokenAddress?: string;
@@ -37,16 +38,8 @@ export const TokenSelector = (props: Props): JSX.Element => {
     [tokenList, selectedTokenAddress]
   );
 
-  // TODO: add token image
   const items = useMemo(
-    (): SelectItem[] =>
-      tokenList.map(
-        (token): SelectItem => ({
-          id: token.address,
-          label: token.symbol,
-          subLabel: token.name,
-        })
-      ),
+    (): SelectItem[] => tokenList.map(tokenDetailsToSelectItem),
     [tokenList]
   );
 

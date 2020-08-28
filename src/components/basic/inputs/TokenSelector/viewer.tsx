@@ -10,6 +10,7 @@ import { TokenDetails } from "types";
 
 import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
 import { SubtextAmount } from "components/basic/misc/SubtextAmount";
+
 import { Props } from ".";
 
 const COMPONENT_WIDTH = "305px";

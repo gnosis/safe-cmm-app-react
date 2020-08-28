@@ -3,6 +3,7 @@ export interface TokenDetails {
   decimals: number;
   symbol: string;
   name: string;
+  imageUrl?: string;
 }
 
 export interface SafeInfo {
