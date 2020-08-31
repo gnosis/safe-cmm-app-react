@@ -116,6 +116,7 @@ module.exports = {
   resolve: {
     modules: [
       path.resolve(__dirname, "src"), // allows absolute imports like `import "components/App"`
+      path.resolve(__dirname, "assets"), // for importing img and the like in code
       path.resolve(__dirname, "node_modules"),
       path.resolve(__dirname, "build"),
     ],
@@ -130,7 +131,7 @@ module.exports = {
     historyApiFallback: true,
     disableHostCheck: true,
     contentBase: [
-      path.resolve(__dirname, "src/assets"),
+      path.resolve(__dirname, "assets"),
       path.resolve(__dirname, "build"),
     ],
     headers: {

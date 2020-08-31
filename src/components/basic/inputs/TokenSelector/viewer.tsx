@@ -8,7 +8,7 @@ import { formatSmart } from "@gnosis.pm/dex-js";
 
 import { TokenDetails } from "types";
 
-import fallbackTokenImg from "assets/img/fallbackTokenImg.svg";
+import fallbackTokenImg from "img/fallbackTokenImg.svg";
 
 import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
 import { SubtextAmount } from "components/basic/misc/SubtextAmount";
