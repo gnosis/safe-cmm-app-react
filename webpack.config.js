@@ -2,8 +2,11 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 //const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+
 const path = require("path");
 const webpack = require("webpack");
+
+const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Make sure required envs are set
 if (!process.env.INFURA_API_KEY) {
@@ -35,7 +38,7 @@ const BABELRC = {
 };
 
 module.exports = {
-  devtool: "eval-source-map",
+  devtool: isDevelopment ? "eval-source-map" : "source-map",
   target: "web",
   module: {
     rules: [
