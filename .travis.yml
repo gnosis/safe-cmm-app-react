@@ -30,6 +30,7 @@ deploy:
     local_dir: dist
     skip_cleanup: true
     region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
     on:
       branch: development
 
@@ -42,6 +43,7 @@ deploy:
     skip_cleanup: true
     upload-dir: current/
     region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
     on:
       branch: master
 
@@ -54,6 +56,7 @@ deploy:
     skip_cleanup: true
     upload-dir: releases/$TRAVIS_TAG
     region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
     on:
       tags: true
   - provider: script
