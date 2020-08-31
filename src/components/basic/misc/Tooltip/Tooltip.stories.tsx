@@ -5,7 +5,7 @@ import { Tooltip, Props } from ".";
 
 export default {
   component: Tooltip,
-  title: "Tooltip",
+  title: "basic/misc/Tooltip",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
 } as Meta;

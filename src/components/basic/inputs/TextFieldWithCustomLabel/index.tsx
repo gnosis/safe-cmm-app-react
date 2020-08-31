@@ -13,6 +13,8 @@ type Theme = typeof theme;
 
 interface WrapperProps {
   width?: string | number;
+  inputWidth?: string | number;
+  center?: boolean;
   error?: boolean;
   warn?: boolean;
 }
@@ -21,9 +23,23 @@ const Wrapper = styled.div<WrapperProps>`
   width: ${({ width }: WrapperProps): string =>
     pxOrCustomCssUnits(width || WIDTH)};
 
+  > label {
+    padding-bottom: 0.4em;
+  }
+
+  ${({ center }: WrapperProps): string =>
+    !center
+      ? ""
+      : `
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  `}
+
   // Adjust input padding which is normally pushed down to accommodate default label
   .MuiFilledInput-input {
     padding: 19px 12px 18px;
+    font-family: "Averta";
   }
 
   .MuiInputAdornment-filled.MuiInputAdornment-positionStart:not(.MuiInputAdornment-hiddenLabel) {
@@ -31,8 +47,10 @@ const Wrapper = styled.div<WrapperProps>`
   }
 
   .MuiFormControl-root {
-    ${({ width }: WrapperProps): string =>
-      width ? `width: ${pxOrCustomCssUnits(width)};` : ""}
+    ${({ width, inputWidth }: WrapperProps): string =>
+      inputWidth || width
+        ? `width: ${pxOrCustomCssUnits(inputWidth || width)};`
+        : ""}
   }
 
   // We don't want to display the field label neither the error messages.
@@ -66,12 +84,12 @@ export interface Props
 }
 
 export const TextFieldWithCustomLabel = (props: Props): JSX.Element => {
-  const { customLabel } = props;
+  const { customLabel, inputWidth, center, ...rest } = props;
 
   return (
-    <Wrapper {...props}>
-      <InputLabel htmlFor={props.id}>{customLabel}</InputLabel>
-      <TextField {...props} label={null} />
+    <Wrapper {...rest} inputWidth={inputWidth} center={center}>
+      <InputLabel htmlFor={rest.id}>{customLabel}</InputLabel>
+      <TextField {...rest} label={null} />
     </Wrapper>
   );
 };

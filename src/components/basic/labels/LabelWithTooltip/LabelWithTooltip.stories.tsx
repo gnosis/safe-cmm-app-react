@@ -5,7 +5,7 @@ import { LabelWithTooltip, Props } from ".";
 
 export default {
   component: LabelWithTooltip,
-  title: "LabelWithTooltip",
+  title: "basic/label/LabelWithTooltip",
   excludeStories: /.*Data$/,
 } as Meta;
 

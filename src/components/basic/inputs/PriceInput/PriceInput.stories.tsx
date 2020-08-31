@@ -5,7 +5,7 @@ import { TokenDetails } from "types";
 
 import { Web3Context } from "components/Web3Provider";
 
-import { NumberInput, Props } from ".";
+import { PriceInput, Props } from ".";
 
 const mockContext = {
   getErc20Details: async (address: string): Promise<TokenDetails> => {
@@ -19,8 +19,8 @@ const mockContext = {
 };
 
 export default {
-  component: NumberInput,
-  title: "NumberInput",
+  component: PriceInput,
+  title: "basic/input/PriceInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
   decorators: [
@@ -32,10 +32,13 @@ export default {
   ],
 } as Meta;
 
-export const numberInputData = {
-  tokenAddress: "0x123123123",
-  customLabel: <div>Label</div>,
+export const priceInputData = {
+  tokenAddress: "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
+  labelText: "Best price",
+  labelTooltip: "bla bla bla",
 };
+
+export const actionData = {};
 
 const Template = (args: Props) => {
   const [value, setValue] = useState(args.value);
@@ -44,7 +47,7 @@ const Template = (args: Props) => {
 
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <NumberInput
+      <PriceInput
         {...args}
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -54,10 +57,16 @@ const Template = (args: Props) => {
 };
 
 export const Default = Template.bind({});
-Default.args = { ...numberInputData };
+Default.args = { ...priceInputData, ...actionData };
 
-export const CustomWidth = Template.bind({});
-CustomWidth.args = { ...numberInputData, width: "120px" };
+export const LargeSize = Template.bind({});
+LargeSize.args = { ...Default.args, labelSize: "xl" };
 
 export const WithoutToken = Template.bind({});
-WithoutToken.args = { ...numberInputData, tokenAddress: undefined };
+WithoutToken.args = { ...Default.args, tokenAddress: undefined };
+
+export const Error = Template.bind({});
+Error.args = { ...Default.args, error: true };
+
+export const Warning = Template.bind({});
+Warning.args = { ...Default.args, warn: true };

@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react/types-6-0";
 
 import { TokenDetails } from "types";
 
 import { Web3Context } from "components/Web3Provider";
 
-import { FundingInput, Props } from ".";
+import { NumberInput, Props } from ".";
 
 const mockContext = {
   getErc20Details: async (address: string): Promise<TokenDetails> => {
@@ -20,8 +19,8 @@ const mockContext = {
 };
 
 export default {
-  component: FundingInput,
-  title: "FundingInput",
+  component: NumberInput,
+  title: "basic/input/NumberInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
   decorators: [
@@ -33,16 +32,11 @@ export default {
   ],
 } as Meta;
 
-export const fundingInputData = {
-  amountPerBracket: "5",
-  tokenAddress: "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
+export const numberInputData = {
+  tokenAddress: "0x123123123",
+  customLabel: <div>Label</div>,
 };
 
-export const actionData = {
-  onMaxClick: action("onMaxClick"),
-};
-
-// Template pattern: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template = (args: Props) => {
   const [value, setValue] = useState(args.value);
 
@@ -50,7 +44,7 @@ const Template = (args: Props) => {
 
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <FundingInput
+      <NumberInput
         {...args}
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -60,17 +54,10 @@ const Template = (args: Props) => {
 };
 
 export const Default = Template.bind({});
-Default.args = { ...fundingInputData, ...actionData };
+Default.args = { ...numberInputData };
 
-export const VeryLongValue = Template.bind({});
-VeryLongValue.args = {
-  ...Default.args,
-  value: "1231231231235345345.312",
-  amountPerBracket: "12351514625333.3",
-};
+export const CustomWidth = Template.bind({});
+CustomWidth.args = { ...numberInputData, width: "120px" };
 
-export const ErrorInput = Template.bind({});
-ErrorInput.args = { ...Default.args, error: true };
-
-export const WarningInput = Template.bind({});
-WarningInput.args = { ...Default.args, warn: true };
+export const WithoutToken = Template.bind({});
+WithoutToken.args = { ...numberInputData, tokenAddress: undefined };

@@ -1,17 +1,15 @@
 import React, { useCallback } from "react";
 
-import { useTokenDetails } from "hooks/useTokenDetails";
-
 import {
   Props as TextFieldWithCustomLabelProps,
   TextFieldWithCustomLabel,
-} from "components/inputs/TextFieldWithCustomLabel";
-import { TokenDisplay } from "components/misc/TokenDisplay";
+} from "components/basic/inputs/TextFieldWithCustomLabel";
+import { TokenDisplay } from "components/basic/misc/TokenDisplay";
 
 export interface Props
   extends Omit<
     TextFieldWithCustomLabelProps,
-    "startAdornment" | "endAdornment" | "input"
+    "startAdornment" | "endAdornment"
   > {
   tokenAddress?: string;
 }
@@ -22,10 +20,8 @@ export interface Props
 export const NumberInput = (props: Props): JSX.Element => {
   const { onChange, tokenAddress, ...rest } = props;
 
-  const tokenDetails = useTokenDetails(tokenAddress);
-
-  const endAdornment = tokenDetails && (
-    <TokenDisplay size="md" tokenDetails={tokenDetails} />
+  const endAdornment = tokenAddress && (
+    <TokenDisplay size="md" tokenAddress={tokenAddress} />
   );
 
   const onlyAllowNumbers = useCallback(
