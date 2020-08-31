@@ -18,7 +18,7 @@ let globalDeployedContracts = {}; // Cache of Contracts by NetworkID for getDepl
 let globalContractsByAddress = {}; // Cache of Contracts by Address for getContract
 
 const readContractJSON = async (contractName) => {
-  const response = await fetch(`contracts/${contractName}.json`);
+  const response = await import(`contracts/${contractName}.json`);
   const contractArtifact = await response.json();
   return contractArtifact;
 };

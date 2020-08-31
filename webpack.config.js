@@ -1,6 +1,7 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+//const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const path = require("path");
 const webpack = require("webpack");
 
@@ -115,11 +116,9 @@ module.exports = {
     }),
     // Add assets and build artifacts to the dist/ folder on build
     new CopyWebpackPlugin({
-      patterns: [
-        { from: "build", to: "." },
-        { from: "assets", to: "." },
-      ],
+      patterns: [{ from: "assets", to: "." }],
     }),
     new ForkTsCheckerWebpackPlugin(),
+    //new BundleAnalyzerPlugin(),
   ],
 };
