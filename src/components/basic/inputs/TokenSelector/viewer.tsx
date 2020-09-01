@@ -10,7 +10,7 @@ import { TokenDetails } from "types";
 
 import fallbackTokenImg from "img/fallbackTokenImg.svg";
 
-import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
+import { TextWithTooltip } from "components/basic/display/TextWithTooltip";
 import { SubtextAmount } from "components/basic/display/SubtextAmount";
 
 import { Props } from ".";
@@ -71,7 +71,7 @@ export const TokenSelectorViewer = (
 
   return (
     <Wrapper>
-      <LabelWithTooltip
+      <TextWithTooltip
         text={label}
         tooltip={tooltip}
         size="lg"

@@ -1,24 +1,24 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 
-import { LabelWithTooltip, Props } from ".";
+import { TextWithTooltip, Props } from ".";
 
 export default {
-  component: LabelWithTooltip,
-  title: "basic/label/LabelWithTooltip",
+  component: TextWithTooltip,
+  title: "basic/display/TextWithTooltip",
   excludeStories: /.*Data$/,
 } as Meta;
 
-export const labelWithTooltipData = {
+export const textWithTooltipData = {
   text: "Label label",
   tooltip: "This is a nice tooltip",
   size: "lg",
 } as Props;
 
-const Template = (args: Props): JSX.Element => <LabelWithTooltip {...args} />;
+const Template = (args: Props): JSX.Element => <TextWithTooltip {...args} />;
 
 export const Default = Template.bind({});
-Default.args = { ...labelWithTooltipData };
+Default.args = { ...textWithTooltipData };
 
 export const Small = Template.bind({});
 Small.args = { ...Default.args, size: "sm" };

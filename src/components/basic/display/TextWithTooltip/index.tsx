@@ -27,7 +27,7 @@ export interface Props {
   className?: string;
 }
 
-export const LabelWithTooltip = (props: Props): JSX.Element => {
+export const TextWithTooltip = (props: Props): JSX.Element => {
   const { text, tooltip, size, color, className } = props;
 
   return (

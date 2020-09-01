@@ -4,7 +4,7 @@ import { ThemeTextSize } from "@gnosis.pm/safe-react-components/dist/theme";
 
 import { DEFAULT_INPUT_WIDTH } from "utils/constants";
 
-import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
+import { TextWithTooltip } from "components/basic/display/TextWithTooltip";
 
 import { NumberInput, Props as NumberInputProps } from "../NumberInput";
 
@@ -34,7 +34,7 @@ export const PriceInput = (props: Props): JSX.Element => {
       tokenAddress={tokenAddress}
       center
       customLabel={
-        <LabelWithTooltip
+        <TextWithTooltip
           size={labelSize}
           text={labelText}
           tooltip={labelTooltip}
