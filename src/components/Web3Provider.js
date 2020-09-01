@@ -72,6 +72,7 @@ const Web3Provider = ({ children }) => {
   }, [handleInit]);
 
   const handleGetArtifact = useCallback(async (dirtyContractName) => {
+    // This removes file endings, because IProxy.sol and IProxy are the same
     const contractName = dirtyContractName.replace(/\..*/, "");
     if (!globalArtifacts[contractName]) {
       // Load from default folder with contractName.json

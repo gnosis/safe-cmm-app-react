@@ -69,6 +69,7 @@ const Deploy = () => {
     history.replace("/active");
   }, [history]);
   */
+  const [error, setError] = useState(null);
   const [tokenCurrentPrice, setTokenCurrentPrice] = useState(null);
 
   const [tokenAddressBase, setTokenAddressBase] = useFormField(null);
@@ -122,17 +123,24 @@ const Deploy = () => {
   );
 
   const handleDeploy = useCallback(async () => {
-    await deployStrategy(
-      web3Context,
-      numBrackets,
-      tokenAddressBase,
-      tokenAddressQuote,
-      asWei(boundsLowerEth),
-      asWei(boundsUpperEth),
-      asWei(investmentBaseEth),
-      asWei(investmentQuoteEth),
-      asWei(tokenCurrentPrice.toString())
-    );
+    setError(null);
+    try {
+      await deployStrategy(
+        web3Context,
+        numBrackets,
+        tokenAddressBase,
+        tokenAddressQuote,
+        asWei(boundsLowerEth),
+        asWei(boundsUpperEth),
+        asWei(investmentBaseEth),
+        asWei(investmentQuoteEth),
+        asWei(tokenCurrentPrice.toString())
+      );
+    } catch (err) {
+      console.error(`Deployment failed with error: ${err.message}`);
+      setError(err.message);
+    }
+
     /*
     sdk.sendTransactions([
       {
@@ -302,6 +310,11 @@ const Deploy = () => {
               >
                 Deploy
               </Button>
+            </Grid>
+            <Grid item xs={12} spacing={2}>
+              {error && (
+                <Text size="md">Deployment failed with error: {error}</Text>
+              )}
             </Grid>
           </Grid>
         </Grid>
