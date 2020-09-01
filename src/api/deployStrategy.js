@@ -33,6 +33,7 @@ const deployStrategy = async (
     sdk,
     getContract,
     getDeployed,
+    getErc20Details,
     safeInfo: { safeAddress },
   } = context;
 
@@ -61,10 +62,21 @@ const deployStrategy = async (
     investmentBaseWei
   );
 
+  const tokenBaseDetails = await getErc20Details(
+    tokenBaseContract.options.address
+  );
+  const tokenQuoteDetails = await getErc20Details(
+    tokenQuoteContract.options.address
+  );
+
   if (!hasEnoughBalanceBase)
-    throw new ValidationError("Insufficient Balance of Base tokens"); // TODO: add name
+    throw new ValidationError(
+      `Insufficient Balance of Base ${tokenBaseDetails.symbol} tokens`
+    ); // TODO: add name
   if (!hasEnoughBalanceQuote)
-    throw new ValidationError("Insufficient Balance of Quote tokens"); // TODO: add name
+    throw new ValidationError(
+      `Insufficient Balance of Quote ${tokenQuoteDetails.symbol} tokens`
+    ); // TODO: add name
 
   if (numBrackets > 23) {
     throw new ValidationError(

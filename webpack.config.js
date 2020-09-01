@@ -1,6 +1,8 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const GenerateJSONPlugin = require("generate-json-webpack-plugin");
+const upperFirst = require("lodash/upperFirst");
 //const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const path = require("path");
@@ -23,6 +25,22 @@ if (!ALLOWED_NETWORKS.includes(process.env.NETWORK)) {
       ", "
     )}`
   );
+}
+
+const MANIFEST_JSON = {
+  name: "GP Market Maker",
+  description: "",
+  iconPath: "img/appIcon.svg",
+};
+
+if (isDevelopment) {
+  // For development versions, always add network
+  MANIFEST_JSON.name += ` - Dev - ${upperFirst(process.env.NETWORK)}`;
+} else {
+  // For production, only add network if not mainnet
+  if (process.env.NETWORK !== "mainnet") {
+    MANIFEST_JSON.name += ` - ${upperFirst(process.env.NETWORK)}`;
+  }
 }
 
 const BABELRC = {
@@ -122,6 +140,7 @@ module.exports = {
       patterns: [{ from: "assets", to: "." }],
     }),
     new ForkTsCheckerWebpackPlugin(),
+    new GenerateJSONPlugin("manifest.json", MANIFEST_JSON),
     //new BundleAnalyzerPlugin(),
   ],
 };
