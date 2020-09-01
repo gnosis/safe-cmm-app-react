@@ -71,12 +71,9 @@ export const TokenSelectorViewer = (
 
   return (
     <Wrapper>
-      <TextWithTooltip
-        text={label}
-        tooltip={tooltip}
-        size="lg"
-        color="shadow"
-      />
+      <TextWithTooltip tooltip={tooltip} size="lg" color="shadow">
+        {label}
+      </TextWithTooltip>
       {/* TODO: add fallback image */}
       <SelectWrapper
         items={items}

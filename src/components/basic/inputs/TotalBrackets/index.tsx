@@ -31,11 +31,9 @@ export const TotalBrackets = (props: Props): JSX.Element => {
         inputWidth="75px"
         center
         customLabel={
-          <TextWithTooltip
-            text="Total Brackets"
-            tooltip="TODO: add tooltips :)"
-            size="lg"
-          />
+          <TextWithTooltip tooltip="TODO: add tooltips :)" size="lg">
+            Total Brackets
+          </TextWithTooltip>
         }
       />
       <SubtextAmount subtext="Total investment:" amount={amount} />

@@ -36,10 +36,11 @@ export const PriceInput = (props: Props): JSX.Element => {
       customLabel={
         <TextWithTooltip
           size={labelSize}
-          text={labelText}
           tooltip={labelTooltip}
           color={error ? "error" : null}
-        />
+        >
+          {labelText}
+        </TextWithTooltip>
       }
     />
   );

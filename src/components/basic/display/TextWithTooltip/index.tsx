@@ -20,20 +20,19 @@ const Wrapper = styled.div`
 `;
 
 export interface Props {
-  text: string | React.ReactNode;
   tooltip: string;
   size: ThemeTextSize;
   color?: ThemeColors;
   className?: string;
 }
 
-export const TextWithTooltip = (props: Props): JSX.Element => {
-  const { text, tooltip, size, color, className } = props;
+export const TextWithTooltip: React.FC<Props> = (props) => {
+  const { children, tooltip, size, color, className } = props;
 
   return (
     <Wrapper className={className}>
       <Text size={size} strong color={color}>
-        {text}
+        {children}
       </Text>
       <Tooltip title={tooltip}>
         <span>

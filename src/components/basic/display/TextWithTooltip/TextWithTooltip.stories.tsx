@@ -10,7 +10,7 @@ export default {
 } as Meta;
 
 export const textWithTooltipData = {
-  text: "Label label",
+  children: "Label label",
   tooltip: "This is a nice tooltip",
   size: "lg",
 } as Props;
@@ -36,5 +36,5 @@ export const ComponentAsText = Template.bind({});
 ComponentAsText.args = {
   ...Default.args,
   color: "error",
-  text: <span>I'm a component</span>,
+  children: <span>I'm a component</span>,
 };
