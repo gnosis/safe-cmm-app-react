@@ -8,7 +8,7 @@ import {
   Props as BracketsInputProps,
 } from "components/basic/inputs/BracketsInput";
 import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
-import { SubtextAmount } from "components/basic/misc/SubtextAmount";
+import { SubtextAmount } from "components/basic/display/SubtextAmount";
 
 const Wrapper = styled.div`
   display: flex;

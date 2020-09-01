@@ -7,7 +7,7 @@ import {
 } from "@gnosis.pm/safe-react-components/dist/theme";
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
 
-import { Tooltip } from "components/basic/misc/Tooltip";
+import { Tooltip } from "components/basic/display/Tooltip";
 
 const Wrapper = styled.div`
   display: flex;

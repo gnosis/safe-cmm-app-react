@@ -5,7 +5,7 @@ import { SubtextAmount, Props } from ".";
 
 export default {
   component: SubtextAmount,
-  title: "basic/misc/SubtextAmount",
+  title: "basic/display/SubtextAmount",
 } as Meta;
 
 const Template = (props: Props): JSX.Element => <SubtextAmount {...props} />;

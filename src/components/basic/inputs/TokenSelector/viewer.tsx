@@ -11,7 +11,7 @@ import { TokenDetails } from "types";
 import fallbackTokenImg from "img/fallbackTokenImg.svg";
 
 import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
-import { SubtextAmount } from "components/basic/misc/SubtextAmount";
+import { SubtextAmount } from "components/basic/display/SubtextAmount";
 
 import { Props } from ".";
 

@@ -4,7 +4,7 @@ import {
   Props as TextFieldWithCustomLabelProps,
   TextFieldWithCustomLabel,
 } from "components/basic/inputs/TextFieldWithCustomLabel";
-import { TokenDisplay } from "components/basic/misc/TokenDisplay";
+import { TokenDisplay } from "components/basic/display/TokenDisplay";
 
 export interface Props
   extends Omit<
