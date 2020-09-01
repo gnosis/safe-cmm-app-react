@@ -31,3 +31,10 @@ Warning.args = { ...Default.args, color: "warning" };
 
 export const Deactivated = Template.bind({});
 Deactivated.args = { ...Default.args, color: "shadow" };
+
+export const ComponentAsText = Template.bind({});
+ComponentAsText.args = {
+  ...Default.args,
+  color: "error",
+  text: <span>I'm a component</span>,
+};

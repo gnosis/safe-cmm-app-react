@@ -20,7 +20,7 @@ const Wrapper = styled.div`
 `;
 
 export interface Props {
-  text: string;
+  text: string | React.ReactNode;
   tooltip: string;
   size: ThemeTextSize;
   color?: ThemeColors;
