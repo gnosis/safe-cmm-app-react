@@ -3445,30 +3445,6 @@
       "links": {},
       "address": "0x1b94BF378B910e5be70b59e774867a1c919821C7",
       "transactionHash": "0xf8256a6b6c92a95f9342d0dbb8afee83d1dd6bec8510278893f568ae0114ee3f"
-    },
-    "437894314313": {
-      "events": {
-        "0x1eb5c30bcd35b94d9582497e50a24649e0801200095081f4fd530345456cd483": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": true,
-              "name": "owner",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "name": "fleet",
-              "type": "address[]"
-            }
-          ],
-          "name": "FleetDeployed",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x9FEbF712073C0816C30377321e9d9E0130607142",
-      "transactionHash": "0xb98ffb2c0984d7f9f57c93497ecd5ae0f39c8be6257f17e94821e4c724241e41"
     }
   },
   "schemaVersion": "3.2.3",
