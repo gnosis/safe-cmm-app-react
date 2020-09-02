@@ -23,13 +23,7 @@ export const linkData = {
 
 export const actionData = { onClick: action("onClick") };
 
-const Template = (args: Props): JSX.Element => {
-  return (
-    // <form noValidate autoComplete="off" onSubmit={onSubmit}>
-    <Link {...args} />
-    // </form>
-  );
-};
+const Template = (args: Props): JSX.Element => <Link {...args} />;
 
 export const Default = Template.bind({});
 Default.args = { ...linkData, ...actionData };
