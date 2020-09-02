@@ -35,15 +35,15 @@ const orderAndFund = async (
   // We need to load these contracts before entering buildTransferApproveDepositFromOrders
   // because it uses artifacts.require - even though it's a shim, it still expects to receive
   // contract artifacts without delay (no promises), so we need to preload them here.
-  const contracts = await Promise.all([
+  await Promise.all([
     context.getArtifact("IProxy.sol"),
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
     context.getArtifact("MultiSend"),
     context.getArtifact("BatchExchange"),
+    context.getArtifact("FleetFactory"),
     context.getArtifact("FleetFactoryDeterministic"),
   ]);
-  console.log(contracts);
 
   const {
     buildTransferApproveDepositFromOrders,

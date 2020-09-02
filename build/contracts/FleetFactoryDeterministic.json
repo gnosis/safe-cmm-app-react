@@ -4181,12 +4181,32 @@
     },
     "4": {
       "links": {},
-      "address": "0xf02419728f01566b3e9173c6b5c652670105dd96",
-      "transactionHash": "0xeb2e70e947891a519a8a10d1d68ac2d00b99e87be8d714bad9c06ab8fa4a2864"
+      "address": "0xA2014Fd31197494837b6a6b3b4FB96ab92a9e994",
+      "transactionHash": "0xf51eb51be61c9b7ac9ec6ef4ef81cc2d4397b9f65f2fb83956a487c607e73fae",
+      "events": {
+        "0x1eb5c30bcd35b94d9582497e50a24649e0801200095081f4fd530345456cd483": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "name": "owner",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "name": "fleet",
+              "type": "address[]"
+            }
+          ],
+          "name": "FleetDeployed",
+          "type": "event"
+        }
+      }
     }
   },
   "schemaVersion": "3.2.3",
-  "updatedAt": "2020-09-01T13:41:37.001Z",
+  "updatedAt": "2020-09-02T10:44:12.414Z",
+  "networkType": "ethereum",
   "devdoc": {
     "methods": {}
   },
