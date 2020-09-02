@@ -29,7 +29,6 @@ const StyledLink = styled.a<Props>`
 
   p {
     text-transform: uppercase;
-    font-size: 0.75em;
     font-weight: bold;
   }
 `;

@@ -10,11 +10,12 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   padding-top: 0.4em;
   display: flex;
+  align-items: center;
 
   ${({ inline }: WrapperProps): string =>
     inline
       ? `
-  p:first-of-type {
+  &>p:first-of-type {
     padding-right: 0.5em;
   }`
       : `
