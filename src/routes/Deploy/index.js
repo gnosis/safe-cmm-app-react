@@ -139,6 +139,7 @@ const Deploy = () => {
     } catch (err) {
       console.error(`Deployment failed with error: ${err.message}`);
       setError(err.message);
+      throw err;
     }
 
     /*
