@@ -29,7 +29,8 @@ if (!ALLOWED_NETWORKS.includes(process.env.NETWORK)) {
 
 const MANIFEST_JSON = {
   name: "GP Market Maker",
-  description: "",
+  description:
+    "Allows you to deploy, withdraw and manage your custom market maker strategies",
   iconPath: "img/appIcon.svg",
 };
 
