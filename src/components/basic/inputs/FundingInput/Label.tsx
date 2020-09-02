@@ -5,7 +5,7 @@ import { Text } from "@gnosis.pm/safe-react-components";
 
 import { ButtonLink } from "components/basic/inputs/ButtonLink";
 
-const Wrapper = styled.div`
+const Wrapper = styled.span`
   display: flex;
   justify-content: space-between;
   flex-wrap: nowrap;

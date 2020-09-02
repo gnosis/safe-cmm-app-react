@@ -9,7 +9,7 @@ import { Text, Icon } from "@gnosis.pm/safe-react-components";
 
 import { Tooltip } from "components/basic/display/Tooltip";
 
-const Wrapper = styled.div`
+const Wrapper = styled.span`
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
