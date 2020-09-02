@@ -34,7 +34,7 @@ const SelectWrapper = styled(Select)`
 `;
 
 export interface TokenSelectorViewerProps
-  extends Omit<Props, "selectedTokenAddress"> {
+  extends Omit<Props, "selectedTokenAddress" | "setError"> {
   items: SelectItem[];
   tokenBalance: BN | null;
   isBalanceLoading: boolean;

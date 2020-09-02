@@ -6,6 +6,7 @@ import { Web3Context } from "components/Web3Provider";
 export interface UseTokenBalanceResult {
   balance: BN | null;
   isLoading: boolean;
+  error: string;
 }
 
 /**
@@ -17,6 +18,7 @@ export interface UseTokenBalanceResult {
 export function useTokenBalance(tokenAddress?: string): UseTokenBalanceResult {
   const [balance, setBalance] = useState<BN | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const { safeInfo, getContract } = useContext(Web3Context);
 
@@ -25,21 +27,33 @@ export function useTokenBalance(tokenAddress?: string): UseTokenBalanceResult {
   // on every change
   useEffect(() => {
     setIsLoading(true);
+    setError("");
+
     async function getBalance(): Promise<void> {
       if (!tokenAddress || !safeInfo.safeAddress) {
+        setIsLoading(false);
         return;
       }
-      const contract = await getContract("ERC20Detailed", tokenAddress);
-      const balance = await contract.methods
-        .balanceOf(safeInfo.safeAddress)
-        .call();
 
-      setBalance(new BN(balance));
-      setIsLoading;
+      try {
+        const contract = await getContract("ERC20Detailed", tokenAddress);
+        const balance = await contract.methods
+          .balanceOf(safeInfo.safeAddress)
+          .call();
+
+        setBalance(new BN(balance));
+      } catch (e) {
+        console.error(
+          `Failed to fetch balance of token '${tokenAddress}' for Safe '${safeInfo.safeAddress}'`,
+          e
+        );
+        setError(`Failed to fetch balance of token '${tokenAddress}'`);
+      }
+      setIsLoading(false);
     }
 
     getBalance();
   }, [tokenAddress, safeInfo]);
 
-  return { balance, isLoading };
+  return { balance, isLoading, error };
 }
