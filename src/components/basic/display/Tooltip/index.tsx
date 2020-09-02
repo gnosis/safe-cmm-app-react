@@ -42,6 +42,12 @@ const StyledToolTip = withStyles(() => ({
  *
  * Other than the styles, it's still a vanilla [Material UI Tooltip](https://material-ui.com/api/tooltip/)
  */
-export const Tooltip: React.FC<Props> = (props: Props): JSX.Element => (
-  <StyledToolTip {...props} arrow />
-);
+export const Tooltip: React.FC<Props> = (props: Props): JSX.Element => {
+  const { children, ...rest } = props;
+
+  return (
+    <StyledToolTip {...rest} arrow>
+      <span>{children}</span>
+    </StyledToolTip>
+  );
+};

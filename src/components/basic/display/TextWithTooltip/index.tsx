@@ -35,13 +35,7 @@ export const TextWithTooltip: React.FC<Props> = (props) => {
         {children}
       </Text>
       <Tooltip title={tooltip}>
-        <span>
-          {/* Needs the extra <span> wrap because... it's disabled?
-            https://material-ui.com/components/tooltips/#disabled-elements
-            Not sure, but doesn't work without it
-          */}
-          <Icon size="sm" type="question" />
-        </span>
+        <Icon size="sm" type="question" />
       </Tooltip>
     </Wrapper>
   );
