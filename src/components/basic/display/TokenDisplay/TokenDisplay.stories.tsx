@@ -18,18 +18,18 @@ const mockContext = {
   },
 };
 
+export const mockGetErc20DetailsDecorator = (Story: any): JSX.Element => (
+  <Web3Context.Provider value={mockContext}>
+    <Story />
+  </Web3Context.Provider>
+);
+
 export default {
   component: TokenDisplay,
   title: "basic/display/TokenDisplay",
   // Our exports that end in "Data" are not stories.
-  excludeStories: /.*Data$/,
-  decorators: [
-    (Story: any): JSX.Element => (
-      <Web3Context.Provider value={mockContext}>
-        <Story />
-      </Web3Context.Provider>
-    ),
-  ],
+  excludeStories: /.*(Data|mock.*)$/,
+  decorators: [mockGetErc20DetailsDecorator],
 } as Meta;
 
 export const tokenDisplayData = {
