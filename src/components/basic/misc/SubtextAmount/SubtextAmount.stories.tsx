@@ -18,3 +18,6 @@ AmountIsAComponent.args = {
   subtext: "Something else:",
   amount: <span>1250 ETH</span>,
 };
+
+export const Inline = Template.bind({});
+Inline.args = { ...Default.args, inline: true };

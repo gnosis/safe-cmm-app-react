@@ -98,11 +98,25 @@ module.exports = {
           "json-x-loader?exclude=ast+legacyAST+sourceMap+deployedSourceMap+source+sourcePath+ast+legacyAST+compiler+schemaVersion+updatedAt+devdoc+userdoc",
         ],
       },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [
+          "file-loader",
+          {
+            loader: "image-webpack-loader",
+            options: {
+              bypassOnDebug: true,
+              disable: isDevelopment,
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {
     modules: [
       path.resolve(__dirname, "src"), // allows absolute imports like `import "components/App"`
+      path.resolve(__dirname, "assets"), // for importing img and the like in code
       path.resolve(__dirname, "node_modules"),
       path.resolve(__dirname, "build"),
     ],
