@@ -21,7 +21,7 @@ export const NumberInput = (props: Props): JSX.Element => {
   const { onChange, tokenAddress, ...rest } = props;
 
   const endAdornment = tokenAddress && (
-    <TokenDisplay size="md" tokenAddress={tokenAddress} />
+    <TokenDisplay size="md" token={tokenAddress} />
   );
 
   const onlyAllowNumbers = useCallback(

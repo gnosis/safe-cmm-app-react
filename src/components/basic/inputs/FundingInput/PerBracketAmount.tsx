@@ -16,7 +16,7 @@ export const PerBracketAmount = (props: Props): JSX.Element => {
       subtext="per bracket"
       amount={
         <>
-          {amount} <TokenDisplay tokenAddress={tokenAddress} size="sm" />
+          {amount} <TokenDisplay token={tokenAddress} size="sm" />
         </>
       }
     />

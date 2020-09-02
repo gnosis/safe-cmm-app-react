@@ -74,7 +74,6 @@ export const TokenSelectorViewer = (
       <TextWithTooltip tooltip={tooltip} size="lg" color="shadow">
         {label}
       </TextWithTooltip>
-      {/* TODO: add fallback image */}
       <SelectWrapper
         items={items}
         activeItemId={tokenDetails?.address || ""}

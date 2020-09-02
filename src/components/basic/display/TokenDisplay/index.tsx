@@ -6,10 +6,12 @@ import {
   ThemeColors,
 } from "@gnosis.pm/safe-react-components/dist/theme";
 
+import { TokenDetails } from "types";
+
 import { useTokenDetails } from "hooks/useTokenDetails";
 
 export interface Props {
-  tokenAddress: string;
+  token: string | TokenDetails;
   size: ThemeTextSize;
   color?: ThemeColors;
 }
@@ -23,9 +25,9 @@ export interface Props {
  * - add support for displaying token images
  */
 export const TokenDisplay = (props: Props): JSX.Element => {
-  const { tokenAddress, size, color } = props;
+  const { token, size, color } = props;
 
-  const tokenDetails = useTokenDetails(tokenAddress);
+  const tokenDetails = useTokenDetails(token);
 
   return tokenDetails ? (
     <Text size={size} color={color} strong>
