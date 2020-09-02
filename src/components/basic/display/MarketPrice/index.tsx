@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
 import { useGetPrice } from "hooks/useGetPrice";
@@ -6,7 +6,6 @@ import { useGetPrice } from "hooks/useGetPrice";
 import { build1InchPriceUrl } from "utils/priceUrls";
 
 import { MarketPriceViewer } from "./viewer";
-import { useEffect } from "@storybook/addons";
 
 export interface Props {
   tokenAAddress?: string;
