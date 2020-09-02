@@ -44,6 +44,7 @@ const DEFAULT_NUM_SAFES = 10;
 const FormBox = styled(Box)`
   max-width: 600px;
   padding: 18px 12px;
+  margin-top: 12px;
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.4);
   border-radius: 8px;
   display: flex;
