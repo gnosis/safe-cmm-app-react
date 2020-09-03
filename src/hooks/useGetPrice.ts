@@ -38,47 +38,45 @@ async function get1InchPrice(
  * `source` defaults to `1inch`.
  */
 export function useGetPrice(params: Params): Result {
+  const { source = "1inch", baseToken, quoteToken } = params;
+
   const [price, setPrice] = useState<Decimal | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const getPrice = useCallback(
-    async (params: Params): Promise<void> => {
-      const { source = "1inch", baseToken, quoteToken } = params;
+  const getPrice = useCallback(async (params: Required<Params>): Promise<
+    void
+  > => {
+    const { source, baseToken, quoteToken } = params;
 
-      if (!baseToken || !quoteToken) {
-        return;
-      }
+    setIsLoading(true);
+    setError("");
 
-      setIsLoading(true);
-      setError("");
+    let price: Decimal | null = null;
+    try {
+      // Switch might seen overkill since there's only 1 type ATM, but there might be more.
+      // Paving the way for new sources
+      switch (source) {
+        case "1inch": {
+          price = await get1InchPrice(baseToken, quoteToken);
 
-      let price: Decimal | null = null;
-      try {
-        // Switch might seen overkill since there's only 1 type ATM, but there might be more.
-        // Paving the way for new sources
-        switch (source) {
-          case "1inch": {
-            price = await get1InchPrice(baseToken, quoteToken);
-            break;
-          }
+          break;
         }
-      } catch (e) {
-        const msg = `Failed to fetch price from '${source}' for '${baseToken.symbol}'/'${quoteToken.symbol}' pair`;
-        console.error(msg, e);
-
-        setError(msg);
       }
+    } catch (e) {
+      const msg = `Failed to fetch price from '${source}' for '${baseToken.symbol}'/'${quoteToken.symbol}' pair`;
+      console.error(msg, e);
 
-      setIsLoading(false);
-      setPrice(price);
-    },
-    [params]
-  );
+      setError(msg);
+    }
+
+    setIsLoading(false);
+    setPrice(price);
+  }, []);
 
   useEffect((): void => {
-    getPrice(params);
-  }, [params]);
+    baseToken && quoteToken && getPrice({ source, baseToken, quoteToken });
+  }, [source, baseToken, quoteToken]);
 
   return { price, isLoading, error };
 }
