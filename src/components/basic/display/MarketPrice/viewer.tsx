@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, memo } from "react";
 import styled from "styled-components";
 
 import { Text, Icon, Loader } from "@gnosis.pm/safe-react-components";
@@ -21,16 +21,18 @@ export interface MarketPriceViewerProps {
   price?: string;
   isPriceLoading: boolean;
   priceUrl: string;
-  tokenA?: TokenDetails;
-  tokenB?: TokenDetails;
+  baseTokenAddress?: string;
+  quoteTokenAddress?: string;
 }
 
-export const MarketPriceViewer = (
-  props: MarketPriceViewerProps
-): JSX.Element => {
-  const { price, isPriceLoading, priceUrl, tokenA, tokenB } = props;
-
-  // TODO: should this come as a string on props?
+const _MarketPriceViewer = (props: MarketPriceViewerProps): JSX.Element => {
+  const {
+    price,
+    isPriceLoading,
+    priceUrl,
+    baseTokenAddress,
+    quoteTokenAddress,
+  } = props;
 
   const amount = useMemo(
     (): JSX.Element | string =>
@@ -47,16 +49,18 @@ export const MarketPriceViewer = (
           >
             {price}
           </Link>
-          <TokenDisplay token={tokenA} size="md" />
+          <TokenDisplay token={quoteTokenAddress} size="md" />
           <Text size="md">per</Text>
-          <TokenDisplay token={tokenB} size="md" />
+          <TokenDisplay token={baseTokenAddress} size="md" />
           <Tooltip title="TODO: add tooltip!!">
             <Icon type="question" size="sm" />
           </Tooltip>
         </Amount>
       ),
-    [price, priceUrl, tokenA, tokenB, isPriceLoading]
+    [price, priceUrl, baseTokenAddress, quoteTokenAddress, isPriceLoading]
   );
 
   return <SubtextAmount subtext="Market price:" amount={amount} inline />;
 };
+
+export const MarketPriceViewer = memo(_MarketPriceViewer);

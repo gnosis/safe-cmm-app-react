@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, memo } from "react";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
 import { useGetPrice } from "hooks/useGetPrice";
@@ -8,21 +8,21 @@ import { build1InchPriceUrl } from "utils/priceUrls";
 import { MarketPriceViewer } from "./viewer";
 
 export interface Props {
-  tokenAAddress?: string;
-  tokenBAddress?: string;
+  baseTokenAddress?: string;
+  quoteTokenAddress?: string;
   setError?: (msg?: string) => void;
 }
 
-export const MarketPrice = (props: Props): JSX.Element => {
-  const { tokenAAddress, tokenBAddress, setError } = props;
+const _MarketPrice = (props: Props): JSX.Element => {
+  const { baseTokenAddress, quoteTokenAddress, setError } = props;
 
-  const tokenA = useTokenDetails(tokenAAddress);
-  const tokenB = useTokenDetails(tokenBAddress);
+  const baseToken = useTokenDetails(baseTokenAddress);
+  const quoteToken = useTokenDetails(quoteTokenAddress);
 
   // TODO: propagate error up to parent when dealing with validation
   const { price, isLoading, error } = useGetPrice({
-    baseToken: tokenA,
-    quoteToken: tokenB,
+    baseToken: baseToken,
+    quoteToken: quoteToken,
     source: "1inch",
   });
 
@@ -30,18 +30,20 @@ export const MarketPrice = (props: Props): JSX.Element => {
     setError && setError(error);
   }, [error]);
 
-  const priceUrl = useMemo((): string => build1InchPriceUrl(tokenA, tokenB), [
-    tokenA,
-    tokenB,
-  ]);
+  const priceUrl = useMemo(
+    (): string => build1InchPriceUrl(baseToken, quoteToken),
+    [baseToken, quoteToken]
+  );
 
   return (
     <MarketPriceViewer
-      tokenA={tokenA}
-      tokenB={tokenB}
+      baseTokenAddress={baseTokenAddress}
+      quoteTokenAddress={quoteTokenAddress}
       isPriceLoading={isLoading}
       price={price ? price.toString() : ""}
       priceUrl={priceUrl}
     />
   );
 };
+
+export const MarketPrice = memo(_MarketPrice);

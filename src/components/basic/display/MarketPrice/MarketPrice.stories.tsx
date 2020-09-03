@@ -16,18 +16,8 @@ export default {
 export const marketPriceData = {
   price: "1.232",
   isPriceLoading: false,
-  tokenA: {
-    symbol: "TKNA",
-    name: "Token A",
-    decimals: 5,
-    address: "0x1A5F9352Af8aF974bFC03399e3767DF6370d82e4",
-  },
-  tokenB: {
-    symbol: "TKNB",
-    name: "Token B",
-    decimals: 15,
-    address: "0x0000000000085d4780B73119b644AE5ecd22b376",
-  },
+  baseTokenAddress: "0x1A5F9352Af8aF974bFC03399e3767DF6370d82e4",
+  quoteTokenAddress: "0x0000000000085d4780B73119b644AE5ecd22b376",
   priceUrl: "https://prices.com.for.real/TKNA/TKNB",
 } as MarketPriceViewerProps;
 
