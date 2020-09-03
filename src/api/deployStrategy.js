@@ -3,7 +3,8 @@ import getLogger from "utils/logger";
 const logger = getLogger("deploy-strategy");
 
 import verifyBalance from "api/utils/verifyBalance";
-import deployAndProvision from "../utils/progressiveTx/deployAndProvision";
+import deployFleet from "api/eth/deployFleet";
+import orderAndFund from "api/eth/orderAndFund";
 
 export class ValidationError extends Error {}
 
@@ -15,10 +16,10 @@ const deployStrategy = async (
   boundsLowerWei,
   boundsUpperWei,
   investmentBaseWei,
-  investmentQuoteWei
+  investmentQuoteWei,
+  currentPriceWei
 ) => {
   console.log([
-    safeAddress,
     numBrackets,
     tokenAddressBase,
     tokenAddressQuote,
@@ -28,21 +29,27 @@ const deployStrategy = async (
     investmentQuoteWei,
   ]);
 
-  const { sdk, instance, getContract, getDeployed, safeInfo: { safeAddress } } = context;
+  const {
+    sdk,
+    getContract,
+    getDeployed,
+    getErc20Details,
+    safeInfo: { safeAddress },
+  } = context;
 
   //const ERC20Contract = await getContract("ERC20Detailed");
-
-  const tokenBaseContract = await getContract(
-    "ERC20Detailed",
-    tokenAddressBase
-  );
-  const tokenQuoteContract = await getContract(
-    "ERC20Detailed",
-    tokenAddressQuote
-  );
-
-  //console.log({ tokenBaseContract, tokenQuoteContract })
-
+  logger.log(`==> Fetching all contracts`);
+  const [
+    tokenBaseContract,
+    tokenQuoteContract,
+    masterSafeContract,
+  ] = await Promise.all([
+    getContract("ERC20Detailed", tokenAddressBase),
+    getContract("ERC20Detailed", tokenAddressQuote),
+    getDeployed("GnosisSafe"),
+  ]);
+  const masterSafeAddress = masterSafeContract.options.address;
+  console.log(masterSafeContract);
   logger.log(`==> Running sanity checks`);
   const hasEnoughBalanceBase = await verifyBalance(
     tokenBaseContract,
@@ -55,10 +62,21 @@ const deployStrategy = async (
     investmentBaseWei
   );
 
+  const tokenBaseDetails = await getErc20Details(
+    tokenBaseContract.options.address
+  );
+  const tokenQuoteDetails = await getErc20Details(
+    tokenQuoteContract.options.address
+  );
+
   if (!hasEnoughBalanceBase)
-    throw new ValidationError("Insufficient Balance of Base tokens"); // TODO: add name
+    throw new ValidationError(
+      `Insufficient Balance of Base ${tokenBaseDetails.symbol} tokens`
+    ); // TODO: add name
   if (!hasEnoughBalanceQuote)
-    throw new ValidationError("Insufficient Balance of Quote tokens"); // TODO: add name
+    throw new ValidationError(
+      `Insufficient Balance of Quote ${tokenQuoteDetails.symbol} tokens`
+    ); // TODO: add name
 
   if (numBrackets > 23) {
     throw new ValidationError(
@@ -66,15 +84,24 @@ const deployStrategy = async (
     );
   }
 
-  await deployAndProvision(context, {
+  const { tx: deployFleetTx, safeAddresses } = await deployFleet(context, {
     numBrackets,
+    masterSafeAddress,
+  });
+
+  const { txs: orderAndFundTxs } = await orderAndFund(context, {
+    safeAddresses,
+    masterSafeAddress,
     tokenBaseContract,
     tokenQuoteContract,
+    currentPriceWei,
     boundsLowerWei,
     boundsUpperWei,
     investmentBaseWei,
     investmentQuoteWei,
   });
+
+  sdk.sendTransactions([deployFleetTx, ...orderAndFundTxs]);
 };
 
 export default deployStrategy;

@@ -1,0 +1,65 @@
+if: (branch = development) OR (branch = master) OR (type = pull_request) OR (tag IS present)
+dist: xenial
+language: node_js
+node_js:
+  - '12.4.0'
+matrix:
+  include:
+    - env:
+        - NETWORK='mainnet'
+        - INFURA_API_KEY=${INFURA_API_KEY}
+      if: (branch = master AND NOT type = pull_request) OR tag IS present
+    - env:
+        - NETWORK='rinkeby'
+        - INFURA_API_KEY=${INFURA_API_KEY}
+      if: (branch != master) OR tag IS NOT present
+cache:
+  yarn: true
+before_install:
+  - npm install
+  # Needed to deploy pull request and releases
+  - pip install awscli --upgrade --user
+script:
+  - npm run build
+deploy:
+  # Development environment
+  - provider: s3
+    bucket: $DEV_BUCKET_NAME
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    local_dir: dist
+    skip_cleanup: true
+    region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
+    on:
+      branch: development
+
+    # Staging environment
+  - provider: s3
+    bucket: $STAGING_BUCKET_NAME
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    local_dir: dist
+    skip_cleanup: true
+    upload-dir: current/
+    region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
+    on:
+      branch: master
+
+    # Prepare production deployment
+  - provider: s3
+    bucket: $STAGING_BUCKET_NAME
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    access_key_id: $AWS_ACCESS_KEY_ID
+    local_dir: dist
+    skip_cleanup: true
+    upload-dir: releases/$TRAVIS_TAG
+    region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
+    on:
+      tags: true
+  - provider: script
+    script: ./config/travis/prepare_production_deployment.sh
+    on:
+      tags: true

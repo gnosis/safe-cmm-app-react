@@ -1,0 +1,7 @@
+authtoken: "ADD YOUR TOKEN"
+tunnels:
+  webpack:
+    addr: "8080"
+    proto: http
+    subdomain: cmm-safe-app
+    bind_tls: "true"
