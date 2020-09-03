@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 
 import { Text } from "@gnosis.pm/safe-react-components";
@@ -31,7 +31,7 @@ export interface Props extends WrapperProps {
   amount: string | React.ReactElement;
 }
 
-export const SubtextAmount = (props: Props): JSX.Element => {
+const _SubtextAmount = (props: Props): JSX.Element => {
   const { subtext, amount, inline } = props;
 
   return (
@@ -45,3 +45,5 @@ export const SubtextAmount = (props: Props): JSX.Element => {
     </Wrapper>
   );
 };
+
+export const SubtextAmount = memo(_SubtextAmount);

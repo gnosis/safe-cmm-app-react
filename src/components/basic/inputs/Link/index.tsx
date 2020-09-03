@@ -1,4 +1,4 @@
-import React, { ComponentPropsWithoutRef } from "react";
+import React, { ComponentPropsWithoutRef, memo } from "react";
 import styled from "styled-components";
 
 import { theme, Text } from "@gnosis.pm/safe-react-components";
@@ -33,7 +33,7 @@ const StyledLink = styled.a<Props>`
   }
 `;
 
-export const Link: React.FC<Props> = (props) => {
+export const _Link: React.FC<Props> = (props) => {
   const { children, ...rest } = props;
 
   return (
@@ -44,3 +44,5 @@ export const Link: React.FC<Props> = (props) => {
     </StyledLink>
   );
 };
+
+export const Link = memo(_Link);

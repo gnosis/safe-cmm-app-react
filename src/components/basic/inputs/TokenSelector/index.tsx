@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, memo } from "react";
 
 import { SelectItem } from "@gnosis.pm/safe-react-components/dist/inputs/Select";
 
@@ -24,7 +24,7 @@ export interface Props {
  * Deals with hooks and state.
  * To be used externally in other components
  */
-export const TokenSelector = (props: Props): JSX.Element => {
+const _TokenSelector = (props: Props): JSX.Element => {
   const { selectedTokenAddress, setError, ...rest } = props;
 
   const tokenList = useTokenList();
@@ -60,3 +60,5 @@ export const TokenSelector = (props: Props): JSX.Element => {
     />
   );
 };
+
+export const TokenSelector = memo(_TokenSelector);

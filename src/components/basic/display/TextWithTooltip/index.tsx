@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 
 import {
@@ -24,9 +24,10 @@ export interface Props {
   size: ThemeTextSize;
   color?: ThemeColors;
   className?: string;
+  children: React.ReactElement | string;
 }
 
-export const TextWithTooltip: React.FC<Props> = (props) => {
+const _TextWithTooltip: React.FC<Props> = (props) => {
   const { children, tooltip, size, color, className } = props;
 
   return (
@@ -40,3 +41,5 @@ export const TextWithTooltip: React.FC<Props> = (props) => {
     </Wrapper>
   );
 };
+
+export const TextWithTooltip = memo(_TextWithTooltip);

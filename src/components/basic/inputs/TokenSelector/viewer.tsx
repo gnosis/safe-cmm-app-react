@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, memo } from "react";
 import BN from "bn.js";
 import styled from "styled-components";
 
@@ -41,9 +41,7 @@ export interface TokenSelectorViewerProps
   tokenDetails?: TokenDetails;
 }
 
-export const TokenSelectorViewer = (
-  props: TokenSelectorViewerProps
-): JSX.Element => {
+const _TokenSelectorViewer = (props: TokenSelectorViewerProps): JSX.Element => {
   const {
     label,
     tooltip,
@@ -84,3 +82,5 @@ export const TokenSelectorViewer = (
     </Wrapper>
   );
 };
+
+export const TokenSelectorViewer = memo(_TokenSelectorViewer);
