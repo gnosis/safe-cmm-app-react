@@ -3,27 +3,38 @@ import styled from "styled-components";
 
 import { Text } from "@gnosis.pm/safe-react-components";
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
+interface WrapperProps {
+  inline?: boolean;
+}
 
+const Wrapper = styled.div<WrapperProps>`
   padding-top: 0.4em;
+  display: flex;
+
+  ${({ inline }: WrapperProps): string =>
+    inline
+      ? `
+  p:first-of-type {
+    padding-right: 0.5em;
+  }`
+      : `
+  flex-direction: column;
 
   p:first-of-type {
     padding-bottom: 0.2em;
-  }
+  }`}
 `;
 
-export interface Props {
+export interface Props extends WrapperProps {
   subtext: string;
   amount: string | React.ReactElement;
 }
 
 export const SubtextAmount = (props: Props): JSX.Element => {
-  const { subtext, amount } = props;
+  const { subtext, amount, inline } = props;
 
   return (
-    <Wrapper>
+    <Wrapper inline={inline}>
       <Text size="md" center strong color="shadow">
         {subtext}
       </Text>

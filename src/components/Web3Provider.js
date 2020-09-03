@@ -7,6 +7,8 @@ import initSdk from "@gnosis.pm/safe-apps-sdk";
 
 import { getTokenAddressesForNetwork } from "../api/tokenAddresses";
 
+import { getImageUrl } from "utils/misc";
+
 export const Web3Context = React.createContext({
   instance: null,
   status: "UNKNOWN",
@@ -191,7 +193,13 @@ const Web3Provider = ({ children }) => {
       ]);
 
       console.log(`details`, decimals, symbol, name);
-      return { address, decimals, symbol, name };
+      return {
+        address,
+        decimals,
+        symbol,
+        name,
+        imageUrl: getImageUrl(address),
+      };
     },
     [handleGetContract]
   );
