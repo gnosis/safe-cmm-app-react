@@ -13,7 +13,7 @@ export function useTokenDetails(
   const { getErc20Details } = useContext(Web3Context);
 
   useEffect(() => {
-    if (typeof token === "string") {
+    if (typeof token === "string" && token) {
       getErc20Details(token).then(setTokenDetails);
     }
   }, [token]);
