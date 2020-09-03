@@ -11,8 +11,6 @@ export default {
   excludeStories: /.*Data$/,
 };
 
-const onSubmit = (e: React.FormEvent) => e.preventDefault();
-
 export const linkData = {
   type: "button",
   color: "primary",
