@@ -32,7 +32,7 @@ const component: React.FC<Props> = (props) => {
 
   return (
     <Wrapper className={className}>
-      <Text size={size} strong color={color}>
+      <Text size={size} strong color={color} as="span">
         {children}
       </Text>
       <Tooltip title={tooltip}>

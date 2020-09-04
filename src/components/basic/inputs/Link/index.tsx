@@ -39,7 +39,7 @@ export const component: React.FC<Props> = (props) => {
 
   return (
     <StyledLink {...rest} target="_blank" rel="noopener noreferrer">
-      <Text size={props.textSize} color={rest.color}>
+      <Text size={props.textSize} color={rest.color} as="span">
         {children}
       </Text>
     </StyledLink>
