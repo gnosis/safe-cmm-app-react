@@ -48,7 +48,7 @@ const component: React.FC<Props> = (props) => {
       return children;
     } else if (typeof children === "string") {
       return (
-        <Text size="sm" color="shadow" className="msgBody">
+        <Text size="md" color="shadow" className="msgBody">
           {children}
         </Text>
       );
@@ -65,7 +65,7 @@ const component: React.FC<Props> = (props) => {
           type={type === "warning" ? "alert" : "error"}
           color={type}
         />
-        <Text size="md" strong>
+        <Text size="lg" strong>
           {label}
         </Text>
       </div>
