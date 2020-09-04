@@ -69,7 +69,13 @@ const Wrapper = styled.div<WrapperProps>`
     .MuiFilledInput-root.MuiFilledInput-underline::after {
       border-bottom-color: ${error ? theme.colors.error : theme.colors.warning};
       transform: scaleX(1);
-    }`;
+    }
+    .MuiInputBase-root.MuiFilledInput-root {
+        background-color: ${
+          error ? theme.colors.backgroundError : theme.colors.backgroundWarning
+        };
+      } 
+    `;
   }}
 
   .MuiInputAdornment-positionEnd {
