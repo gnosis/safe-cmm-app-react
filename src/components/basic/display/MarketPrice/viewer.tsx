@@ -34,13 +34,13 @@ const _MarketPriceViewer = (props: MarketPriceViewerProps): JSX.Element => {
     quoteTokenAddress,
   } = props;
 
-  const amount = useMemo(
-    (): JSX.Element | string =>
-      isPriceLoading ? (
-        <Loader size="xs" />
-      ) : !price ? (
-        "-"
-      ) : (
+  const amount = useMemo((): JSX.Element | string => {
+    if (isPriceLoading) {
+      return <Loader size="xs" />;
+    } else if (!price) {
+      return "-";
+    } else {
+      return (
         <Amount>
           <Link
             color={priceUrl ? "primary" : "disabled"}
@@ -56,9 +56,9 @@ const _MarketPriceViewer = (props: MarketPriceViewerProps): JSX.Element => {
             <Icon type="question" size="sm" />
           </Tooltip>
         </Amount>
-      ),
-    [price, priceUrl, baseTokenAddress, quoteTokenAddress, isPriceLoading]
-  );
+      );
+    }
+  }, [price, priceUrl, baseTokenAddress, quoteTokenAddress, isPriceLoading]);
 
   return <SubtextAmount subtext="Market price:" amount={amount} inline />;
 };
