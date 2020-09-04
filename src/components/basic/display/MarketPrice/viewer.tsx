@@ -25,7 +25,7 @@ export interface MarketPriceViewerProps {
   quoteTokenAddress?: string;
 }
 
-const _MarketPriceViewer = (props: MarketPriceViewerProps): JSX.Element => {
+function component(props: MarketPriceViewerProps): JSX.Element {
   const {
     price,
     isPriceLoading,
@@ -61,6 +61,6 @@ const _MarketPriceViewer = (props: MarketPriceViewerProps): JSX.Element => {
   }, [price, priceUrl, baseTokenAddress, quoteTokenAddress, isPriceLoading]);
 
   return <SubtextAmount subtext="Market price:" amount={amount} inline />;
-};
+}
 
-export const MarketPriceViewer = memo(_MarketPriceViewer);
+export const MarketPriceViewer = memo(component);

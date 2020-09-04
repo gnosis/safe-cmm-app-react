@@ -27,7 +27,7 @@ export interface Props {
   children: React.ReactElement | string;
 }
 
-const _TextWithTooltip: React.FC<Props> = (props) => {
+const component: React.FC<Props> = (props) => {
   const { children, tooltip, size, color, className } = props;
 
   return (
@@ -42,4 +42,4 @@ const _TextWithTooltip: React.FC<Props> = (props) => {
   );
 };
 
-export const TextWithTooltip = memo(_TextWithTooltip);
+export const TextWithTooltip = memo(component);

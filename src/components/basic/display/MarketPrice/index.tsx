@@ -13,7 +13,7 @@ export interface Props {
   setError?: (msg?: string) => void;
 }
 
-const _MarketPrice = (props: Props): JSX.Element => {
+function component(props: Props): JSX.Element {
   const { baseTokenAddress, quoteTokenAddress, setError } = props;
 
   const baseToken = useTokenDetails(baseTokenAddress);
@@ -44,6 +44,6 @@ const _MarketPrice = (props: Props): JSX.Element => {
       priceUrl={priceUrl}
     />
   );
-};
+}
 
-export const MarketPrice = memo(_MarketPrice);
+export const MarketPrice = memo(component);

@@ -33,7 +33,7 @@ const StyledLink = styled.a<Props>`
   }
 `;
 
-export const _Link: React.FC<Props> = (props) => {
+export const component: React.FC<Props> = (props) => {
   const { children, ...rest } = props;
 
   return (
@@ -45,4 +45,4 @@ export const _Link: React.FC<Props> = (props) => {
   );
 };
 
-export const Link = memo(_Link);
+export const Link = memo(component);

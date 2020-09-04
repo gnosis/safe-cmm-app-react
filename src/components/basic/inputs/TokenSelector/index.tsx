@@ -24,7 +24,7 @@ export interface Props {
  * Deals with hooks and state.
  * To be used externally in other components
  */
-const _TokenSelector = (props: Props): JSX.Element => {
+function component(props: Props): JSX.Element {
   const { selectedTokenAddress, setError, ...rest } = props;
 
   const tokenList = useTokenList();
@@ -59,6 +59,6 @@ const _TokenSelector = (props: Props): JSX.Element => {
       isBalanceLoading={isLoading}
     />
   );
-};
+}
 
-export const TokenSelector = memo(_TokenSelector);
+export const TokenSelector = memo(component);

@@ -42,7 +42,7 @@ const StyledToolTip = withStyles(() => ({
  *
  * Other than the styles, it's still a vanilla [Material UI Tooltip](https://material-ui.com/api/tooltip/)
  */
-const _Tooltip: React.FC<Props> = (props: Props): JSX.Element => {
+const component: React.FC<Props> = (props: Props): JSX.Element => {
   const { children, ...rest } = props;
 
   return (
@@ -52,4 +52,4 @@ const _Tooltip: React.FC<Props> = (props: Props): JSX.Element => {
   );
 };
 
-export const Tooltip = memo(_Tooltip);
+export const Tooltip = memo(component);
