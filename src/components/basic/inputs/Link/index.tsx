@@ -1,7 +1,8 @@
 import React, { ComponentPropsWithoutRef, memo } from "react";
 import styled from "styled-components";
 
-import { theme, Text } from "@gnosis.pm/safe-react-components";
+import { Text } from "@gnosis.pm/safe-react-components";
+import { theme } from "theme";
 
 import { Props as ButtonLinkProps } from "components/basic/inputs/ButtonLink";
 
