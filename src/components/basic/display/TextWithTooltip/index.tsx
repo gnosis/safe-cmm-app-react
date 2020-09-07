@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 
 import {
@@ -7,9 +7,9 @@ import {
 } from "@gnosis.pm/safe-react-components/dist/theme";
 import { Text, Icon } from "@gnosis.pm/safe-react-components";
 
-import { Tooltip } from "components/basic/misc/Tooltip";
+import { Tooltip } from "components/basic/display/Tooltip";
 
-const Wrapper = styled.div`
+const Wrapper = styled.span`
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -20,30 +20,26 @@ const Wrapper = styled.div`
 `;
 
 export interface Props {
-  text: string;
   tooltip: string;
   size: ThemeTextSize;
   color?: ThemeColors;
   className?: string;
+  children: React.ReactElement | string;
 }
 
-export const LabelWithTooltip = (props: Props): JSX.Element => {
-  const { text, tooltip, size, color, className } = props;
+const component: React.FC<Props> = (props) => {
+  const { children, tooltip, size, color, className } = props;
 
   return (
     <Wrapper className={className}>
       <Text size={size} strong color={color}>
-        {text}
+        {children}
       </Text>
       <Tooltip title={tooltip}>
-        <span>
-          {/* Needs the extra <span> wrap because... it's disabled?
-            https://material-ui.com/components/tooltips/#disabled-elements
-            Not sure, but doesn't work without it
-          */}
-          <Icon size="sm" type="question" />
-        </span>
+        <Icon size="sm" type="question" />
       </Tooltip>
     </Wrapper>
   );
 };
+
+export const TextWithTooltip = memo(component);

@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, memo } from "react";
 
 import { SelectItem } from "@gnosis.pm/safe-react-components/dist/inputs/Select";
 
@@ -15,7 +15,7 @@ export interface Props {
   label: string;
   tooltip: string;
   onSelect: (tokenAddress: string) => void;
-  setError: (message?: string) => void;
+  setError?: (message?: string) => void;
 }
 
 /**
@@ -24,7 +24,7 @@ export interface Props {
  * Deals with hooks and state.
  * To be used externally in other components
  */
-export const TokenSelector = (props: Props): JSX.Element => {
+function component(props: Props): JSX.Element {
   const { selectedTokenAddress, setError, ...rest } = props;
 
   const tokenList = useTokenList();
@@ -34,7 +34,9 @@ export const TokenSelector = (props: Props): JSX.Element => {
 
   // TODO: propagate error to parent component, since the design does not expect errors at the component level
   // probably better when adding validation
-  useEffect((): void => setError(error), [error]);
+  useEffect((): void => {
+    setError && setError(error);
+  }, [error]);
 
   const tokenDetails = useMemo(
     (): TokenDetails | undefined =>
@@ -57,4 +59,6 @@ export const TokenSelector = (props: Props): JSX.Element => {
       isBalanceLoading={isLoading}
     />
   );
-};
+}
+
+export const TokenSelector = memo(component);

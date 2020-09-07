@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 
 import { Text } from "@gnosis.pm/safe-react-components";
@@ -10,11 +10,12 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
   padding-top: 0.4em;
   display: flex;
+  align-items: center;
 
   ${({ inline }: WrapperProps): string =>
     inline
       ? `
-  p:first-of-type {
+  &>p:first-of-type {
     padding-right: 0.5em;
   }`
       : `
@@ -30,7 +31,7 @@ export interface Props extends WrapperProps {
   amount: string | React.ReactElement;
 }
 
-export const SubtextAmount = (props: Props): JSX.Element => {
+function component(props: Props): JSX.Element {
   const { subtext, amount, inline } = props;
 
   return (
@@ -43,4 +44,6 @@ export const SubtextAmount = (props: Props): JSX.Element => {
       </Text>
     </Wrapper>
   );
-};
+}
+
+export const SubtextAmount = memo(component);

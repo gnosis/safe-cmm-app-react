@@ -1,7 +1,7 @@
 import React from "react";
 
-import { TokenDisplay } from "components/basic/misc/TokenDisplay";
-import { SubtextAmount } from "components/basic/misc/SubtextAmount";
+import { TokenDisplay } from "components/basic/display/TokenDisplay";
+import { SubtextAmount } from "components/basic/display/SubtextAmount";
 
 export interface Props {
   amount: string;
@@ -16,7 +16,7 @@ export const PerBracketAmount = (props: Props): JSX.Element => {
       subtext="per bracket"
       amount={
         <>
-          {amount} <TokenDisplay tokenAddress={tokenAddress} size="sm" />
+          {amount} <TokenDisplay token={tokenAddress} size="sm" />
         </>
       }
     />

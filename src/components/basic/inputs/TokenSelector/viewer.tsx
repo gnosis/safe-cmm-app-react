@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, memo } from "react";
 import BN from "bn.js";
 import styled from "styled-components";
 
@@ -10,8 +10,8 @@ import { TokenDetails } from "types";
 
 import fallbackTokenImg from "img/fallbackTokenImg.svg";
 
-import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
-import { SubtextAmount } from "components/basic/misc/SubtextAmount";
+import { TextWithTooltip } from "components/basic/display/TextWithTooltip";
+import { SubtextAmount } from "components/basic/display/SubtextAmount";
 
 import { Props } from ".";
 
@@ -41,9 +41,7 @@ export interface TokenSelectorViewerProps
   tokenDetails?: TokenDetails;
 }
 
-export const TokenSelectorViewer = (
-  props: TokenSelectorViewerProps
-): JSX.Element => {
+function component(props: TokenSelectorViewerProps): JSX.Element {
   const {
     label,
     tooltip,
@@ -71,13 +69,9 @@ export const TokenSelectorViewer = (
 
   return (
     <Wrapper>
-      <LabelWithTooltip
-        text={label}
-        tooltip={tooltip}
-        size="lg"
-        color="shadow"
-      />
-      {/* TODO: add fallback image */}
+      <TextWithTooltip tooltip={tooltip} size="lg" color="shadow">
+        {label}
+      </TextWithTooltip>
       <SelectWrapper
         items={items}
         activeItemId={tokenDetails?.address || ""}
@@ -87,4 +81,6 @@ export const TokenSelectorViewer = (
       <SubtextAmount subtext="Safe balance:" amount={amount} inline />
     </Wrapper>
   );
-};
+}
+
+export const TokenSelectorViewer = memo(component);

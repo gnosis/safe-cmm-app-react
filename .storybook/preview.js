@@ -1,3 +1,4 @@
+import "../src/wdyr";
 import React from "react";
 import { addDecorator } from "@storybook/react";
 import { addParameters } from "@storybook/react";

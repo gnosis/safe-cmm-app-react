@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import MaterialUiTooltip, { TooltipProps } from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core";
 import { theme } from "@gnosis.pm/safe-react-components";
@@ -42,6 +42,14 @@ const StyledToolTip = withStyles(() => ({
  *
  * Other than the styles, it's still a vanilla [Material UI Tooltip](https://material-ui.com/api/tooltip/)
  */
-export const Tooltip: React.FC<Props> = (props: Props): JSX.Element => (
-  <StyledToolTip {...props} arrow />
-);
+const component: React.FC<Props> = (props: Props): JSX.Element => {
+  const { children, ...rest } = props;
+
+  return (
+    <StyledToolTip {...rest} arrow>
+      <span>{children}</span>
+    </StyledToolTip>
+  );
+};
+
+export const Tooltip = memo(component);

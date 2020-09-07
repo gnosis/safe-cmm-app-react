@@ -3,7 +3,6 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const GenerateJSONPlugin = require("generate-json-webpack-plugin");
 const upperFirst = require("lodash/upperFirst");
-//const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const path = require("path");
 const webpack = require("webpack");
@@ -137,7 +136,7 @@ module.exports = {
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
-    public: "cmm-safe-app.ngrok.io/",
+    public: process.env.PUBLIC_ENDPOINT,
     port: 8080,
     host: "0.0.0.0",
   },
@@ -156,6 +155,5 @@ module.exports = {
     }),
     new ForkTsCheckerWebpackPlugin(),
     new GenerateJSONPlugin("manifest.json", MANIFEST_JSON),
-    //new BundleAnalyzerPlugin(),
   ],
 };

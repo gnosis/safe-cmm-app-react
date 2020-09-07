@@ -241,9 +241,18 @@ const Web3Provider = ({ children }) => {
       );
 
       const erc20Details = await Promise.all(
-        tokenAddresses.map((address) => handleGetErc20Details(address))
+        tokenAddresses.map(handleGetErc20Details)
       );
-      setErc20Cache(erc20Details);
+
+      setErc20Cache(
+        erc20Details.reduce(
+          (acc, tokenDetails) => ({
+            ...acc,
+            [tokenDetails.address]: tokenDetails,
+          }),
+          {}
+        )
+      );
     }
 
     loadErc20Details();

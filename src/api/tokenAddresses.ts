@@ -21,7 +21,6 @@ const tokenAddresses: { [networkId: number]: string[] } = {
     "0xa7D1C04fAF998F9161fC9F800a99A809b84cfc9D", // owl
     "0x784B46A4331f5c7C495F296AE700652265ab2fC6", // gusd
     "0xBD6A9921504fae42EaD2024F43305A8ED3890F6f", // pax
-    "0x0000000000085d4780B73119b644AE5ecd22b376", // tusd
     "0xa9881E6459CA05d7D7C95374463928369cD7a90C", // usdt
   ],
 };
