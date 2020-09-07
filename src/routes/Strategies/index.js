@@ -1,68 +1,50 @@
 import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import { ButtonLink } from "@gnosis.pm/safe-react-components";
 import { Switch, Route, useHistory } from "react-router-dom";
 
 import Active from "./Active";
 import Pending from "./Pending";
 import Deactivated from "./Deactivated";
-import { Box } from "@material-ui/core";
-import styled from "styled-components";
-
-const SubNavigationBar = styled(Box)`
-  display: flex;
-  width: auto;
-  height: 32px;
-`;
-
-const NavButtonLink = styled(ButtonLink)`
-  text-decoration: none;
-`;
+import NavBar from "../../components/NavBar";
 
 const STRATEGY_TAB_ITEMS = [
   {
     id: "active",
     label: "Active",
+    counter: 4,
   },
   {
     id: "pending",
     label: "Pending",
+    counter: 1,
   },
   {
     id: "deactivated",
     label: "Deactivated",
+    counter: 1,
   },
 ];
 const Strategies = ({ match }) => {
   const history = useHistory();
-  const [selectedSubTab, setSelectedSubTab] = useState("active");
-  const handleSelectTab = useCallback(
-    (id, e) => {
-      e.preventDefault();
-      history.replace(`${match.path}/${id}`);
-      setSelectedSubTab(id);
-    },
-    [history, setSelectedSubTab, match]
-  );
 
-  const makeTabSelector = useCallback((id) => (e) => handleSelectTab(id, e), [
-    handleSelectTab,
-  ]);
+  // TODO: Get start tab from `match.path`
+  const [selectedTab, setSelectedTab] = useState("active");
+
+  const handleChangeTab = useCallback(
+    (id) => {
+      history.replace(`${match.path}/${id}`);
+      setSelectedTab(id);
+    },
+    [setSelectedTab, history, match]
+  );
 
   return (
     <>
-      <SubNavigationBar>
-        {STRATEGY_TAB_ITEMS.map(({ id, label }) => (
-          <NavButtonLink
-            key={id}
-            onClick={makeTabSelector(id)}
-            color={selectedSubTab === id ? "primary" : "#000"}
-            textSize="xl"
-          >
-            {label}
-          </NavButtonLink>
-        ))}
-      </SubNavigationBar>
+      <NavBar
+        items={STRATEGY_TAB_ITEMS}
+        selectedItem={selectedTab}
+        onChange={handleChangeTab}
+      />
       <Switch>
         <Route path={`${match.path}/active`} component={Active} />
         <Route path={`${match.path}/deactivated`} component={Deactivated} />

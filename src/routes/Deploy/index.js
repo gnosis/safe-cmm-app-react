@@ -5,7 +5,6 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-import styled from "styled-components";
 
 // import { useHistory } from "react-router-dom"
 
@@ -15,7 +14,7 @@ import asWei from "utils/asWei";
 
 import HorizontalBox from "components/HorizontalBox";
 import { Web3Context } from "components/Web3Provider";
-import { Box, Grid, makeStyles } from "@material-ui/core";
+import { Box, Grid, makeStyles, styled } from "@material-ui/core";
 import {
   Text,
   Select,
