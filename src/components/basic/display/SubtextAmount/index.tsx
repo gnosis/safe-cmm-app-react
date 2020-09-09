@@ -36,10 +36,10 @@ function component(props: Props): JSX.Element {
 
   return (
     <Wrapper inline={inline}>
-      <Text size="md" center strong color="shadow">
+      <Text size="md" center strong color="shadow" as="span">
         {subtext}
       </Text>
-      <Text size="md" center strong>
+      <Text size="md" center strong as="span">
         {amount}
       </Text>
     </Wrapper>

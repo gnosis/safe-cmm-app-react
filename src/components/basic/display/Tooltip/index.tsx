@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import MaterialUiTooltip, { TooltipProps } from "@material-ui/core/Tooltip";
 import { withStyles } from "@material-ui/core";
-import { theme } from "@gnosis.pm/safe-react-components";
+import { theme } from "theme";
 
 export type Props = Omit<TooltipProps, "arrow">;
 

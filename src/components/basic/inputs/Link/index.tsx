@@ -1,7 +1,8 @@
 import React, { ComponentPropsWithoutRef, memo } from "react";
 import styled from "styled-components";
 
-import { theme, Text } from "@gnosis.pm/safe-react-components";
+import { Text } from "@gnosis.pm/safe-react-components";
+import { theme } from "theme";
 
 import { Props as ButtonLinkProps } from "components/basic/inputs/ButtonLink";
 
@@ -38,7 +39,7 @@ export const component: React.FC<Props> = (props) => {
 
   return (
     <StyledLink {...rest} target="_blank" rel="noopener noreferrer">
-      <Text size={props.textSize} color={rest.color}>
+      <Text size={props.textSize} color={rest.color} as="span">
         {children}
       </Text>
     </StyledLink>

@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import { theme } from "@gnosis.pm/safe-react-components";
+import { theme } from "theme";
 
 import {
   NumberInput,

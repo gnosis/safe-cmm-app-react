@@ -50,7 +50,9 @@ function component(props: MarketPriceViewerProps): JSX.Element {
             {price}
           </Link>
           <TokenDisplay token={quoteTokenAddress} size="md" />
-          <Text size="md">per</Text>
+          <Text size="md" as="span">
+            per
+          </Text>
           <TokenDisplay token={baseTokenAddress} size="md" />
           <Tooltip title="TODO: add tooltip!!">
             <Icon type="question" size="sm" />

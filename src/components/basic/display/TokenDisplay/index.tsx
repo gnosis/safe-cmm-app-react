@@ -30,7 +30,7 @@ function component(props: Props): JSX.Element {
   const tokenDetails = useTokenDetails(token);
 
   return tokenDetails ? (
-    <Text size={size} color={color} strong>
+    <Text size={size} color={color} strong as="span">
       {tokenDetails.symbol}
     </Text>
   ) : (
