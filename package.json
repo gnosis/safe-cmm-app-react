@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "./node_modules/.bin/webpack-dev-server --hot",
+    "start": "./node_modules/.bin/webpack-dev-server --hot --https",
     "build": "NODE_ENV=production ./node_modules/.bin/webpack -p",
     "lint": "./node_modules/.bin/eslint ./src",
     "lint-fix": "./node_modules/.bin/eslint --fix ./src",
@@ -16,8 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "@gnosis.pm/dex-contracts": "^0.4.1",
-    "@gnosis.pm/dex-liquidity-provision": "github:gnosis/dex-liquidity-provision#cmm-changes",
     "@gnosis.pm/dex-js": "^0.4.1",
+    "@gnosis.pm/dex-liquidity-provision": "github:gnosis/dex-liquidity-provision#cmm-changes",
     "@gnosis.pm/safe-apps-sdk": "^0.3.1",
     "@gnosis.pm/safe-react-components": "gnosis/safe-react-components#development",
     "@hot-loader/react-dom": "^16.13.0",

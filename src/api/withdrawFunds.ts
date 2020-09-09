@@ -22,21 +22,23 @@ const withdrawFunds = async (context : Web3Context, strategy : Strategy) : Promi
     context.getArtifact("IProxy"),
     context.getArtifact("MultiSend"),
     context.getArtifact("BatchExchange"),
+    context.getArtifact("FleetFactory"),
     //context.getArtifact("FleetFactoryDeterministic"),
   ]);
   
   const withdrawHelpers = runInitializerIfNotRan(context);
 
-  const withdrawTransaction = await withdrawHelpers.prepareWithdrawAndTransferFundsToMaster(
+  const withdrawTransactions = await withdrawHelpers.prepareWithdrawAndTransferFundsToMaster( // prepareTransferFundsToMaster
     {
       masterSafe: context.safeInfo.safeAddress,
       brackets: strategy.brackets.map(bracket => bracket.address),
       tokenIds: [strategy.baseTokenId, strategy.quoteTokenId],
     }, true
   )
-
+  console.log(withdrawTransactions)
+  
   return {
-    tx: withdrawTransaction
+    txs: withdrawTransactions
   }
 
 }

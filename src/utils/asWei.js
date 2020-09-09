@@ -5,7 +5,7 @@ const { toBN } = web3.utils;
 
 const asWei = (ethValue) => {
   const asDecimal = new Decimal(ethValue);
-  const asBN = toBN(asDecimal.mul(1e18).toString());
+  const asBN = toBN(asDecimal.mul(1e18).toNearest().toString());
   return asBN;
 };
 
