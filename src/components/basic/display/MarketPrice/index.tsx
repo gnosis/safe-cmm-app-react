@@ -11,16 +11,25 @@ export interface Props {
   baseTokenAddress?: string;
   quoteTokenAddress?: string;
   setError?: (msg?: string) => void;
+  // injected hooks
+  useTokenDetailsHook?: typeof useTokenDetails;
+  useGetPriceHook?: typeof useGetPrice;
 }
 
 function component(props: Props): JSX.Element {
-  const { baseTokenAddress, quoteTokenAddress, setError } = props;
+  const {
+    baseTokenAddress,
+    quoteTokenAddress,
+    setError,
+    useTokenDetailsHook = useTokenDetails,
+    useGetPriceHook = useGetPrice,
+  } = props;
 
-  const baseToken = useTokenDetails(baseTokenAddress);
-  const quoteToken = useTokenDetails(quoteTokenAddress);
+  const baseToken = useTokenDetailsHook(baseTokenAddress);
+  const quoteToken = useTokenDetailsHook(quoteTokenAddress);
 
   // TODO: propagate error up to parent when dealing with validation
-  const { price, isLoading, error } = useGetPrice({
+  const { price, isLoading, error } = useGetPriceHook({
     baseToken: baseToken,
     quoteToken: quoteToken,
     source: "1inch",
