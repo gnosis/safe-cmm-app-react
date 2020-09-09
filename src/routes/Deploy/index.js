@@ -11,10 +11,13 @@ import React, {
 import deployStrategy from "api/deployStrategy";
 
 import asWei from "utils/asWei";
+import getLogger from "utils/logger";
+
+import styled from "styled-components";
 
 import HorizontalBox from "components/HorizontalBox";
 import { Web3Context } from "components/Web3Provider";
-import { Box, Grid, makeStyles, styled } from "@material-ui/core";
+import { Box, Grid, makeStyles } from "@material-ui/core";
 import {
   Text,
   Select,
@@ -23,6 +26,8 @@ import {
   Loader,
 } from "@gnosis.pm/safe-react-components";
 import { getOneinchPrice } from "@gnosis.pm/dex-liquidity-provision/scripts/utils/price_utils";
+
+const logger = getLogger("deployment-form");
 
 const useFormField = (defaultValue) => {
   const [fieldValue, setFieldValue] = useState(defaultValue);
@@ -47,6 +52,10 @@ const FormBox = styled(Box)`
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.4);
   border-radius: 8px;
   display: flex;
+`;
+
+const WrapperBox = styled(Box)`
+  margin: 12px 0;
 `;
 
 const useStyles = makeStyles(() => ({
@@ -99,10 +108,12 @@ const Deploy = () => {
       (async () => {
         setPriceStatus("LOADING");
         const { price } = await getOneinchPrice(
-          tokenBaseDetails,
-          tokenQuoteDetails
+          tokenQuoteDetails, // Quote goes first??
+          tokenBaseDetails
         );
-        console.log(price);
+        logger.log(
+          `==> Price calculated for ${tokenBaseDetails.symbol} per ${tokenQuoteDetails.symbol} as ${price}`
+        );
 
         setTokenCurrentPrice(price);
         setPriceStatus("SUCCESS");
@@ -164,7 +175,7 @@ const Deploy = () => {
   ]);
 
   return (
-    <Box>
+    <WrapperBox>
       <FormBox>
         <Grid container spacing={3}>
           <Grid container item xs={12}>
@@ -178,7 +189,14 @@ const Deploy = () => {
                 />
               </Box>
             </Grid>
-            <Grid container item xs={2} justify="center" alignItems="center">
+            <Grid
+              container
+              item
+              spacing={2}
+              xs={2}
+              justify="center"
+              alignItems="center"
+            >
               <Grid item xs={12}>
                 <Text size="md" center>
                   {"<->"}
@@ -320,7 +338,7 @@ const Deploy = () => {
           </Grid>
         </Grid>
       </FormBox>
-    </Box>
+    </WrapperBox>
   );
 };
 

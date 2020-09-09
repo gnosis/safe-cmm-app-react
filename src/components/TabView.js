@@ -26,7 +26,6 @@ const DEFAULT_TAB = "deployment";
 
 const TabView = () => {
   const history = useHistory();
-  console.log(history);
 
   const [selectedTab, setSelectedTab] = useState(DEFAULT_TAB);
   const handleChangeTab = useCallback(
@@ -46,8 +45,8 @@ const TabView = () => {
         variant="outlined"
       />
       <Switch>
-        <Route path="/strategies" component={Strategies} />
         <Route path="/deployment" component={Deploy} />
+        <Route path="/strategies" component={Strategies} />
         <Redirect to={`/${DEFAULT_TAB}`} />
       </Switch>
     </>

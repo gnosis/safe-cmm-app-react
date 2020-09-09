@@ -51,7 +51,6 @@ const orderAndFund = async (
   } = runInitializerIfNotRan(context);
 
   const batchExchangeContract = await context.getDeployed("BatchExchange");
-  console.log(batchExchangeContract);
   const [tokenBaseId, tokenQuoteId] = await Promise.all([
     batchExchangeContract.methods
       .tokenAddressToIdMap(tokenBaseContract.options.address)
@@ -70,7 +69,6 @@ const orderAndFund = async (
     new Decimal(boundsUpperWei.toString()).div(1e18).toString(),
     true
   );
-  console.log(orderTransactions);
 
   const fundTransactions = await buildTransferApproveDepositFromOrders(
     context.safeInfo.safeAddress,
@@ -84,7 +82,6 @@ const orderAndFund = async (
     investmentBaseWei,
     false
   );
-  console.log(fundTransactions);
 
   return {
     txs: [...orderTransactions, ...fundTransactions],
