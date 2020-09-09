@@ -7,6 +7,8 @@ import initSdk from "@gnosis.pm/safe-apps-sdk";
 
 import { getTokenAddressesForNetwork } from "../api/tokenAddresses";
 
+import { getImageUrl } from "utils/misc";
+
 export const Web3Context = React.createContext({
   instance: null,
   status: "UNKNOWN",
@@ -191,7 +193,13 @@ const Web3Provider = ({ children }) => {
       ]);
 
       console.log(`details`, decimals, symbol, name);
-      return { address, decimals, symbol, name };
+      return {
+        address,
+        decimals,
+        symbol,
+        name,
+        imageUrl: getImageUrl(address),
+      };
     },
     [handleGetContract]
   );
@@ -233,9 +241,18 @@ const Web3Provider = ({ children }) => {
       );
 
       const erc20Details = await Promise.all(
-        tokenAddresses.map((address) => handleGetErc20Details(address))
+        tokenAddresses.map(handleGetErc20Details)
       );
-      setErc20Cache(erc20Details);
+
+      setErc20Cache(
+        erc20Details.reduce(
+          (acc, tokenDetails) => ({
+            ...acc,
+            [tokenDetails.address]: tokenDetails,
+          }),
+          {}
+        )
+      );
     }
 
     loadErc20Details();

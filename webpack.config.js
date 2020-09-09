@@ -3,7 +3,6 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const GenerateJSONPlugin = require("generate-json-webpack-plugin");
 const upperFirst = require("lodash/upperFirst");
-//const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const path = require("path");
 const webpack = require("webpack");
@@ -29,7 +28,8 @@ if (!ALLOWED_NETWORKS.includes(process.env.NETWORK)) {
 
 const MANIFEST_JSON = {
   name: "GP Market Maker",
-  description: "",
+  description:
+    "Allows you to deploy, withdraw and manage your custom market maker strategies",
   iconPath: "img/appIcon.svg",
 };
 
@@ -97,11 +97,25 @@ module.exports = {
           "json-x-loader?exclude=ast+legacyAST+sourceMap+deployedSourceMap+source+sourcePath+ast+legacyAST+compiler+schemaVersion+updatedAt+devdoc+userdoc",
         ],
       },
+      {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: [
+          "file-loader",
+          {
+            loader: "image-webpack-loader",
+            options: {
+              bypassOnDebug: true,
+              disable: isDevelopment,
+            },
+          },
+        ],
+      },
     ],
   },
   resolve: {
     modules: [
       path.resolve(__dirname, "src"), // allows absolute imports like `import "components/App"`
+      path.resolve(__dirname, "assets"), // for importing img and the like in code
       path.resolve(__dirname, "node_modules"),
       path.resolve(__dirname, "build"),
     ],
@@ -122,7 +136,7 @@ module.exports = {
     headers: {
       "Access-Control-Allow-Origin": "*",
     },
-    public: "cmm-safe-app.ngrok.io/",
+    public: process.env.PUBLIC_ENDPOINT,
     port: 8080,
     host: "0.0.0.0",
   },
@@ -141,6 +155,5 @@ module.exports = {
     }),
     new ForkTsCheckerWebpackPlugin(),
     new GenerateJSONPlugin("manifest.json", MANIFEST_JSON),
-    //new BundleAnalyzerPlugin(),
   ],
 };

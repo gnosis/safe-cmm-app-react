@@ -5,7 +5,7 @@ import { SubtextAmount, Props } from ".";
 
 export default {
   component: SubtextAmount,
-  title: "basic/misc/SubtextAmount",
+  title: "basic/display/SubtextAmount",
 } as Meta;
 
 const Template = (props: Props): JSX.Element => <SubtextAmount {...props} />;
@@ -18,3 +18,6 @@ AmountIsAComponent.args = {
   subtext: "Something else:",
   amount: <span>1250 ETH</span>,
 };
+
+export const Inline = Template.bind({});
+Inline.args = { ...Default.args, inline: true };

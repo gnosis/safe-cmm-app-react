@@ -2,41 +2,22 @@ import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react/types-6-0";
 
-import { TokenDetails } from "types";
-
-import { Web3Context } from "components/Web3Provider";
+import { mockGetErc20DetailsDecorator } from "components/basic/display/TokenDisplay/TokenDisplay.stories";
 
 import { FundingInput, Props } from ".";
-
-const mockContext = {
-  getErc20Details: async (address: string): Promise<TokenDetails> => {
-    return {
-      decimals: 18,
-      name: "Token",
-      symbol: "TKN",
-      address,
-    };
-  },
-};
 
 export default {
   component: FundingInput,
   title: "basic/input/FundingInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
-  decorators: [
-    (Story: any): JSX.Element => (
-      <Web3Context.Provider value={mockContext}>
-        <Story />
-      </Web3Context.Provider>
-    ),
-  ],
+  decorators: [mockGetErc20DetailsDecorator],
 } as Meta;
 
 export const fundingInputData = {
   amountPerBracket: "5",
   tokenAddress: "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
-};
+} as Props;
 
 export const actionData = {
   onMaxClick: action("onMaxClick"),
