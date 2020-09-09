@@ -27,7 +27,6 @@ const NavButton = styled(ButtonLink)`
       active ? theme.colors.primary : theme.colors.placeHolder};
     font-weight: ${({ active }) => (active ? "600" : "400")};
   }
-  ${(props) => console.log(props)}
 
   :hover {
     color: ${({ theme }) => theme.colors.primary};
