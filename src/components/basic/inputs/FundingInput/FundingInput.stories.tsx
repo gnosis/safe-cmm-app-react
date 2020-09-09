@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react/types-6-0";
 
-import { mockGetErc20DetailsDecorator } from "components/basic/display/TokenDisplay/TokenDisplay.stories";
+import { mockGetErc20DetailsDecorator } from "mock/decorators";
 
 import { FundingInput, Props } from ".";
 

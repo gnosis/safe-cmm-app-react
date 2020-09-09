@@ -1,10 +1,10 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 
-import { mockGetErc20DetailsDecorator } from "../TokenDisplay/TokenDisplay.stories";
+import { mockUseGetPriceFactory } from "mock/hooks";
+import { mockGetErc20DetailsDecorator } from "mock/decorators";
 
 import { MarketPriceViewer, MarketPriceViewerProps } from "./viewer";
-import { TokenDetails } from "types";
 
 export default {
   component: MarketPriceViewer,

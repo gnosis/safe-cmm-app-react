@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Meta } from "@storybook/react/types-6-0";
 
-import { mockGetErc20DetailsDecorator } from "components/basic/display/TokenDisplay/TokenDisplay.stories";
+import { mockGetErc20DetailsDecorator } from "mock/decorators";
 
 import { PriceInput, Props } from ".";
 

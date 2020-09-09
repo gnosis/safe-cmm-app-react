@@ -3,7 +3,7 @@ import { Meta } from "@storybook/react/types-6-0";
 
 import { TokenDetails } from "types";
 
-import { mockGetErc20DetailsDecorator } from "components/basic/display/TokenDisplay/TokenDisplay.stories";
+import { mockGetErc20DetailsDecorator } from "mock/decorators";
 
 import { NumberInput, Props } from ".";
 

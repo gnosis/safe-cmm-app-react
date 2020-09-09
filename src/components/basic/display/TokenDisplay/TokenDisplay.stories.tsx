@@ -1,28 +1,9 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 
-import { Web3Context } from "components/Web3Provider";
-
-import { TokenDetails } from "types";
+import { mockGetErc20DetailsDecorator } from "mock/decorators";
 
 import { TokenDisplay, Props } from ".";
-
-const mockContext = {
-  getErc20Details: async (address: string): Promise<TokenDetails> => {
-    return {
-      decimals: 18,
-      name: "Token",
-      symbol: "TKN",
-      address,
-    };
-  },
-};
-
-export const mockGetErc20DetailsDecorator = (Story: any): JSX.Element => (
-  <Web3Context.Provider value={mockContext}>
-    <Story />
-  </Web3Context.Provider>
-);
 
 export default {
   component: TokenDisplay,
