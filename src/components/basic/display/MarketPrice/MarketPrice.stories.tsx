@@ -5,13 +5,16 @@ import { mockUseGetPriceFactory } from "mock/hooks";
 import { mockGetErc20DetailsDecorator } from "mock/decorators";
 
 import { MarketPriceViewer, MarketPriceViewerProps } from "./viewer";
+import { MarketPrice, Props } from ".";
 
 export default {
   component: MarketPriceViewer,
   title: "basic/display/MarketPrice",
-  excludeStories: /Data$/,
+  excludeStories: /(Data|mock.*)$/,
   decorators: [mockGetErc20DetailsDecorator],
 } as Meta;
+
+// Viewer
 
 export const marketPriceData = {
   price: "1.232",
@@ -33,3 +36,29 @@ PriceIsLoading.args = { ...marketPriceData, isPriceLoading: true };
 
 export const NoPrice = Template.bind({});
 NoPrice.args = { ...marketPriceData, price: undefined };
+
+// Container
+
+export const containerData = {
+  useGetPriceHook: mockUseGetPriceFactory(),
+} as Props;
+
+const ContainerTemplate = (args: Props): JSX.Element => {
+  return <MarketPrice {...args} />;
+};
+
+export const DefaultContainer = ContainerTemplate.bind({});
+DefaultContainer.args = { ...containerData };
+
+export const FilledContainer = ContainerTemplate.bind({});
+FilledContainer.args = {
+  ...DefaultContainer.args,
+  baseTokenAddress: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  quoteTokenAddress: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+};
+
+export const LoadingContainer = ContainerTemplate.bind({});
+LoadingContainer.args = {
+  ...DefaultContainer.args,
+  useGetPriceHook: mockUseGetPriceFactory(true),
+};
