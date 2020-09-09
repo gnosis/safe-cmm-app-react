@@ -1,5 +1,4 @@
 import TruffleContract from "@truffle/contract";
-console.log(TruffleContract);
 
 /** This util emulates `artifacts` from truffle-contract so that it can be mocked for
  * integrating external libraries that use artifacts.require.

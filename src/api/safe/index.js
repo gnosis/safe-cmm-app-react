@@ -11,7 +11,17 @@ export const getTransactions = async (safeAddress) => {
     `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/transactions`
   );
   const txs = await response.json();
-  console.log(txs);
+  //console.log(txs);
 
   return txs.results;
 };
+
+export const getPendingTransactions = async (safeAddress) => {
+  const response = await fetch(
+    `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/transactions?executed=false`
+  );
+  const txs = await response.json();
+  //console.log(txs);
+
+  return txs.results;
+}

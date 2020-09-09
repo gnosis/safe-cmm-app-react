@@ -3,7 +3,6 @@ const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const GenerateJSONPlugin = require("generate-json-webpack-plugin");
 const upperFirst = require("lodash/upperFirst");
-//const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 const path = require("path");
 const webpack = require("webpack");
@@ -29,7 +28,7 @@ if (!ALLOWED_NETWORKS.includes(process.env.NETWORK)) {
 
 const MANIFEST_JSON = {
   name: "GP Market Maker",
-  description: "",
+  description: "asdasdasdasd",
   iconPath: "img/appIcon.svg",
 };
 

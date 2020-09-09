@@ -20,14 +20,13 @@ const NavButtonItem = styled(Box)`
 
 const NavButton = styled(ButtonLink)`
   text-decoration: none;
-
+  
   p {
     text-decoration: none;
     color: ${({ theme, active }) =>
       active ? theme.colors.primary : theme.colors.placeHolder};
     font-weight: ${({ active }) => (active ? "600" : "400")};
   }
-  ${(props) => console.log(props)}
 
   :hover {
     color: ${({ theme }) => theme.colors.primary};
