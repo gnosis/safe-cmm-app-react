@@ -59,7 +59,9 @@ const Active = () => {
       try {
         const { txs } = await withdrawFunds(context, strategy);
         if (txs.length === 0) {
-          throw new Error('Nothing to redeem.\nNo bracket contains more than >1 USD in value excluding it\'s funds.')
+          throw new Error(
+            "Nothing to redeem.\nNo bracket contains more than >1 USD in value excluding it's funds."
+          );
         }
         await context.sdk.sendTransactions(txs);
         handleSetWithdrawStatusForStrategyWithBlockhash(
@@ -77,7 +79,7 @@ const Active = () => {
     [context, handleSetWithdrawStatusForStrategyWithBlockhash]
   );
 
-  console.log(withdrawStatusForRow)
+  console.log(withdrawStatusForRow);
 
   return (
     <Box>
@@ -90,7 +92,7 @@ const Active = () => {
         }
       />
       <Box>
-        {status}
+        {status === "LOADING" && <Loader size="lg" />}
         {status === "SUCCESS" && (
           <TableContainer>
             <Table>
@@ -115,27 +117,35 @@ const Active = () => {
                     <TableCell>TODO</TableCell>
                     <TableCell>{strategy.brackets.length}</TableCell>
                     <TableCell>
-                        {withdrawStatusForRow[strategy.transactionHash]?.status ===
-                          "LOADING" && <Loader size="sm" />}
-                        {withdrawStatusForRow[strategy.transactionHash]?.status ===
-                          "SUCCESS" && (
-                          <Icon type="check" size="md" color="primary" />
-                        )}
-                        {withdrawStatusForRow[strategy.transactionHash]?.status === 'ERROR' && (
-                          <p style={{whiteSpace: "pre"}}>
-                            <Text color="error" size="md">{withdrawStatusForRow[strategy.transactionHash]?.errorMessage}</Text>
-                          </p>
-                        )}
-                        {(!withdrawStatusForRow[strategy.transactionHash] || withdrawStatusForRow[strategy.transactionHash]?.status !== 'LOADING') && (
-                          <Button
-                            size="lg"
-                            color="primary"
-                            variant="contained"
-                            onClick={makeHandleWithdraw(strategy)}
-                          >
-                            Withdraw
-                          </Button>
-                        )}
+                      {withdrawStatusForRow[strategy.transactionHash]
+                        ?.status === "LOADING" && <Loader size="sm" />}
+                      {withdrawStatusForRow[strategy.transactionHash]
+                        ?.status === "SUCCESS" && (
+                        <Icon type="check" size="md" color="primary" />
+                      )}
+                      {withdrawStatusForRow[strategy.transactionHash]
+                        ?.status === "ERROR" && (
+                        <p style={{ whiteSpace: "pre" }}>
+                          <Text color="error" size="md">
+                            {
+                              withdrawStatusForRow[strategy.transactionHash]
+                                ?.errorMessage
+                            }
+                          </Text>
+                        </p>
+                      )}
+                      {(!withdrawStatusForRow[strategy.transactionHash] ||
+                        withdrawStatusForRow[strategy.transactionHash]
+                          ?.status !== "LOADING") && (
+                        <Button
+                          size="lg"
+                          color="primary"
+                          variant="contained"
+                          onClick={makeHandleWithdraw(strategy)}
+                        >
+                          Withdraw
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
