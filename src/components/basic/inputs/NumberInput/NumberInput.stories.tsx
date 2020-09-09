@@ -3,39 +3,22 @@ import { Meta } from "@storybook/react/types-6-0";
 
 import { TokenDetails } from "types";
 
-import { Web3Context } from "components/Web3Provider";
+import { mockGetErc20DetailsDecorator } from "components/basic/display/TokenDisplay/TokenDisplay.stories";
 
 import { NumberInput, Props } from ".";
-
-const mockContext = {
-  getErc20Details: async (address: string): Promise<TokenDetails> => {
-    return {
-      decimals: 18,
-      name: "Token",
-      symbol: "TKN",
-      address,
-    };
-  },
-};
 
 export default {
   component: NumberInput,
   title: "basic/input/NumberInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
-  decorators: [
-    (Story: any): JSX.Element => (
-      <Web3Context.Provider value={mockContext}>
-        <Story />
-      </Web3Context.Provider>
-    ),
-  ],
+  decorators: [mockGetErc20DetailsDecorator],
 } as Meta;
 
 export const numberInputData = {
   tokenAddress: "0x123123123",
   customLabel: <div>Label</div>,
-};
+} as Props;
 
 const Template = (args: Props) => {
   const [value, setValue] = useState(args.value);

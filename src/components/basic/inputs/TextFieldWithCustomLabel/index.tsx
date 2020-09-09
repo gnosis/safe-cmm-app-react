@@ -2,14 +2,14 @@ import React from "react";
 import styled from "styled-components";
 
 import { InputLabel } from "@material-ui/core";
-import { TextField, theme } from "@gnosis.pm/safe-react-components";
+import { TextField } from "@gnosis.pm/safe-react-components";
+
+import { Theme } from "theme";
+
 import { pxOrCustomCssUnits } from "utils/cssUtils";
 
 // To match parent's width https://github.com/gnosis/safe-react-components/blob/development/src/inputs/TextField/index.tsx#L24
 const WIDTH = 400;
-
-// Local alias for proper typing
-type Theme = typeof theme;
 
 interface WrapperProps {
   width?: string | number;
@@ -69,7 +69,13 @@ const Wrapper = styled.div<WrapperProps>`
     .MuiFilledInput-root.MuiFilledInput-underline::after {
       border-bottom-color: ${error ? theme.colors.error : theme.colors.warning};
       transform: scaleX(1);
-    }`;
+    }
+    .MuiInputBase-root.MuiFilledInput-root {
+        background-color: ${
+          error ? theme.colors.backgroundError : theme.colors.backgroundWarning
+        };
+      } 
+    `;
   }}
 
   .MuiInputAdornment-positionEnd {

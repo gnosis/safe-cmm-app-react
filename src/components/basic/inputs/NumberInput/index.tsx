@@ -4,7 +4,7 @@ import {
   Props as TextFieldWithCustomLabelProps,
   TextFieldWithCustomLabel,
 } from "components/basic/inputs/TextFieldWithCustomLabel";
-import { TokenDisplay } from "components/basic/misc/TokenDisplay";
+import { TokenDisplay } from "components/basic/display/TokenDisplay";
 
 export interface Props
   extends Omit<
@@ -21,7 +21,7 @@ export const NumberInput = (props: Props): JSX.Element => {
   const { onChange, tokenAddress, ...rest } = props;
 
   const endAdornment = tokenAddress && (
-    <TokenDisplay size="md" tokenAddress={tokenAddress} />
+    <TokenDisplay size="md" token={tokenAddress} />
   );
 
   const onlyAllowNumbers = useCallback(

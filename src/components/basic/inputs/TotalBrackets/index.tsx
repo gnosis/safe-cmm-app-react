@@ -7,8 +7,8 @@ import {
   BracketsInput,
   Props as BracketsInputProps,
 } from "components/basic/inputs/BracketsInput";
-import { LabelWithTooltip } from "components/basic/labels/LabelWithTooltip";
-import { SubtextAmount } from "components/basic/misc/SubtextAmount";
+import { TextWithTooltip } from "components/basic/display/TextWithTooltip";
+import { SubtextAmount } from "components/basic/display/SubtextAmount";
 
 const Wrapper = styled.div`
   display: flex;
@@ -31,11 +31,9 @@ export const TotalBrackets = (props: Props): JSX.Element => {
         inputWidth="75px"
         center
         customLabel={
-          <LabelWithTooltip
-            text="Total Brackets"
-            tooltip="TODO: add tooltips :)"
-            size="lg"
-          />
+          <TextWithTooltip tooltip="TODO: add tooltips :)" size="lg">
+            Total Brackets
+          </TextWithTooltip>
         }
       />
       <SubtextAmount subtext="Total investment:" amount={amount} />
