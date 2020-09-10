@@ -41,6 +41,20 @@ module.exports = {
     // Get the `jsx?` rule to skip `@gnosis.pm/dex-` files, currently causing issues
     config.module.rules.push(custom.module.rules[0]);
 
+    // Aliases for mocking things inside the stories
+    config.resolve.alias["hooks/useGetPrice"] = require.resolve(
+      "../src/mock/useGetPrice.ts"
+    );
+    config.resolve.alias["hooks/useTokenList"] = require.resolve(
+      "../src/mock/useTokenList.ts"
+    );
+    config.resolve.alias["hooks/useTokenDetails"] = require.resolve(
+      "../src/mock/useTokenDetails.ts"
+    );
+    config.resolve.alias["hooks/useTokenBalance"] = require.resolve(
+      "../src/mock/useTokenBalance.ts"
+    );
+
     return config;
   },
 };

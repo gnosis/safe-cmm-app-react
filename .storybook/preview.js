@@ -7,12 +7,18 @@ import { theme } from "theme";
 
 import GlobalStyles from "../src/components/GlobalStyle";
 
+import { decorator as useGetPriceDecorator } from "../src/mock/useGetPrice";
+import { decorator as useTokenBalanceDecorator } from "../src/mock/useTokenBalance";
+
 addDecorator((storyFn) => (
   <ThemeProvider theme={theme}>
     <GlobalStyles />
     {storyFn()}
   </ThemeProvider>
 ));
+
+addDecorator(useGetPriceDecorator);
+addDecorator(useTokenBalanceDecorator);
 
 addParameters({
   options: {
