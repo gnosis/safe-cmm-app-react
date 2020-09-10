@@ -1,8 +1,6 @@
 import React from "react";
 import { Meta } from "@storybook/react/types-6-0";
 
-import { mockGetErc20DetailsDecorator } from "mock/decorators";
-
 import { TokenDisplay, Props } from ".";
 
 export default {
@@ -10,7 +8,6 @@ export default {
   title: "basic/display/TokenDisplay",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*(Data|mock.*)$/,
-  decorators: [mockGetErc20DetailsDecorator],
 } as Meta;
 
 export const tokenDisplayData = {

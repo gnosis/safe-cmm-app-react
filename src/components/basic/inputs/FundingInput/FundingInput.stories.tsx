@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 import { Meta } from "@storybook/react/types-6-0";
 
-import { mockGetErc20DetailsDecorator } from "mock/decorators";
-
 import { FundingInput, Props } from ".";
 
 export default {
@@ -11,7 +9,6 @@ export default {
   title: "basic/input/FundingInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
-  decorators: [mockGetErc20DetailsDecorator],
 } as Meta;
 
 export const fundingInputData = {
