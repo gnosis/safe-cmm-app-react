@@ -9,7 +9,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "jsx": "react",
-    "resolveJsonModule": false,
+    "resolveJsonModule": true,
     "allowJs": false,
     "checkJs": false,
     "lib": ["dom", "es2015", "es2016", "es2017", "esnext"],
