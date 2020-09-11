@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, createContext } from "react";
 import { Container } from "@material-ui/core";
 import styled from "styled-components";
 
@@ -13,23 +13,28 @@ import {
   Props as MessageProps,
   Message,
 } from "components/basic/display/Message";
-import { SideBar } from "./SideBar";
 
-const Wrapper = styled.div`
+import { SideBar } from "./SideBar";
+import { TokenSelectorsFragment } from "./TokenSelectorsFragment";
+import { PricesFragment } from "./PricesFragment";
+import { MarketPriceFragment } from "./MarketPriceFragment";
+import { ErrorMessagesFragment } from "./ErrorMessagesFragment";
+import { DeployStrategyButtonFragment } from "./DeployStrategyButtonFragment";
+
+const PageLayout = styled.div`
   display: flex;
   min-width: 860px;
-
-  & > div:first-child {
-    margin-right: 48px;
-  }
 `;
 
-const Widget = styled.div`
+const DeployWidget = styled.div`
   // basic dimensions
   max-width: 444px;
   min-height: 482px;
 
   padding: 16px 13px;
+
+  // Some space for sidebar
+  margin-right: 48px;
 
   // Spacing between elements
   & > *:not(:last-child) {
@@ -44,63 +49,6 @@ const Widget = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
-
-  // TODO: move out
-  .tokenSelectors {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    & > span > svg {
-      transform: rotate(90deg);
-    }
-  }
-
-  .marketPrice {
-    align-self: center;
-  }
-
-  // TODO: move out
-  .prices {
-    display: flex;
-    justify-content: space-between;
-
-    & > div {
-      padding: 16px 13px;
-
-      & > div:first-child {
-        margin-bottom: 15px;
-      }
-    }
-
-    & > div:first-child {
-      padding-left: 0;
-    }
-    & > div:last-child {
-      padding-right: 0;
-    }
-
-    .middle {
-      padding-top: 13px;
-      border: 1px solid #e8e7e6;
-      border-radius: 16px;
-    }
-  }
-
-  // TODO: move out
-  .messages {
-    & > * {
-      margin-bottom: 5px;
-    }
-    & > :last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  > button {
-    border-radius: 16px;
-    font-weight: bold;
-  }
 `;
 
 export interface Props {
@@ -118,97 +66,36 @@ export interface Props {
   messages?: MessageProps[];
 }
 
-function component(props: Props): JSX.Element {
-  const {
-    baseTokenAddress,
-    quoteTokenAddress,
-    onBaseTokenSelect,
-    onQuoteTokenSelect,
-    lowestPrice,
-    highestPrice,
-    startPrice,
-    baseTokenAmount,
-    baseTokenAmountPerBracket,
-    quoteTokenAmount,
-    quoteTokenAmountPerBracket,
-    messages,
-  } = props;
+// TODO: This feels dumb.
+// I want to have things on the context that are required but are not available when I create the context
+// Will I have to make them optional and always check their existence later?
+function dummyOnSelect(_: string): void {}
 
+export const initialContext: Props = {
+  onBaseTokenSelect: dummyOnSelect,
+  onQuoteTokenSelect: dummyOnSelect,
+};
+
+export const DeployPageContext = createContext<Props>(initialContext);
+
+/**
+ * All component props are passed down into a local context
+ * Every fragment takes what is needs from it
+ */
+function component(props: Props): JSX.Element {
   return (
-    <Wrapper>
-      <Widget>
-        <div className="tokenSelectors">
-          {/* TODO: split out into separated file */}
-          <TokenSelector
-            label="Pick Token A"
-            tooltip="This is the token that will be used to buy token B"
-            onSelect={onBaseTokenSelect}
-          />
-          <Icon type="transactionsInactive" size="md" />
-          <TokenSelector
-            label="Pick Token B"
-            tooltip="This is the token that will be sold for token A"
-            onSelect={onQuoteTokenSelect}
-          />
-        </div>
-        <div className="marketPrice">
-          <MarketPrice
-            baseTokenAddress={baseTokenAddress}
-            quoteTokenAddress={quoteTokenAddress}
-          />
-        </div>
-        <div className="prices">
-          {/* TODO: split out into separated file */}
-          <div>
-            <PriceInput
-              tokenAddress={baseTokenAddress}
-              labelText="Lowest price"
-              labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
-              value={lowestPrice}
-            />
-            <FundingInput
-              amountPerBracket={baseTokenAmountPerBracket}
-              tokenAddress={baseTokenAddress}
-              value={baseTokenAmount}
-            />
-          </div>
-          <div className="middle">
-            <PriceInput
-              tokenAddress={baseTokenAddress}
-              labelText="Start Price"
-              labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
-              value={startPrice}
-              labelSize="xl"
-            />
-            <TotalBrackets />
-          </div>
-          <div>
-            <PriceInput
-              tokenAddress={baseTokenAddress}
-              labelText="Highest price"
-              labelTooltip="The max price per token A you are willing to sell or buy"
-              value={highestPrice}
-            />
-            <FundingInput
-              amountPerBracket={quoteTokenAmountPerBracket}
-              tokenAddress={quoteTokenAddress}
-              value={quoteTokenAmount}
-            />
-          </div>
-        </div>
-        {messages && (
-          <div className="messages">
-            {messages.map((msgProps) => (
-              <Message {...msgProps} />
-            ))}
-          </div>
-        )}
-        <Button type="submit" size="lg" color="primary" variant="contained">
-          Deploy Strategy
-        </Button>
-      </Widget>
-      <SideBar />
-    </Wrapper>
+    <DeployPageContext.Provider value={props}>
+      <PageLayout>
+        <DeployWidget>
+          <TokenSelectorsFragment />
+          <MarketPriceFragment />
+          <PricesFragment />
+          <ErrorMessagesFragment />
+          <DeployStrategyButtonFragment />
+        </DeployWidget>
+        <SideBar />
+      </PageLayout>
+    </DeployPageContext.Provider>
   );
 }
 
