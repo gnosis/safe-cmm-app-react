@@ -1,4 +1,5 @@
 const { EnvironmentPlugin } = require("webpack");
+const AliasPlugin = require('enhanced-resolve/lib/AliasPlugin');
 
 const path = require("path");
 
@@ -42,9 +43,13 @@ module.exports = {
     config.module.rules.push(custom.module.rules[0]);
 
     // Aliases for mocking things inside the stories
-    // Requires any hook/* file to have a correnponding mock/file
-    // if it is ever imported in storybook dependency tree
-    config.resolve.alias["hooks"] = path.resolve(__dirname, '../src/mock')
+    // import alias with fallback in case there's no corresponding mock/hook.ts for hooks/hook.ts
+    // from https://github.com/webpack/webpack/issues/6817#issuecomment-542448438
+    config.resolve.plugins = [
+      new AliasPlugin('described-resolve', [
+        { name: 'hooks', alias: [path.resolve(__dirname, '../src/mock'), path.resolve(__dirname, '../src/hooks')] },
+      ], 'resolve')
+    ];
 
     return config;
   },
