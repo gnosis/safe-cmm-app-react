@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Decimal from "decimal.js";
 import { Meta } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
@@ -25,7 +25,21 @@ export const filledDeployPageData: Props = {
 };
 
 const Template = (args: Props): JSX.Element => {
-  return <DeployPageViewer {...args} />;
+  const [baseTokenAddress, setBaseTokenAddress] = useState(
+    args.baseTokenAddress
+  );
+  const [quoteTokenAddress, setQuoteTokenAddress] = useState(
+    args.quoteTokenAddress
+  );
+  return (
+    <DeployPageViewer
+      {...args}
+      baseTokenAddress={baseTokenAddress}
+      quoteTokenAddress={quoteTokenAddress}
+      onBaseTokenSelect={setBaseTokenAddress}
+      onQuoteTokenSelect={setQuoteTokenAddress}
+    />
+  );
 };
 
 export const Default = Template.bind({});
