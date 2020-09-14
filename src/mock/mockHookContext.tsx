@@ -20,7 +20,6 @@ const MockHookContext = React.createContext<Parameters>({})
 export const createMockHook = <T extends (...args: any) => any>(name: string, defaultValue?: ReturnType<T>): T => {
   return ((...args: any[]) => {
     const ctx = useContext(MockHookContext)
-    console.log('ctx', JSON.stringify(ctx, null, 2));
     const mockedHook = ctx[name]
     // if parameters = {useYourHook: Function}, then execute with args
     if (typeof mockedHook === 'function') {
@@ -33,7 +32,6 @@ export const createMockHook = <T extends (...args: any) => any>(name: string, de
 }
 
 export const mockHookDecorator: BaseDecorators<JSX.Element>[0] = (Story, { parameters }) => {
-  console.log('parameters', parameters);
   return (
     <MockHookContext.Provider value={parameters}>
       {Story()}
