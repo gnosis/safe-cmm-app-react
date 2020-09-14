@@ -60,9 +60,11 @@ export interface Props {
   highestPrice?: string;
   startPrice?: string;
   baseTokenAmount?: string;
-  baseTokenAmountPerBracket?: string;
   quoteTokenAmount?: string;
-  quoteTokenAmountPerBracket?: string;
+  totalBrackets?: string;
+  totalInvestment?: string;
+  baseTokenBrackets?: number;
+  quoteTokenBrackets?: number;
   messages?: MessageProps[];
 }
 

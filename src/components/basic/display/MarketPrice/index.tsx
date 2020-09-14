@@ -47,4 +47,4 @@ function component(props: Props): JSX.Element {
   );
 }
 
-export const MarketPrice = memo(component);
+export const MarketPrice: typeof component = memo(component);

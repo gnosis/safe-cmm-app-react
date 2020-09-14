@@ -39,8 +39,10 @@ function component(): JSX.Element {
     quoteTokenAddress,
     baseTokenAmount,
     quoteTokenAmount,
-    baseTokenAmountPerBracket,
-    quoteTokenAmountPerBracket,
+    totalBrackets,
+    totalInvestment,
+    baseTokenBrackets,
+    quoteTokenBrackets,
     startPrice,
     lowestPrice,
     highestPrice,
@@ -56,7 +58,7 @@ function component(): JSX.Element {
           value={lowestPrice}
         />
         <FundingInput
-          amountPerBracket={baseTokenAmountPerBracket}
+          brackets={baseTokenBrackets}
           tokenAddress={baseTokenAddress}
           value={baseTokenAmount}
         />
@@ -69,7 +71,7 @@ function component(): JSX.Element {
           value={startPrice}
           labelSize="xl"
         />
-        <TotalBrackets />
+        <TotalBrackets value={totalBrackets} amount={totalInvestment} />
       </div>
       <div>
         <PriceInput
@@ -79,7 +81,7 @@ function component(): JSX.Element {
           value={highestPrice}
         />
         <FundingInput
-          amountPerBracket={quoteTokenAmountPerBracket}
+          brackets={quoteTokenBrackets}
           tokenAddress={quoteTokenAddress}
           value={quoteTokenAmount}
         />

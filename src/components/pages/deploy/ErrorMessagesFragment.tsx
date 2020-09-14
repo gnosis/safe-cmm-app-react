@@ -6,11 +6,8 @@ import { Message } from "components/basic/display/Message";
 import { DeployPageContext } from "./viewer";
 
 const Wrapper = styled.div`
-  & > * {
+  & > :not(:last-child) {
     margin-bottom: 5px;
-  }
-  & > :last-child {
-    margin-bottom: 0;
   }
 `;
 

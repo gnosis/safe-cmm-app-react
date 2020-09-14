@@ -12,7 +12,7 @@ const Wrapper = styled.span`
 `;
 
 interface Props {
-  onClick: (e: React.SyntheticEvent) => void;
+  onClick?: (e: React.SyntheticEvent) => void;
   error?: boolean;
 }
 
