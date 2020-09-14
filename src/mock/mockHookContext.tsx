@@ -5,7 +5,7 @@ const MockHookContext = React.createContext<Parameters>({})
 
 /**
  * create a mock hook with
- * export const useYourOfHook = createMockHook('useYourOfHook)
+ * export const useYourOfHook = createMockHook('useYourOfHook', defaultValue?)
  * 
  * in *.stories.tsx
  * Story.parameter = {
