@@ -34,8 +34,12 @@ function component(props: Props): JSX.Element {
     <Text size={size} color={color} strong as="span">
       {tokenDetails.symbol}
     </Text>
-  ) : (
+  ) : isLoading ? (
     <Loader size={size === "xl" ? "lg" : size} />
+  ) : (
+    <Text size={size} color={color} strong as="span">
+      -
+    </Text>
   );
 }
 
