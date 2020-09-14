@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import BN from "bn.js";
 import Decimal from "decimal.js";
 import { Meta } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
@@ -14,6 +15,16 @@ export default {
   parameters: {
     useGetPrice: ({ baseToken, quoteToken }) => ({
       price: !baseToken || !quoteToken ? null : new Decimal("323.44"),
+    }),
+    useTokenBalance: (address?: string) => ({
+      balance:
+        address === "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+          ? new BN("9310293132123908088")
+          : address === "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+          ? new BN("579127394283794127491")
+          : !!address
+          ? new BN("0")
+          : null,
     }),
   },
 } as Meta;
