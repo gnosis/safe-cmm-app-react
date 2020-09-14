@@ -1,9 +1,7 @@
 import { useTokenDetails as hook } from "hooks/useTokenDetails";
 import { mockTokenDetails } from "./data";
 
-export function useTokenDetails(
-  ...[token]: Parameters<typeof hook>
-): ReturnType<typeof hook> {
+export const useTokenDetails: typeof hook = (token) => {
   if (!token) {
     return null;
   }
@@ -18,4 +16,4 @@ export function useTokenDetails(
     );
   }
   return token;
-}
+};

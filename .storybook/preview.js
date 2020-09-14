@@ -7,8 +7,7 @@ import { theme } from "theme";
 
 import GlobalStyles from "../src/components/GlobalStyle";
 
-import { decorator as useGetPriceDecorator } from "../src/mock/useGetPrice";
-import { decorator as useTokenBalanceDecorator } from "../src/mock/useTokenBalance";
+import { mockHookDecorator } from '../src/mock/mockHookContext';
 
 addDecorator((storyFn) => (
   <ThemeProvider theme={theme}>
@@ -17,8 +16,7 @@ addDecorator((storyFn) => (
   </ThemeProvider>
 ));
 
-addDecorator(useGetPriceDecorator);
-addDecorator(useTokenBalanceDecorator);
+addDecorator(mockHookDecorator);
 
 addParameters({
   options: {

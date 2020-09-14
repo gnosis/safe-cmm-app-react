@@ -1,4 +1,5 @@
 const { EnvironmentPlugin } = require("webpack");
+const AliasPlugin = require('enhanced-resolve/lib/AliasPlugin');
 
 const path = require("path");
 
@@ -42,18 +43,13 @@ module.exports = {
     config.module.rules.push(custom.module.rules[0]);
 
     // Aliases for mocking things inside the stories
-    config.resolve.alias["hooks/useGetPrice"] = require.resolve(
-      "../src/mock/useGetPrice.ts"
-    );
-    config.resolve.alias["hooks/useTokenList"] = require.resolve(
-      "../src/mock/useTokenList.ts"
-    );
-    config.resolve.alias["hooks/useTokenDetails"] = require.resolve(
-      "../src/mock/useTokenDetails.ts"
-    );
-    config.resolve.alias["hooks/useTokenBalance"] = require.resolve(
-      "../src/mock/useTokenBalance.ts"
-    );
+    // import alias with fallback in case there's no corresponding mock/hook.ts for hooks/hook.ts
+    // from https://github.com/webpack/webpack/issues/6817#issuecomment-542448438
+    config.resolve.plugins = [
+      new AliasPlugin('described-resolve', [
+        { name: 'hooks', alias: [path.resolve(__dirname, '../src/mock'), path.resolve(__dirname, '../src/hooks')] },
+      ], 'resolve')
+    ];
 
     return config;
   },
