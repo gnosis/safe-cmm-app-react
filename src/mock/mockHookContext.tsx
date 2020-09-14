@@ -4,8 +4,9 @@ import { BaseDecorators, Parameters } from '@storybook/addons'
 const MockHookContext = React.createContext<Parameters>({})
 
 /**
- * create a mock hook with
- * export const useYourOfHook = createMockHook('useYourOfHook', defaultValue?)
+ * to mock useYourHook hook from src/hooks/useYourHook.ts
+ * create a mock hook in src/mock/useYourHook.ts 
+ * export const useYourHook = createMockHook('useYourHook', defaultValue?)
  * 
  * in *.stories.tsx
  * Story.parameter = {
