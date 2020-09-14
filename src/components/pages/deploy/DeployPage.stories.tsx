@@ -11,6 +11,11 @@ export default {
   component: DeployPageViewer,
   title: "pages/Deploy",
   excludeStories: /Data$/,
+  parameters: {
+    useGetPrice: ({ baseToken, quoteToken }) => ({
+      price: !baseToken || !quoteToken ? null : new Decimal("323.44"),
+    }),
+  },
 } as Meta;
 
 export const deployPageData: Props = {
@@ -51,7 +56,6 @@ WithError.args = {
   ...filledDeployPageData,
   messages: [{ type: "error", label: "Insufficient DAI balance" }],
 };
-WithError.parameters = { useGetPrice: { price: new Decimal("380.39134") } };
 
 export const WithWarning = Template.bind({});
 WithWarning.args = {
