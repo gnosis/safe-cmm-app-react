@@ -54,8 +54,8 @@ const DeployWidget = styled.div`
 export interface Props {
   baseTokenAddress?: string;
   quoteTokenAddress?: string;
-  onBaseTokenSelect: (address: string) => void;
-  onQuoteTokenSelect: (address: string) => void;
+  onBaseTokenSelect?: (address: string) => void;
+  onQuoteTokenSelect?: (address: string) => void;
   lowestPrice?: string;
   highestPrice?: string;
   startPrice?: string;
@@ -68,17 +68,7 @@ export interface Props {
   messages?: MessageProps[];
 }
 
-// TODO: This feels dumb.
-// I want to have things on the context that are required but are not available when I create the context
-// Will I have to make them optional and always check their existence later?
-function dummyOnSelect(_: string): void {}
-
-export const initialContext: Props = {
-  onBaseTokenSelect: dummyOnSelect,
-  onQuoteTokenSelect: dummyOnSelect,
-};
-
-export const DeployPageContext = createContext<Props>(initialContext);
+export const DeployPageContext = createContext<Props>({});
 
 /**
  * All component props are passed down into a local context

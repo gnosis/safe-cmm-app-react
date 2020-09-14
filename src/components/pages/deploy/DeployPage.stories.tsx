@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import BN from "bn.js";
 import Decimal from "decimal.js";
 import { Meta } from "@storybook/react";
-import { action } from "@storybook/addon-actions";
 
 import { Text } from "@gnosis.pm/safe-react-components";
 
@@ -29,10 +28,7 @@ export default {
   },
 } as Meta;
 
-export const deployPageData: Props = {
-  onBaseTokenSelect: action("onBaseTokenSelect"),
-  onQuoteTokenSelect: action("onQuoteTokenSelect"),
-};
+export const deployPageData: Props = {};
 
 export const filledDeployPageData: Props = {
   ...deployPageData,
