@@ -1,19 +1,22 @@
 import { useTokenDetails as hook } from "hooks/useTokenDetails";
+import { TokenDetails } from "types";
+
 import { mockTokenDetails } from "./data";
 
 export const useTokenDetails: typeof hook = (token) => {
+  let tokenDetails: null | TokenDetails;
+
   if (!token) {
-    return null;
+    tokenDetails = null;
+  } else if (typeof token === "string") {
+    tokenDetails = mockTokenDetails[token] || {
+      decimals: 18,
+      name: "same",
+      symbol: "TKN",
+      address: token,
+    };
+  } else {
+    tokenDetails = token;
   }
-  if (typeof token === "string") {
-    return (
-      mockTokenDetails[token] || {
-        decimals: 18,
-        name: "same",
-        symbol: "TKN",
-        address: token,
-      }
-    );
-  }
-  return token;
+  return { tokenDetails, isLoading: false, error: "" };
 };

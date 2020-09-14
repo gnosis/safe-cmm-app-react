@@ -27,7 +27,8 @@ export interface Props {
 function component(props: Props): JSX.Element {
   const { token, size, color } = props;
 
-  const tokenDetails = useTokenDetails(token);
+  // TODO: handle error
+  const { tokenDetails, isLoading } = useTokenDetails(token);
 
   return tokenDetails ? (
     <Text size={size} color={color} strong as="span">
