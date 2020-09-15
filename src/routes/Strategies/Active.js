@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
+import useInterval from "@use-it/interval";
 
 import styled from "styled-components";
 
@@ -12,12 +13,13 @@ import {
   TableContainer,
 } from "@material-ui/core";
 
-import { Button, Loader, Icon, Text } from "@gnosis.pm/safe-react-components";
+import { Button, Loader, Text } from "@gnosis.pm/safe-react-components";
 import useWeb3Strategies from "hooks/useWeb3Strategies";
 
 import { Web3Context } from "components/Web3Provider";
 
-import withdrawFunds from "api/withdrawFunds";
+import { withdrawRequest, withdrawClaim } from "api/withdrawFunds";
+import moment from "moment";
 
 const CenterLoaderBox = styled(Box)`
   display: flex;
@@ -25,6 +27,109 @@ const CenterLoaderBox = styled(Box)`
   justify-content: center;
   height: 100%;
 `;
+
+const WithdrawButton = ({
+  withdrawRequestEvent,
+  withdrawClaimEvent,
+  withdrawStatus,
+  handleWithdrawRequest,
+  handleWithdrawClaim,
+}) => {
+  const [status, setStatus] = useState("UNKNOWN");
+  const [countdown, setCountdown] = useState(null);
+  const updateTimer = useCallback(() => {
+    if (!withdrawRequestEvent) {
+      setStatus("REQUEST_READY");
+      return null;
+    }
+
+    const timeSinceWithdrawRequestBlock = moment.duration(
+      moment(withdrawRequestEvent.created).add(5, "minutes").diff(moment())
+    );
+
+    if (timeSinceWithdrawRequestBlock.as("seconds") < 0) {
+      setStatus("CLAIM_READY");
+    } else {
+      setStatus("WAIT_CLAIM");
+      setCountdown(
+        `${timeSinceWithdrawRequestBlock
+          .get("minutes")
+          .toString()
+          .padStart(2, "0")}:${timeSinceWithdrawRequestBlock
+          .get("seconds")
+          .toString()
+          .padStart(2, "0")}`
+      );
+    }
+  }, [withdrawRequestEvent]);
+  useInterval(updateTimer, 1000);
+
+  if (withdrawRequestEvent && withdrawClaimEvent) {
+    // Existing claim event means the market was closed.
+    // TODO: Move this to a status variable with more thorough checks for actual "deactivated" markets
+    return null;
+  }
+
+  if (withdrawStatus?.status === "LOADING") {
+    // Transaction is pending
+    return <Loader size="md" />;
+  }
+
+  if (withdrawStatus?.status === "ERROR") {
+    // Error occurred during withdrawClaim/withdrawRequest
+    return (
+      <Text size="md" color="error">
+        {withdrawStatus?.errorMessage}
+      </Text>
+    );
+  }
+
+  if (status === "UNKNOWN") {
+    // Status not yet known, timer didn't run yet, show loader with no action on click
+    return (
+      <Button size="lg" color="primary" variant="contained">
+        <Loader size="sm" color="white" />
+      </Button>
+    );
+  }
+
+  if (status === "WAIT_CLAIM") {
+    // Waiting the 5min period to claim the withdraw
+    return (
+      <Button size="lg" color="primary" variant="contained">
+        {countdown} until claim
+      </Button>
+    );
+  }
+
+  if (status === "CLAIM_READY") {
+    // Withdraw can now be claimed
+    return (
+      <Button
+        size="lg"
+        color="primary"
+        variant="contained"
+        onClick={handleWithdrawClaim}
+      >
+        Claim Withdraw
+      </Button>
+    );
+  }
+
+  if (status === "REQUEST_READY") {
+    // No withdraw event found, can be requested
+    return (
+      <Button
+        size="lg"
+        color="primary"
+        variant="contained"
+        onClick={handleWithdrawRequest}
+      >
+        Request Withdraw (5min)
+      </Button>
+    );
+  }
+};
 
 const Active = () => {
   const context = useContext(Web3Context);
@@ -45,17 +150,47 @@ const Active = () => {
     []
   );
 
-  const makeHandleWithdraw = useCallback(
+  const makeHandleWithdrawRequest = useCallback(
     (strategy) => async () => {
       handleSetWithdrawStatusForStrategyWithBlockhash(
         strategy.transactionHash,
         "LOADING"
       );
       try {
-        const { txs } = await withdrawFunds(context, strategy);
+        const { txs } = await withdrawRequest(context, strategy);
         if (txs.length === 0) {
           throw new Error(
-            "Nothing to redeem.\nNo bracket contains more than >1 USD in value excluding it's funding."
+            "No funds available to request withdraw.\nNo bracket contains more than >1 USD in value."
+          );
+        }
+        await context.sdk.sendTransactions(txs);
+        handleSetWithdrawStatusForStrategyWithBlockhash(
+          strategy.transactionHash,
+          "SUCCESS"
+        );
+      } catch (err) {
+        handleSetWithdrawStatusForStrategyWithBlockhash(
+          strategy.transactionHash,
+          "ERROR",
+          err.message
+        );
+      }
+    },
+    [context, handleSetWithdrawStatusForStrategyWithBlockhash]
+  );
+
+  const makeHandleWithdrawClaim = useCallback(
+    (strategy) => async () => {
+      handleSetWithdrawStatusForStrategyWithBlockhash(
+        strategy.transactionHash,
+        "LOADING"
+      );
+
+      try {
+        const { txs } = await withdrawClaim(context, strategy);
+        if (txs.length === 0) {
+          throw new Error(
+            "No funds available to claim withdraw.\nNo bracket contains more than >1 USD in value."
           );
         }
         await context.sdk.sendTransactions(txs);
@@ -81,6 +216,9 @@ const Active = () => {
           <Loader size="lg" />
         </CenterLoaderBox>
       )}
+      {status === "ERROR" && (
+        <Text size="md">Error occurred. Please wait or reload the App.</Text>
+      )}
       {status === "SUCCESS" && (
         <TableContainer>
           <Table>
@@ -105,35 +243,17 @@ const Active = () => {
                   <TableCell>TODO</TableCell>
                   <TableCell>{strategy.brackets.length}</TableCell>
                   <TableCell>
-                    {withdrawStatusForRow[strategy.transactionHash]?.status ===
-                      "LOADING" && <Loader size="sm" />}
-                    {withdrawStatusForRow[strategy.transactionHash]?.status ===
-                      "SUCCESS" && (
-                      <Icon type="check" size="md" color="primary" />
-                    )}
-                    {withdrawStatusForRow[strategy.transactionHash]?.status ===
-                      "ERROR" && (
-                      <p style={{ whiteSpace: "pre" }}>
-                        <Text color="error" size="md">
-                          {
-                            withdrawStatusForRow[strategy.transactionHash]
-                              ?.errorMessage
-                          }
-                        </Text>
-                      </p>
-                    )}
-                    {(!withdrawStatusForRow[strategy.transactionHash] ||
-                      withdrawStatusForRow[strategy.transactionHash]?.status !==
-                        "LOADING") && (
-                      <Button
-                        size="lg"
-                        color="primary"
-                        variant="contained"
-                        onClick={makeHandleWithdraw(strategy)}
-                      >
-                        Withdraw
-                      </Button>
-                    )}
+                    <WithdrawButton
+                      withdrawRequestEvent={strategy.lastWithdrawRequestEvent}
+                      withdrawClaimEvent={strategy.lastWithdrawClaimEvent}
+                      withdrawStatus={
+                        withdrawStatusForRow[strategy.transactionHash]
+                      }
+                      handleWithdrawRequest={makeHandleWithdrawRequest(
+                        strategy
+                      )}
+                      handleWithdrawClaim={makeHandleWithdrawClaim(strategy)}
+                    />
                   </TableCell>
                 </TableRow>
               ))}
