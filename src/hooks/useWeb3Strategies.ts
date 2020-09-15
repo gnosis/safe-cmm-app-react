@@ -3,8 +3,6 @@ import useInterval from "@use-it/interval"
 
 import getLogger from 'utils/logger';
 
-import getLogger from 'utils/logger';
-
 import findStrategiesForOwner from 'api/web3/findStrategiesForOwner';
 import { Web3Context } from 'components/Web3Provider';
 
