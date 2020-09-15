@@ -63,7 +63,7 @@ const deployStrategy = async (
   const hasEnoughBalanceQuote = await verifyBalance(
     tokenQuoteContract,
     safeAddress,
-    investmentBaseWei
+    investmentQuoteWei
   );
 
   const tokenBaseDetails = await getErc20Details(

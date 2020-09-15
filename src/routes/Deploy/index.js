@@ -148,11 +148,11 @@ const Deploy = () => {
         numBrackets,
         tokenAddressBase,
         tokenAddressQuote,
-        asWei(boundsLowerEth),
-        asWei(boundsUpperEth),
-        asWei(investmentBaseEth),
-        asWei(investmentQuoteEth),
-        asWei(startPrice.toString())
+        asWei(boundsLowerEth, tokenBaseDetails.decimals),
+        asWei(boundsUpperEth, tokenBaseDetails.decimals),
+        asWei(investmentBaseEth, tokenBaseDetails.decimals),
+        asWei(investmentQuoteEth, tokenQuoteDetails.decimals),
+        asWei(startPrice.toString(), tokenBaseDetails.decimals)
       );
     } catch (err) {
       console.error(`Deployment failed with error: ${err.message}`);
