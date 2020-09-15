@@ -87,7 +87,7 @@ class Strategy {
 
       const withdrawClaims = await batchExchangeContract.getPastEvents("Withdraw", {
         fromBlock: this.startBlockNumber-1,
-        filter: { use: bracketAddress }
+        filter: { user: bracketAddress }
       })
 
       let withdrawRequestsWithBlock : WithdrawEvent[] = []
