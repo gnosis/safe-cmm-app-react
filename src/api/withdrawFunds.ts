@@ -52,17 +52,17 @@ export const withdrawClaim = async (context : Web3Context, strategy : Strategy) 
   
   const withdrawHelpers = runInitializerIfNotRan(context);
 
-  const withdrawTransactions = await withdrawHelpers.prepareWithdraw( // prepareTransferFundsToMaster
-    {
-      masterSafe: context.safeInfo.safeAddress,
-      brackets: strategy.brackets.map(bracket => bracket.address),
-      tokens: [strategy.baseTokenAddress, strategy.quoteTokenAddress],
-    }, true
-  )
-  console.log(withdrawTransactions)
-  
+  const argv = {
+    masterSafe: context.safeInfo.safeAddress,
+    brackets: strategy.brackets.map(bracket => bracket.address),
+    tokens: [strategy.baseTokenAddress, strategy.quoteTokenAddress],
+  };
+
+  const withdrawTransactions = await withdrawHelpers.prepareWithdraw(argv, true)
+  const withdrawTransferTransaction = await withdrawHelpers.prepareTransferFundsToMaster(argv, true)
+
   return {
-    txs: withdrawTransactions
+    txs: [...withdrawTransactions, ...withdrawTransferTransaction]
   }
 
 }
