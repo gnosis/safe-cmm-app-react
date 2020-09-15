@@ -33,7 +33,11 @@ const useFormField = (defaultValue) => {
   const [fieldValue, setFieldValue] = useState(defaultValue);
 
   const handleChangeValue = useCallback((eventOrValue) => {
-    if (typeof eventOrValue === "object" && eventOrValue.target != null) {
+    if (
+      eventOrValue !== null &&
+      typeof eventOrValue === "object" &&
+      eventOrValue.target != null
+    ) {
       setFieldValue(eventOrValue.target.value);
     } else {
       setFieldValue(eventOrValue);
@@ -90,6 +94,7 @@ const Deploy = () => {
   const [investmentBaseEth, setInvestmentBaseEth] = useFormField(null);
   const [investmentQuoteEth, setInvestmentQuoteEth] = useFormField(null);
   const [priceStatus, setPriceStatus] = useState("NO_TOKEN");
+  const [startPrice, setStartPrice] = useFormField(null);
 
   const [tokenBaseDetails, setTokenBaseDetails] = useState(null);
   const [tokenQuoteDetails, setTokenQuoteDetails] = useState(null);
@@ -106,6 +111,7 @@ const Deploy = () => {
   useEffect(() => {
     if (tokenBaseDetails && tokenQuoteDetails) {
       (async () => {
+        setStartPrice(null);
         setPriceStatus("LOADING");
         const { price } = await getOneinchPrice(
           tokenQuoteDetails, // Quote goes first??
@@ -116,12 +122,13 @@ const Deploy = () => {
         );
 
         setTokenCurrentPrice(price);
+        setStartPrice(price.toFixed(4));
         setPriceStatus("SUCCESS");
       })();
     } else {
       setPriceStatus("NO_TOKEN");
     }
-  }, [web3Context, tokenBaseDetails, tokenQuoteDetails]);
+  }, [web3Context, tokenBaseDetails, tokenQuoteDetails, setStartPrice]);
 
   const tokenSelectValues = useMemo(
     () =>
@@ -145,7 +152,7 @@ const Deploy = () => {
         asWei(boundsUpperEth),
         asWei(investmentBaseEth),
         asWei(investmentQuoteEth),
-        asWei(tokenCurrentPrice.toString())
+        asWei(startPrice.toString())
       );
     } catch (err) {
       console.error(`Deployment failed with error: ${err.message}`);
@@ -171,7 +178,7 @@ const Deploy = () => {
     numBrackets,
     tokenAddressBase,
     tokenAddressQuote,
-    tokenCurrentPrice,
+    startPrice,
   ]);
 
   return (
@@ -268,8 +275,8 @@ const Deploy = () => {
                     label="Current Price"
                     name="currentPrice"
                     className={classes.textField}
-                    value={tokenCurrentPrice?.toFixed(4) || ""}
-                    readOnly
+                    value={startPrice || ""}
+                    onChange={setStartPrice}
                     endAdornment={
                       <Text size="md">{tokenBaseDetails?.symbol}</Text>
                     }

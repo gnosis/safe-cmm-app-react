@@ -1,7 +1,6 @@
 import React from "react";
 import { hot } from "react-hot-loader/root";
 
-import { ThemeProvider } from "styled-components";
 import { theme } from "theme";
 
 import { BrowserRouter as Router } from "react-router-dom";
