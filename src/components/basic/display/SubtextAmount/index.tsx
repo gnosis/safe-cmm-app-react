@@ -15,13 +15,13 @@ const Wrapper = styled.div<WrapperProps>`
   ${({ inline }: WrapperProps): string =>
     inline
       ? `
-  &>p:first-of-type {
+  & > :first-child {
     padding-right: 0.5em;
   }`
       : `
   flex-direction: column;
 
-  p:first-of-type {
+  :first-child {
     padding-bottom: 0.2em;
   }`}
 `;

@@ -19,4 +19,4 @@ const SAFE_ENDPOINT_URLS = {
 export const SAFE_ENDPOINT_URL =
   SAFE_ENDPOINT_URLS[Network[NETWORK]] || SAFE_ENDPOINT_URLS[Network.rinkeby];
 
-export const DEFAULT_INPUT_WIDTH = "120px";
+export const DEFAULT_INPUT_WIDTH = "130px";

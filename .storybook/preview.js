@@ -7,12 +7,16 @@ import { theme } from "theme";
 
 import GlobalStyles from "../src/components/GlobalStyle";
 
+import { mockHookDecorator } from '../src/mock/mockHookContext';
+
 addDecorator((storyFn) => (
   <ThemeProvider theme={theme}>
     <GlobalStyles />
     {storyFn()}
   </ThemeProvider>
 ));
+
+addDecorator(mockHookDecorator);
 
 addParameters({
   options: {

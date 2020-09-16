@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { Meta } from "@storybook/react/types-6-0";
 
-import { mockGetErc20DetailsDecorator } from "components/basic/display/TokenDisplay/TokenDisplay.stories";
-
 import { PriceInput, Props } from ".";
 
 export default {
@@ -10,7 +8,6 @@ export default {
   title: "basic/input/PriceInput",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
-  decorators: [mockGetErc20DetailsDecorator],
 } as Meta;
 
 export const priceInputData = {

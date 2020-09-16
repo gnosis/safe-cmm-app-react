@@ -19,8 +19,6 @@ const StyledLink = styled.a<Props>`
   cursor: pointer;
   color: ${({ color }: Props) => theme.colors[color as string]};
   font-family: inherit;
-  display: flex;
-  align-items: center;
 
   :focus {
     outline: none;
