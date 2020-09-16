@@ -59,7 +59,12 @@ export const withdrawClaim = async (context : Web3Context, strategy : Strategy) 
   };
 
   const withdrawTransactions = await withdrawHelpers.prepareWithdraw(argv, true)
-  const withdrawTransferTransaction = await withdrawHelpers.prepareTransferFundsToMaster(argv, true)
+  const withdrawTransferTransaction = await withdrawHelpers.prepareWithdrawAndTransferFundsToMaster(argv, true)
+
+  console.log({
+    claim: withdrawTransactions,
+    transfer: withdrawTransferTransaction,
+  });
 
   return {
     txs: [...withdrawTransactions, ...withdrawTransferTransaction]

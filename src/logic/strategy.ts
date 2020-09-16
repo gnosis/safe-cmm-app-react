@@ -65,6 +65,7 @@ class Strategy {
     let tokenIdBought;
     let orderBatchIds = [];
     let withdrawRequestBlocks = {};
+    let allWithdrawClaims = [];
 
     const brackets = await Promise.all(this.safeAddresses.map(async (bracketAddress) : Promise<Bracket> => {
       // Bracket orders find the tokens used for the strategy
@@ -89,6 +90,8 @@ class Strategy {
         fromBlock: this.startBlockNumber-1,
         filter: { user: bracketAddress }
       })
+      
+      allWithdrawClaims.push(...withdrawClaims)
 
       let withdrawRequestsWithBlock : WithdrawEvent[] = []
       if (bracketDepositEvents[0]) {
@@ -177,7 +180,7 @@ class Strategy {
     this.quoteFunding = quoteFundingBn.toString();
 
     this.lastWithdrawRequestEvent = brackets[0]?.withdrawRequests[0];
-    this.lastWithdrawClaimEvent = brackets[0]?.withdraws[0];
+    this.lastWithdrawClaimEvent = allWithdrawClaims[0];
 
     this.brackets = brackets;
   }
