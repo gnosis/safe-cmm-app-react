@@ -76,6 +76,7 @@ export interface Props {
   onBaseTokenAmountChange?: OnChangeHandler;
   onQuoteTokenAmountChange?: OnChangeHandler;
   onTotalBracketsChange?: OnChangeHandler;
+  onSubmit?: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
 export const DeployPageContext = createContext<Props>({});
@@ -88,13 +89,15 @@ function component(props: Props): JSX.Element {
   return (
     <DeployPageContext.Provider value={props}>
       <PageLayout>
-        <DeployWidget>
-          <TokenSelectorsFragment />
-          <MarketPriceFragment />
-          <PricesFragment />
-          <ErrorMessagesFragment />
-          <DeployStrategyButtonFragment />
-        </DeployWidget>
+        <form onSubmit={props.onSubmit}>
+          <DeployWidget>
+            <TokenSelectorsFragment />
+            <MarketPriceFragment />
+            <PricesFragment />
+            <ErrorMessagesFragment />
+            <DeployStrategyButtonFragment />
+          </DeployWidget>
+        </form>
         <SideBar />
       </PageLayout>
     </DeployPageContext.Provider>
