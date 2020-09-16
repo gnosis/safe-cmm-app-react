@@ -20,7 +20,7 @@ export const PerBracketAmount = (props: Props): JSX.Element => {
   const { tokenDetails } = useTokenDetails(tokenAddress);
 
   const amountPerBracket = useMemo((): string => {
-    if (!tokenDetails || !totalAmount || !brackets || +totalAmount === 0) {
+    if (!tokenDetails || !totalAmount || !brackets || +totalAmount <= 0) {
       return "";
     }
     const amountInTokenUnits = parseAmount(totalAmount, tokenDetails.decimals);
@@ -30,9 +30,11 @@ export const PerBracketAmount = (props: Props): JSX.Element => {
       amount: amountPerBracket,
       precision: tokenDetails.decimals,
     });
-  }, [tokenDetails]);
+  }, [tokenDetails, totalAmount, brackets]);
 
-  const subtext = brackets ? `${brackets} brackets w/ each:` : `0 brackets`;
+  const subtext = brackets
+    ? `${brackets} bracket${brackets > 1 ? "s" : ""} w/ each:`
+    : `0 brackets`;
 
   return (
     <SubtextAmount
