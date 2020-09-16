@@ -1,12 +1,13 @@
 import React, { useCallback, useState } from "react";
 
+import { useDeployStrategy } from "hooks/useDeployStrategy";
+
 import { DeployPageViewer, Props } from "./viewer";
 
 // TODO: fix type
 const onChangeHandlerFactory = (
   setter: React.Dispatch<React.SetStateAction<string>>
 ) => (event: React.ChangeEvent<HTMLInputElement>): void => {
-  console.log(`going to set something`, event.target.value);
   setter(event.target.value);
 };
 
@@ -24,6 +25,42 @@ export function DeployPage(): JSX.Element {
   const [baseTokenBrackets, setBaseTokenBrackets] = useState(0);
   const [quoteTokenBrackets, setQuoteTokenBrackets] = useState(0);
   const [totalInvestment, setTotalInvestment] = useState("");
+  // error handling
+  const [error, setError] = useState<{ label: string; body: string } | null>(
+    null
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const deployStrategy = useDeployStrategy({
+    lowestPrice,
+    highestPrice,
+    baseTokenAmount,
+    quoteTokenAmount,
+    totalBrackets,
+    baseTokenAddress,
+    quoteTokenAddress,
+    startPrice,
+  });
+
+  const onSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+      // TODO: move on to another page/show success message
+      event.preventDefault();
+
+      if (deployStrategy) {
+        setIsSubmitting(true);
+        setError(null);
+        try {
+          await deployStrategy();
+        } catch (e) {
+          console.error(`Failed to deploy strategy:`, e);
+          setError({ label: "Failed to deploy strategy", body: e.message });
+        }
+        setIsSubmitting(false);
+      }
+    },
+    [deployStrategy]
+  );
 
   const onTotalBracketsChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -96,6 +133,15 @@ export function DeployPage(): JSX.Element {
     onBaseTokenAmountChange: onChangeHandlerFactory(setBaseTokenAmount),
     onQuoteTokenAmountChange: onChangeHandlerFactory(setQuoteTokenAmount),
     onTotalBracketsChange: onTotalBracketsChange,
+    onSubmit: deployStrategy && onSubmit,
+    isSubmitting,
+    messages: error && [
+      {
+        type: "error",
+        label: error.label,
+        children: error.body,
+      },
+    ],
   };
 
   return <DeployPageViewer {...viewerProps} />;

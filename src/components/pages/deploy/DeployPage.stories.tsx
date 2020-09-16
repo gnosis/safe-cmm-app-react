@@ -5,6 +5,11 @@ import { Meta } from "@storybook/react";
 
 import { Text } from "@gnosis.pm/safe-react-components";
 
+import {
+  Params as UseDeployStrategyParams,
+  Return as UseDeployStrategyReturn,
+} from "hooks/useDeployStrategy";
+
 import { DeployPageViewer, Props } from "./viewer";
 import { DeployPage } from ".";
 
@@ -60,6 +65,9 @@ const Template = (args: Props): JSX.Element => {
 export const Default = Template.bind({});
 Default.args = { ...deployPageData };
 
+export const Submitting = Template.bind({});
+Submitting.args = { ...deployPageData, isSubmitting: true };
+
 export const WithError = Template.bind({});
 WithError.args = {
   ...Default.args,
@@ -100,3 +108,22 @@ MultipleMessages.args = {
 const TemplateContainer = (): JSX.Element => <DeployPage />;
 
 export const DefaultContainer = TemplateContainer.bind({});
+DefaultContainer.parameters = {
+  useDeployStrategy: (
+    params: UseDeployStrategyParams
+  ): UseDeployStrategyReturn => {
+    // Deploy Strategy button is enabled once all values are input
+    if (!Object.values(params).every(Boolean)) {
+      return null;
+    }
+
+    return async (): Promise<void> => {};
+  },
+};
+
+export const ErrorOnDeployContainer = TemplateContainer.bind({});
+ErrorOnDeployContainer.parameters = {
+  useDeployStrategy: () => async () => {
+    throw new Error("This will always fail. Sorry ¯\\_(ツ)_/¯");
+  },
+};
