@@ -1,18 +1,10 @@
 import React, { memo, createContext } from "react";
-import { Container } from "@material-ui/core";
+import { Backdrop, withStyles } from "@material-ui/core";
 import styled from "styled-components";
 
-import { Button, Icon } from "@gnosis.pm/safe-react-components";
+import { Loader } from "@gnosis.pm/safe-react-components";
 
-import { MarketPrice } from "components/basic/display/MarketPrice";
-import { TokenSelector } from "components/basic/inputs/TokenSelector";
-import { PriceInput } from "components/basic/inputs/PriceInput";
-import { TotalBrackets } from "components/basic/inputs/TotalBrackets";
-import { FundingInput } from "components/basic/inputs/FundingInput";
-import {
-  Props as MessageProps,
-  Message,
-} from "components/basic/display/Message";
+import { Props as MessageProps } from "components/basic/display/Message";
 
 import { SideBar } from "./SideBar";
 import { TokenSelectorsFragment } from "./TokenSelectorsFragment";
@@ -51,9 +43,13 @@ const DeployWidget = styled.div`
   align-items: stretch;
 `;
 
+const StyledBackdrop = withStyles(() => ({ root: { zIndex: 999 } }))(Backdrop);
+
 type OnChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => void;
 
 export interface Props {
+  isSubmitting?: boolean;
+
   baseTokenAddress?: string;
   quoteTokenAddress?: string;
   lowestPrice?: string;
@@ -99,6 +95,9 @@ function component(props: Props): JSX.Element {
           </DeployWidget>
         </form>
         <SideBar />
+        <StyledBackdrop open={props.isSubmitting}>
+          <Loader size="lg" color="primaryLight" />
+        </StyledBackdrop>
       </PageLayout>
     </DeployPageContext.Provider>
   );
