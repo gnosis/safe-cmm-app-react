@@ -6,6 +6,7 @@ import { Meta } from "@storybook/react";
 import { Text } from "@gnosis.pm/safe-react-components";
 
 import { DeployPageViewer, Props } from "./viewer";
+import { DeployPage } from ".";
 
 export default {
   component: DeployPageViewer,
@@ -27,6 +28,8 @@ export default {
     }),
   },
 } as Meta;
+
+// Viewer
 
 export const deployPageData: Props = {};
 
@@ -91,3 +94,9 @@ MultipleMessages.args = {
   ...WithWarning.args,
   messages: [...WithWarning.args.messages, ...WithError.args.messages],
 };
+
+// Container
+
+const TemplateContainer = (): JSX.Element => <DeployPage />;
+
+export const DefaultContainer = TemplateContainer.bind({});
