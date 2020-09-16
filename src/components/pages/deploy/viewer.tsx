@@ -51,11 +51,11 @@ const DeployWidget = styled.div`
   align-items: stretch;
 `;
 
+type OnChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => void;
+
 export interface Props {
   baseTokenAddress?: string;
   quoteTokenAddress?: string;
-  onBaseTokenSelect?: (address: string) => void;
-  onQuoteTokenSelect?: (address: string) => void;
   lowestPrice?: string;
   highestPrice?: string;
   startPrice?: string;
@@ -66,6 +66,15 @@ export interface Props {
   baseTokenBrackets?: number;
   quoteTokenBrackets?: number;
   messages?: MessageProps[];
+  // callbacks
+  onBaseTokenSelect?: (address: string) => void;
+  onQuoteTokenSelect?: (address: string) => void;
+  onLowestPriceChange?: OnChangeHandler;
+  onStartPriceChange?: OnChangeHandler;
+  onHighestPriceChange?: OnChangeHandler;
+  onBaseTokenAmountChange?: OnChangeHandler;
+  onQuoteTokenAmountChange?: OnChangeHandler;
+  onTotalBracketsChange?: OnChangeHandler;
 }
 
 export const DeployPageContext = createContext<Props>({});

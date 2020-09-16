@@ -46,6 +46,13 @@ function component(): JSX.Element {
     startPrice,
     lowestPrice,
     highestPrice,
+    // callbacks
+    onLowestPriceChange,
+    onStartPriceChange,
+    onHighestPriceChange,
+    onBaseTokenAmountChange,
+    onQuoteTokenAmountChange,
+    onTotalBracketsChange,
   } = useContext(DeployPageContext);
 
   return (
@@ -56,11 +63,13 @@ function component(): JSX.Element {
           labelText="Lowest price"
           labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
           value={lowestPrice}
+          onChange={onLowestPriceChange}
         />
         <FundingInput
           brackets={baseTokenBrackets}
           tokenAddress={baseTokenAddress}
           value={baseTokenAmount}
+          onChange={onBaseTokenAmountChange}
         />
       </div>
       <div className="middle">
@@ -70,8 +79,13 @@ function component(): JSX.Element {
           labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
           value={startPrice}
           labelSize="xl"
+          onChange={onStartPriceChange}
         />
-        <TotalBrackets value={totalBrackets} amount={totalInvestment} />
+        <TotalBrackets
+          value={totalBrackets}
+          amount={totalInvestment}
+          onChange={onTotalBracketsChange}
+        />
       </div>
       <div>
         <PriceInput
@@ -79,11 +93,13 @@ function component(): JSX.Element {
           labelText="Highest price"
           labelTooltip="The max price per token A you are willing to sell or buy"
           value={highestPrice}
+          onChange={onHighestPriceChange}
         />
         <FundingInput
           brackets={quoteTokenBrackets}
           tokenAddress={quoteTokenAddress}
           value={quoteTokenAmount}
+          onChange={onQuoteTokenAmountChange}
         />
       </div>
     </Wrapper>
