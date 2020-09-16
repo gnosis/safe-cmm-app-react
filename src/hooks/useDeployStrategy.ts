@@ -63,8 +63,8 @@ export function useDeployStrategy(params: Params): Return {
       quoteTokenAddress,
       parseAmount(lowestPrice, baseTokenDetails.decimals),
       parseAmount(highestPrice, baseTokenDetails.decimals),
-      parseAmount(baseTokenAmount, baseTokenDetails.decimals),
-      parseAmount(quoteTokenAmount, quoteTokenDetails.decimals),
+      new BN(baseTokenAmount),
+      new BN(quoteTokenAmount),
       new BN(startPrice.toString())
     );
   };
