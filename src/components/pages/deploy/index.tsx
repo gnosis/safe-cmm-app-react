@@ -48,6 +48,25 @@ export function DeployPage(): JSX.Element {
     []
   );
 
+  const swapTokens = useCallback(() => {
+    setBaseTokenAddress(quoteTokenAddress);
+    setQuoteTokenAddress(baseTokenAddress);
+  }, [baseTokenAddress, quoteTokenAddress]);
+
+  const onSelectTokenFactory = useCallback(
+    (
+      setter: React.Dispatch<React.SetStateAction<string>>,
+      oppositeValue: string
+    ) => (address: string): void => {
+      if (address === oppositeValue) {
+        swapTokens();
+      } else {
+        setter(address);
+      }
+    },
+    [swapTokens]
+  );
+
   const viewerProps: Props = {
     // inputs
     baseTokenAddress,
@@ -62,8 +81,15 @@ export function DeployPage(): JSX.Element {
     baseTokenBrackets,
     quoteTokenBrackets,
     // callbacks
-    onBaseTokenSelect: setBaseTokenAddress,
-    onQuoteTokenSelect: setQuoteTokenAddress,
+    swapTokens,
+    onBaseTokenSelect: onSelectTokenFactory(
+      setBaseTokenAddress,
+      quoteTokenAddress
+    ),
+    onQuoteTokenSelect: onSelectTokenFactory(
+      setQuoteTokenAddress,
+      baseTokenAddress
+    ),
     onLowestPriceChange: onChangeHandlerFactory(setLowestPrice),
     onStartPriceChange: onChangeHandlerFactory(setStartPrice),
     onHighestPriceChange: onChangeHandlerFactory(setHighestPrice),

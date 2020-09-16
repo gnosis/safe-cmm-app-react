@@ -2,22 +2,24 @@ import React, { memo, useContext } from "react";
 import styled from "styled-components";
 
 import { TokenSelector } from "components/basic/inputs/TokenSelector";
-import { Icon } from "@gnosis.pm/safe-react-components";
+import { Button, Icon } from "@gnosis.pm/safe-react-components";
 
 import { DeployPageContext } from "./viewer";
+import { Link } from "components/basic/inputs/Link";
 
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
 
-  & > span > svg {
+  .swapIcon {
     transform: rotate(90deg);
   }
 `;
 
 function component(): JSX.Element {
   const {
+    swapTokens,
     onBaseTokenSelect,
     onQuoteTokenSelect,
     baseTokenAddress,
@@ -32,7 +34,9 @@ function component(): JSX.Element {
         onSelect={onBaseTokenSelect}
         selectedTokenAddress={baseTokenAddress}
       />
-      <Icon type="transactionsInactive" size="md" />
+      <Link onClick={swapTokens} textSize="sm" color="text">
+        <Icon type="transactionsInactive" size="md" className="swapIcon" />
+      </Link>
       <TokenSelector
         label="Pick Token B"
         tooltip="This is the token that will be sold for token A"

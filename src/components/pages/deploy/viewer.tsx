@@ -67,6 +67,7 @@ export interface Props {
   quoteTokenBrackets?: number;
   messages?: MessageProps[];
   // callbacks
+  swapTokens?: () => void;
   onBaseTokenSelect?: (address: string) => void;
   onQuoteTokenSelect?: (address: string) => void;
   onLowestPriceChange?: OnChangeHandler;
