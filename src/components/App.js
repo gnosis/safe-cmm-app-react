@@ -1,5 +1,6 @@
 import React from "react";
 import { hot } from "react-hot-loader/root";
+import { RecoilRoot } from "recoil";
 
 import { theme } from "theme";
 
@@ -17,11 +18,13 @@ const App = () => {
     // useStyles and other styling methods from Material-UI will not work!
     <StyledComponentThemeProvider theme={theme}>
       <GlobalStyle />
-      <Web3Provider>
-        <Router>
-          <TabView />
-        </Router>
-      </Web3Provider>
+      <RecoilRoot>
+        <Web3Provider>
+          <Router>
+            <TabView />
+          </Router>
+        </Web3Provider>
+      </RecoilRoot>
     </StyledComponentThemeProvider>
   );
 };

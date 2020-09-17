@@ -9,7 +9,7 @@
   "env": {
     "node": true,
     "es6": true,
-    "browser": true,
+    "browser": true
   },
   "settings": {
     "react": {
@@ -20,5 +20,14 @@
         "paths": ["src"]
       }
     }
+  },
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "additionalHooks": "useRecoilCallback"
+      }
+    ]
   }
 }
