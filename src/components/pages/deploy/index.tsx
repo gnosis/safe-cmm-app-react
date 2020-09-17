@@ -1,10 +1,9 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 import { useDeployStrategy } from "hooks/useDeployStrategy";
 
 import { DeployPageViewer, Props } from "./viewer";
 
-// TODO: fix type
 const onChangeHandlerFactory = (
   setter: React.Dispatch<React.SetStateAction<string>>
 ) => (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -104,8 +103,48 @@ export function DeployPage(): JSX.Element {
     [swapTokens]
   );
 
-  const viewerProps: Props = {
-    // inputs
+  const viewerProps: Props = useMemo(() => {
+    return {
+      // inputs
+      baseTokenAddress,
+      quoteTokenAddress,
+      lowestPrice,
+      startPrice,
+      highestPrice,
+      baseTokenAmount,
+      quoteTokenAmount,
+      totalBrackets,
+      // display
+      baseTokenBrackets,
+      quoteTokenBrackets,
+      // callbacks
+      swapTokens,
+      onBaseTokenSelect: onSelectTokenFactory(
+        setBaseTokenAddress,
+        quoteTokenAddress
+      ),
+      onQuoteTokenSelect: onSelectTokenFactory(
+        setQuoteTokenAddress,
+        baseTokenAddress
+      ),
+      onLowestPriceChange: onChangeHandlerFactory(setLowestPrice),
+      onStartPriceChange: onChangeHandlerFactory(setStartPrice),
+      onHighestPriceChange: onChangeHandlerFactory(setHighestPrice),
+      onBaseTokenAmountChange: onChangeHandlerFactory(setBaseTokenAmount),
+      onQuoteTokenAmountChange: onChangeHandlerFactory(setQuoteTokenAmount),
+      onTotalBracketsChange,
+      onSubmit: deployStrategy && onSubmit,
+      isSubmitting,
+      isValid: !!deployStrategy,
+      messages: error && [
+        {
+          type: "error",
+          label: error.label,
+          children: error.body,
+        },
+      ],
+    };
+  }, [
     baseTokenAddress,
     quoteTokenAddress,
     lowestPrice,
@@ -114,36 +153,15 @@ export function DeployPage(): JSX.Element {
     baseTokenAmount,
     quoteTokenAmount,
     totalBrackets,
-    // display
     baseTokenBrackets,
     quoteTokenBrackets,
-    // callbacks
     swapTokens,
-    onBaseTokenSelect: onSelectTokenFactory(
-      setBaseTokenAddress,
-      quoteTokenAddress
-    ),
-    onQuoteTokenSelect: onSelectTokenFactory(
-      setQuoteTokenAddress,
-      baseTokenAddress
-    ),
-    onLowestPriceChange: onChangeHandlerFactory(setLowestPrice),
-    onStartPriceChange: onChangeHandlerFactory(setStartPrice),
-    onHighestPriceChange: onChangeHandlerFactory(setHighestPrice),
-    onBaseTokenAmountChange: onChangeHandlerFactory(setBaseTokenAmount),
-    onQuoteTokenAmountChange: onChangeHandlerFactory(setQuoteTokenAmount),
-    onTotalBracketsChange: onTotalBracketsChange,
-    onSubmit: deployStrategy && onSubmit,
+    onSelectTokenFactory,
+    deployStrategy,
+    onSubmit,
     isSubmitting,
-    isValid: !!deployStrategy,
-    messages: error && [
-      {
-        type: "error",
-        label: error.label,
-        children: error.body,
-      },
-    ],
-  };
+    error,
+  ]);
 
   return <DeployPageViewer {...viewerProps} />;
 }
