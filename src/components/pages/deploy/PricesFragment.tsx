@@ -1,11 +1,25 @@
-import React, { memo, useContext } from "react";
+import React, { memo } from "react";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
 import { FundingInput } from "components/basic/inputs/FundingInput";
 import { TotalBrackets } from "components/basic/inputs/TotalBrackets";
 
-import { DeployPageContext } from "./viewer";
+import { Props as ViewerProps } from "./viewer";
+import {
+  baseTokenAddressAtom,
+  baseTokenAmountAtom,
+  baseTokenBracketsAtom,
+  highestPriceAtom,
+  lowestPriceAtom,
+  quoteTokenAddressAtom,
+  quoteTokenAmountAtom,
+  quoteTokenBracketsAtom,
+  startPriceAtom,
+  totalBracketsAtom,
+  totalInvestmentAtom,
+} from "./atoms";
 
 const Wrapper = styled.div`
   display: flex;
@@ -33,19 +47,18 @@ const Wrapper = styled.div`
   }
 `;
 
-function component(): JSX.Element {
+type Props = Pick<
+  ViewerProps,
+  | "onLowestPriceChange"
+  | "onStartPriceChange"
+  | "onHighestPriceChange"
+  | "onBaseTokenAmountChange"
+  | "onQuoteTokenAmountChange"
+  | "onTotalBracketsChange"
+>;
+
+function component(props: Props): JSX.Element {
   const {
-    baseTokenAddress,
-    quoteTokenAddress,
-    baseTokenAmount,
-    quoteTokenAmount,
-    totalBrackets,
-    totalInvestment,
-    baseTokenBrackets,
-    quoteTokenBrackets,
-    startPrice,
-    lowestPrice,
-    highestPrice,
     // callbacks
     onLowestPriceChange,
     onStartPriceChange,
@@ -53,7 +66,19 @@ function component(): JSX.Element {
     onBaseTokenAmountChange,
     onQuoteTokenAmountChange,
     onTotalBracketsChange,
-  } = useContext(DeployPageContext);
+  } = props;
+
+  const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
+  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
+  const baseTokenBrackets = useRecoilValue(baseTokenBracketsAtom);
+  const quoteTokenBrackets = useRecoilValue(quoteTokenBracketsAtom);
+  const baseTokenAmount = useRecoilValue(baseTokenAmountAtom);
+  const quoteTokenAmount = useRecoilValue(quoteTokenAmountAtom);
+  const totalBrackets = useRecoilValue(totalBracketsAtom);
+  const totalInvestment = useRecoilValue(totalInvestmentAtom);
+  const startPrice = useRecoilValue(startPriceAtom);
+  const lowestPrice = useRecoilValue(lowestPriceAtom);
+  const highestPrice = useRecoilValue(highestPriceAtom);
 
   return (
     <Wrapper>

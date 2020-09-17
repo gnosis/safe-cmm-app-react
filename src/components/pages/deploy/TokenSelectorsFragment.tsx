@@ -1,11 +1,14 @@
 import React, { memo, useContext } from "react";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 
-import { TokenSelector } from "components/basic/inputs/TokenSelector";
 import { Button, Icon } from "@gnosis.pm/safe-react-components";
 
-import { DeployPageContext } from "./viewer";
+import { TokenSelector } from "components/basic/inputs/TokenSelector";
 import { Link } from "components/basic/inputs/Link";
+
+import { Props as ViewerProps } from "./viewer";
+import { baseTokenAddressAtom, quoteTokenAddressAtom } from "./atoms";
 
 const Wrapper = styled.div`
   display: flex;
@@ -17,14 +20,15 @@ const Wrapper = styled.div`
   }
 `;
 
-function component(): JSX.Element {
-  const {
-    swapTokens,
-    onBaseTokenSelect,
-    onQuoteTokenSelect,
-    baseTokenAddress,
-    quoteTokenAddress,
-  } = useContext(DeployPageContext);
+type Props = Pick<
+  ViewerProps,
+  "swapTokens" | "onBaseTokenSelect" | "onQuoteTokenSelect"
+>;
+
+function component(props: Props): JSX.Element {
+  const { swapTokens, onBaseTokenSelect, onQuoteTokenSelect } = props;
+  const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
+  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
 
   return (
     <Wrapper>

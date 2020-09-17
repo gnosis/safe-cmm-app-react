@@ -1,9 +1,10 @@
-import React, { memo, useContext } from "react";
+import React, { memo } from "react";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { Button } from "@gnosis.pm/safe-react-components";
 
-import { DeployPageContext } from "./viewer";
+import { isSubmittingAtom, isValidAtom } from "./atoms";
 
 const StyledButton = styled(Button)`
   border-radius: 16px;
@@ -11,7 +12,8 @@ const StyledButton = styled(Button)`
 `;
 
 function component(): JSX.Element {
-  const { isValid, isSubmitting } = useContext(DeployPageContext);
+  const isValid = useRecoilValue(isValidAtom);
+  const isSubmitting = useRecoilValue(isSubmittingAtom);
 
   return (
     <StyledButton

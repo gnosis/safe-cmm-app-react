@@ -1,10 +1,9 @@
-import React, { memo, createContext } from "react";
+import React, { memo } from "react";
+import { useRecoilValue } from "recoil";
 import { Backdrop, withStyles } from "@material-ui/core";
 import styled from "styled-components";
 
 import { Loader } from "@gnosis.pm/safe-react-components";
-
-import { Props as MessageProps } from "components/basic/display/Message";
 
 import { SideBar } from "./SideBar";
 import { TokenSelectorsFragment } from "./TokenSelectorsFragment";
@@ -12,6 +11,7 @@ import { PricesFragment } from "./PricesFragment";
 import { MarketPriceFragment } from "./MarketPriceFragment";
 import { ErrorMessagesFragment } from "./ErrorMessagesFragment";
 import { DeployStrategyButtonFragment } from "./DeployStrategyButtonFragment";
+import { isSubmittingAtom } from "./atoms";
 
 const PageLayout = styled.div`
   display: flex;
@@ -48,21 +48,6 @@ const StyledBackdrop = withStyles(() => ({ root: { zIndex: 999 } }))(Backdrop);
 type OnChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => void;
 
 export interface Props {
-  isSubmitting: boolean;
-  isValid: boolean;
-
-  baseTokenAddress?: string;
-  quoteTokenAddress?: string;
-  lowestPrice?: string;
-  highestPrice?: string;
-  startPrice?: string;
-  baseTokenAmount?: string;
-  quoteTokenAmount?: string;
-  totalBrackets?: string;
-  totalInvestment?: string;
-  baseTokenBrackets?: number;
-  quoteTokenBrackets?: number;
-  messages?: MessageProps[];
   // callbacks
   swapTokens?: () => void;
   onBaseTokenSelect?: (address: string) => void;
@@ -76,35 +61,30 @@ export interface Props {
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
-export const DeployPageContext = createContext<Props>({
-  isSubmitting: false,
-  isValid: false,
-});
-
 /**
  * All component props are passed down into a local context
  * Every fragment takes what is needs from it
  */
 function component(props: Props): JSX.Element {
+  const isSubmitting = useRecoilValue(isSubmittingAtom);
+
   return (
-    <DeployPageContext.Provider value={props}>
-      <PageLayout>
-        <form onSubmit={props.onSubmit}>
-          <DeployWidget>
-            <TokenSelectorsFragment />
-            <MarketPriceFragment />
-            <PricesFragment />
-            <ErrorMessagesFragment />
-            <DeployStrategyButtonFragment />
-          </DeployWidget>
-        </form>
-        <SideBar />
-        <StyledBackdrop open={props.isSubmitting}>
-          <Loader size="lg" color="primaryLight" />
-        </StyledBackdrop>
-      </PageLayout>
-    </DeployPageContext.Provider>
+    <PageLayout>
+      <form onSubmit={props.onSubmit}>
+        <DeployWidget>
+          <TokenSelectorsFragment {...props} />
+          <MarketPriceFragment />
+          <PricesFragment {...props} />
+          <ErrorMessagesFragment />
+          <DeployStrategyButtonFragment />
+        </DeployWidget>
+      </form>
+      <SideBar />
+      <StyledBackdrop open={isSubmitting}>
+        <Loader size="lg" color="primaryLight" />
+      </StyledBackdrop>
+    </PageLayout>
   );
 }
 
-export const DeployPageViewer = memo(component);
+export const DeployPageViewer: typeof component = memo(component);
