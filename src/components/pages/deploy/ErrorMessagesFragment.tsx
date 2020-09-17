@@ -1,10 +1,10 @@
-import React, { useContext, memo } from "react";
+import React, { memo } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { Message } from "components/basic/display/Message";
 
-import { messagesSelector } from "recoil/selectors";
+import { messagesSelector } from "components/pages/deploy/selectors";
 
 const Wrapper = styled.div`
   & > :not(:last-child) {

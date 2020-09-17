@@ -46,4 +46,4 @@ function component(props: Props): JSX.Element {
   );
 }
 
-export const SubtextAmount = memo(component);
+export const SubtextAmount: typeof component = memo(component);
