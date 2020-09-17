@@ -134,8 +134,8 @@ function component(): JSX.Element {
         </StyledAccordionSummary>
         <StyledAccordionDetails>
           <ol>
-            {howItWorks.map((item: string) => (
-              <li>{item}</li>
+            {howItWorks.map((item: string, id: number) => (
+              <li key={id}>{item}</li>
             ))}
           </ol>
         </StyledAccordionDetails>
