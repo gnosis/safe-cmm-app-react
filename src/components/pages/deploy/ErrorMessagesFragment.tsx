@@ -21,8 +21,8 @@ function component(): JSX.Element {
   return (
     messages && (
       <Wrapper className="messages">
-        {messages.map((msgProps) => (
-          <Message {...msgProps} />
+        {messages.map((msgProps, id) => (
+          <Message {...msgProps} key={id} />
         ))}
       </Wrapper>
     )
