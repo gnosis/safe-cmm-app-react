@@ -135,6 +135,7 @@ export function DeployPage(): JSX.Element {
     onTotalBracketsChange: onTotalBracketsChange,
     onSubmit: deployStrategy && onSubmit,
     isSubmitting,
+    isValid: !!deployStrategy,
     messages: error && [
       {
         type: "error",

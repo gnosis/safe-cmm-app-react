@@ -11,7 +11,7 @@ const StyledButton = styled(Button)`
 `;
 
 function component(): JSX.Element {
-  const { onSubmit, isSubmitting } = useContext(DeployPageContext);
+  const { isValid, isSubmitting } = useContext(DeployPageContext);
 
   return (
     <StyledButton
@@ -19,7 +19,7 @@ function component(): JSX.Element {
       size="lg"
       color="primary"
       variant="contained"
-      disabled={!onSubmit || isSubmitting}
+      disabled={!isValid || isSubmitting}
     >
       <span>Deploy Strategy</span>
     </StyledButton>

@@ -48,7 +48,8 @@ const StyledBackdrop = withStyles(() => ({ root: { zIndex: 999 } }))(Backdrop);
 type OnChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => void;
 
 export interface Props {
-  isSubmitting?: boolean;
+  isSubmitting: boolean;
+  isValid: boolean;
 
   baseTokenAddress?: string;
   quoteTokenAddress?: string;
@@ -75,7 +76,10 @@ export interface Props {
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
-export const DeployPageContext = createContext<Props>({});
+export const DeployPageContext = createContext<Props>({
+  isSubmitting: false,
+  isValid: false,
+});
 
 /**
  * All component props are passed down into a local context
