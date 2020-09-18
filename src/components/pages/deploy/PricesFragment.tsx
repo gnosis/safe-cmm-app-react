@@ -10,16 +10,18 @@ import { Props as ViewerProps } from "./viewer";
 import {
   baseTokenAddressAtom,
   baseTokenAmountAtom,
-  baseTokenBracketsAtom,
   highestPriceAtom,
   lowestPriceAtom,
   quoteTokenAddressAtom,
   quoteTokenAmountAtom,
-  quoteTokenBracketsAtom,
   startPriceAtom,
   totalBracketsAtom,
   totalInvestmentAtom,
 } from "./atoms";
+import {
+  baseTokenBracketsSelector,
+  quoteTokenBracketsSelector,
+} from "./selectors";
 
 const Wrapper = styled.div`
   display: flex;
@@ -70,8 +72,8 @@ function component(props: Props): JSX.Element {
 
   const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
   const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
-  const baseTokenBrackets = useRecoilValue(baseTokenBracketsAtom);
-  const quoteTokenBrackets = useRecoilValue(quoteTokenBracketsAtom);
+  const baseTokenBrackets = useRecoilValue(baseTokenBracketsSelector);
+  const quoteTokenBrackets = useRecoilValue(quoteTokenBracketsSelector);
   const baseTokenAmount = useRecoilValue(baseTokenAmountAtom);
   const quoteTokenAmount = useRecoilValue(quoteTokenAmountAtom);
   const totalBrackets = useRecoilValue(totalBracketsAtom);

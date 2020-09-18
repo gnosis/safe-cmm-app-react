@@ -20,14 +20,6 @@ export const quoteTokenAmountAtom = atom({
   default: "",
 });
 export const totalBracketsAtom = atom({ key: "totalBrackets", default: "" });
-export const baseTokenBracketsAtom = atom({
-  key: "baseTokenBrackets",
-  default: 0,
-});
-export const quoteTokenBracketsAtom = atom({
-  key: "quoteTokenBrackets",
-  default: 0,
-});
 export const totalInvestmentAtom = atom({
   key: "totalInvestment",
   default: "",

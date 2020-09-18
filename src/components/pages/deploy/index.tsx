@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   RecoilState,
   useRecoilCallback,
@@ -17,8 +17,6 @@ import {
   baseTokenAmountAtom,
   quoteTokenAmountAtom,
   totalBracketsAtom,
-  baseTokenBracketsAtom,
-  quoteTokenBracketsAtom,
   errorAtom,
   isSubmittingAtom,
 } from "./atoms";
@@ -41,6 +39,7 @@ export function DeployPage(): JSX.Element {
   const setHighestPrice = useSetRecoilState(highestPriceAtom);
   const setBaseTokenAmount = useSetRecoilState(baseTokenAmountAtom);
   const setQuoteTokenAmount = useSetRecoilState(quoteTokenAmountAtom);
+  const setTotalBrackets = useSetRecoilState(totalBracketsAtom);
 
   const deployStrategy = useDeployStrategy({
     baseTokenAddress,
@@ -99,29 +98,6 @@ export function DeployPage(): JSX.Element {
     [deployStrategy]
   );
 
-  const onTotalBracketsChange = useRecoilCallback(
-    ({ set }) => (event: React.ChangeEvent<HTMLInputElement>): void => {
-      set(totalBracketsAtom, event.target.value);
-
-      const brackets = +event.target.value;
-
-      // TODO: find out how to properly split brackets when uneven
-      if (brackets >= 1) {
-        if (brackets % 2 === 0) {
-          set(baseTokenBracketsAtom, brackets / 2);
-          set(quoteTokenBracketsAtom, brackets / 2);
-        } else {
-          set(baseTokenBracketsAtom, Math.ceil(brackets / 2));
-          set(quoteTokenBracketsAtom, Math.floor(brackets / 2));
-        }
-      } else {
-        set(baseTokenBracketsAtom, 0);
-        set(quoteTokenBracketsAtom, 0);
-      }
-    },
-    []
-  );
-
   const swapTokens = useRecoilCallback(({ snapshot, set }) => async (): Promise<
     void
   > => {
@@ -164,7 +140,7 @@ export function DeployPage(): JSX.Element {
       onHighestPriceChange: onChangeHandlerFactory(setHighestPrice),
       onBaseTokenAmountChange: onChangeHandlerFactory(setBaseTokenAmount),
       onQuoteTokenAmountChange: onChangeHandlerFactory(setQuoteTokenAmount),
-      onTotalBracketsChange,
+      onTotalBracketsChange: onChangeHandlerFactory(setTotalBrackets),
       onSubmit,
     }),
     [onSubmit]

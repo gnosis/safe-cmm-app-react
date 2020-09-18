@@ -47,3 +47,29 @@ export const isValidSelector = selector({
     ].every(Boolean);
   },
 });
+
+export const baseTokenBracketsSelector = selector({
+  key: "baseTokenBrackets",
+  get: ({ get }): number => {
+    const brackets = Number(get(totalBracketsAtom));
+
+    if (brackets >= 1) {
+      return Math.ceil(brackets / 2);
+    } else {
+      return 0;
+    }
+  },
+});
+
+export const quoteTokenBracketsSelector = selector({
+  key: "quoteTokenBrackets",
+  get: ({ get }): number => {
+    const brackets = Number(get(totalBracketsAtom));
+
+    if (brackets >= 1) {
+      return Math.floor(brackets / 2);
+    } else {
+      return 0;
+    }
+  },
+});
