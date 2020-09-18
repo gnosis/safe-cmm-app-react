@@ -3,8 +3,6 @@ import BN from "bn.js";
 import Decimal from "decimal.js";
 import { Meta } from "@storybook/react";
 
-import { Text } from "@gnosis.pm/safe-react-components";
-
 import {
   Params as UseDeployStrategyParams,
   Return as UseDeployStrategyReturn,
@@ -12,6 +10,29 @@ import {
 
 import { DeployPageViewer, Props } from "./viewer";
 import { DeployPage } from ".";
+import {
+  baseTokenAddressAtom,
+  baseTokenAmountAtom,
+  errorAtom,
+  highestPriceAtom,
+  isSubmittingAtom,
+  lowestPriceAtom,
+  quoteTokenAddressAtom,
+  quoteTokenAmountAtom,
+  startPriceAtom,
+  totalBracketsAtom,
+} from "./atoms";
+
+const defaultStates = [
+  [baseTokenAddressAtom, "0x6B175474E89094C44Da98b954EedeAC495271d0F"],
+  [quoteTokenAddressAtom, "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
+  [lowestPriceAtom, "300"],
+  [startPriceAtom, "323"],
+  [highestPriceAtom, "350"],
+  [baseTokenAmountAtom, "1000"],
+  [quoteTokenAmountAtom, "1000"],
+  [totalBracketsAtom, "10"],
+];
 
 export default {
   component: DeployPageViewer,
@@ -31,76 +52,33 @@ export default {
           ? new BN("0")
           : null,
     }),
+    recoilStates: defaultStates,
   },
 } as Meta;
 
 // Viewer
 
-export const deployPageData: Props = {};
-
-export const filledDeployPageData: Props = {
-  ...deployPageData,
-  baseTokenAddress: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-  quoteTokenAddress: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-};
-
 const Template = (args: Props): JSX.Element => {
-  const [baseTokenAddress, setBaseTokenAddress] = useState(
-    args.baseTokenAddress
-  );
-  const [quoteTokenAddress, setQuoteTokenAddress] = useState(
-    args.quoteTokenAddress
-  );
-  return (
-    <DeployPageViewer
-      {...args}
-      baseTokenAddress={baseTokenAddress}
-      quoteTokenAddress={quoteTokenAddress}
-      onBaseTokenSelect={setBaseTokenAddress}
-      onQuoteTokenSelect={setQuoteTokenAddress}
-    />
-  );
+  const onSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => event.preventDefault();
+
+  return <DeployPageViewer {...args} onSubmit={onSubmit} />;
 };
 
 export const Default = Template.bind({});
-Default.args = { ...deployPageData };
 
 export const Submitting = Template.bind({});
-Submitting.args = { ...deployPageData, isSubmitting: true };
+Submitting.parameters = {
+  recoilStates: [...defaultStates, [isSubmittingAtom, "true"]],
+};
 
 export const WithError = Template.bind({});
-WithError.args = {
-  ...Default.args,
-  ...filledDeployPageData,
-  messages: [{ type: "error", label: "Insufficient DAI balance" }],
-};
-
-export const WithWarning = Template.bind({});
-WithWarning.args = {
-  ...Default.args,
-  ...filledDeployPageData,
-  messages: [
-    {
-      type: "warning",
-      label: "Detected: Start price >2% higher than market price",
-      children: (
-        <Text as="span" size="md" color="shadow">
-          The specified{" "}
-          <Text as="span" size="md" strong>
-            Start Price
-          </Text>{" "}
-          is at least 2% higher than the current indicated market price. If
-          intentional continue with your order.
-        </Text>
-      ),
-    },
+WithError.parameters = {
+  recoilStates: [
+    ...defaultStates,
+    [errorAtom, { label: "Insufficient DAI balance" }],
   ],
-};
-
-export const MultipleMessages = Template.bind({});
-MultipleMessages.args = {
-  ...WithWarning.args,
-  messages: [...WithWarning.args.messages, ...WithError.args.messages],
 };
 
 // Container

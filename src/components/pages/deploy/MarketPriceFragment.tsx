@@ -1,16 +1,19 @@
-import React, { useContext, memo } from "react";
+import React, { memo } from "react";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { MarketPrice } from "components/basic/display/MarketPrice";
 
-import { DeployPageContext } from "./viewer";
+import { baseTokenAddressAtom, quoteTokenAddressAtom } from "./atoms";
 
 const Wrapper = styled.div`
   align-self: center;
 `;
 
 function component(): JSX.Element {
-  const { baseTokenAddress, quoteTokenAddress } = useContext(DeployPageContext);
+  const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
+  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
+
   return (
     <Wrapper>
       <MarketPrice

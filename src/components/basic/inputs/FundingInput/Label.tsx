@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import styled from "styled-components";
 
 import { Text } from "@gnosis.pm/safe-react-components";
@@ -16,7 +16,7 @@ interface Props {
   error?: boolean;
 }
 
-export const Label = (props: Props): JSX.Element => {
+function component(props: Props): JSX.Element {
   const { onClick, error } = props;
   return (
     <Wrapper {...props}>
@@ -28,4 +28,6 @@ export const Label = (props: Props): JSX.Element => {
       </ButtonLink>
     </Wrapper>
   );
-};
+}
+
+export const Label: typeof component = memo(component);

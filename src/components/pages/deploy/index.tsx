@@ -1,8 +1,28 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
+import {
+  RecoilState,
+  useRecoilCallback,
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
 
 import { useDeployStrategy } from "hooks/useDeployStrategy";
 
+import {
+  baseTokenAddressAtom,
+  quoteTokenAddressAtom,
+  lowestPriceAtom,
+  startPriceAtom,
+  highestPriceAtom,
+  baseTokenAmountAtom,
+  quoteTokenAmountAtom,
+  totalBracketsAtom,
+  errorAtom,
+  isSubmittingAtom,
+} from "./atoms";
+
 import { DeployPageViewer, Props } from "./viewer";
+import { isValidSelector } from "./selectors";
 
 const onChangeHandlerFactory = (
   setter: React.Dispatch<React.SetStateAction<string>>
@@ -12,156 +32,119 @@ const onChangeHandlerFactory = (
 
 export function DeployPage(): JSX.Element {
   // input states
-  const [baseTokenAddress, setBaseTokenAddress] = useState("");
-  const [quoteTokenAddress, setQuoteTokenAddress] = useState("");
-  const [lowestPrice, setLowestPrice] = useState("");
-  const [startPrice, setStartPrice] = useState("");
-  const [highestPrice, setHighestPrice] = useState("");
-  const [baseTokenAmount, setBaseTokenAmount] = useState("");
-  const [quoteTokenAmount, setQuoteTokenAmount] = useState("");
-  const [totalBrackets, setTotalBrackets] = useState("");
-  // display states
-  const [baseTokenBrackets, setBaseTokenBrackets] = useState(0);
-  const [quoteTokenBrackets, setQuoteTokenBrackets] = useState(0);
-  const [totalInvestment, setTotalInvestment] = useState("");
-  // error handling
-  const [error, setError] = useState<{ label: string; body: string } | null>(
-    null
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
+  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
+  const setLowestPrice = useSetRecoilState(lowestPriceAtom);
+  const setStartPrice = useSetRecoilState(startPriceAtom);
+  const setHighestPrice = useSetRecoilState(highestPriceAtom);
+  const setBaseTokenAmount = useSetRecoilState(baseTokenAmountAtom);
+  const setQuoteTokenAmount = useSetRecoilState(quoteTokenAmountAtom);
+  const setTotalBrackets = useSetRecoilState(totalBracketsAtom);
 
   const deployStrategy = useDeployStrategy({
-    lowestPrice,
-    highestPrice,
-    baseTokenAmount,
-    quoteTokenAmount,
-    totalBrackets,
     baseTokenAddress,
     quoteTokenAddress,
-    startPrice,
   });
 
-  const onSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const onSubmit = useRecoilCallback(
+    ({ snapshot, set }) => async (
+      event: React.FormEvent<HTMLFormElement>
+    ): Promise<void> => {
       // TODO: move on to another page/show success message
       event.preventDefault();
 
-      if (deployStrategy) {
-        setIsSubmitting(true);
-        setError(null);
+      const isValid = await snapshot.getPromise(isValidSelector);
+
+      if (isValid) {
+        set(isSubmittingAtom, true);
+        set(errorAtom, null);
+
         try {
-          await deployStrategy();
+          // Fetch state values from snapshot
+          const [
+            lowestPrice,
+            highestPrice,
+            baseTokenAmount,
+            quoteTokenAmount,
+            totalBrackets,
+            startPrice,
+          ] = await Promise.all([
+            snapshot.getPromise(lowestPriceAtom),
+            snapshot.getPromise(highestPriceAtom),
+            snapshot.getPromise(baseTokenAmountAtom),
+            snapshot.getPromise(quoteTokenAmountAtom),
+            snapshot.getPromise(totalBracketsAtom),
+            snapshot.getPromise(startPriceAtom),
+          ]);
+
+          await deployStrategy({
+            lowestPrice,
+            highestPrice,
+            baseTokenAmount,
+            quoteTokenAmount,
+            totalBrackets,
+            startPrice,
+          });
         } catch (e) {
           console.error(`Failed to deploy strategy:`, e);
-          setError({ label: "Failed to deploy strategy", body: e.message });
+          set(errorAtom, {
+            label: "Failed to deploy strategy",
+            body: e.message,
+          });
         }
-        setIsSubmitting(false);
+        set(isSubmittingAtom, false);
       }
     },
     [deployStrategy]
   );
 
-  const onTotalBracketsChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>): void => {
-      setTotalBrackets(event.target.value);
+  const swapTokens = useRecoilCallback(({ snapshot, set }) => async (): Promise<
+    void
+  > => {
+    const [currBase, currQuote] = await Promise.all([
+      snapshot.getPromise(baseTokenAddressAtom),
+      snapshot.getPromise(quoteTokenAddressAtom),
+    ]);
+    set(quoteTokenAddressAtom, currBase);
+    set(baseTokenAddressAtom, currQuote);
+  });
 
-      const brackets = +event.target.value;
+  const onSelectTokenFactory = useRecoilCallback(
+    ({ snapshot, set }) => (
+      currentSelectAtom: RecoilState<string>,
+      oppositeSelectAtom: RecoilState<string>
+    ) => async (address: string): Promise<void> => {
+      const oppositeValue = await snapshot.getPromise(oppositeSelectAtom);
 
-      // TODO: find out how to properly split brackets when uneven
-      if (brackets >= 1) {
-        if (brackets % 2 === 0) {
-          setBaseTokenBrackets(brackets / 2);
-          setQuoteTokenBrackets(brackets / 2);
-        } else {
-          setBaseTokenBrackets(Math.ceil(brackets / 2));
-          setQuoteTokenBrackets(Math.floor(brackets / 2));
-        }
-      } else {
-        setBaseTokenBrackets(0);
-        setQuoteTokenBrackets(0);
-      }
-    },
-    []
-  );
-
-  const swapTokens = useCallback(() => {
-    setBaseTokenAddress(quoteTokenAddress);
-    setQuoteTokenAddress(baseTokenAddress);
-  }, [baseTokenAddress, quoteTokenAddress]);
-
-  const onSelectTokenFactory = useCallback(
-    (
-      setter: React.Dispatch<React.SetStateAction<string>>,
-      oppositeValue: string
-    ) => (address: string): void => {
       if (address === oppositeValue) {
         swapTokens();
       } else {
-        setter(address);
+        set(currentSelectAtom, address);
       }
-    },
-    [swapTokens]
+    }
   );
 
-  const viewerProps: Props = useMemo(() => {
-    return {
-      // inputs
-      baseTokenAddress,
-      quoteTokenAddress,
-      lowestPrice,
-      startPrice,
-      highestPrice,
-      baseTokenAmount,
-      quoteTokenAmount,
-      totalBrackets,
-      // display
-      baseTokenBrackets,
-      quoteTokenBrackets,
-      // callbacks
+  const viewerProps: Props = useMemo(
+    () => ({
       swapTokens,
       onBaseTokenSelect: onSelectTokenFactory(
-        setBaseTokenAddress,
-        quoteTokenAddress
+        baseTokenAddressAtom,
+        quoteTokenAddressAtom
       ),
       onQuoteTokenSelect: onSelectTokenFactory(
-        setQuoteTokenAddress,
-        baseTokenAddress
+        quoteTokenAddressAtom,
+        baseTokenAddressAtom
       ),
       onLowestPriceChange: onChangeHandlerFactory(setLowestPrice),
       onStartPriceChange: onChangeHandlerFactory(setStartPrice),
       onHighestPriceChange: onChangeHandlerFactory(setHighestPrice),
       onBaseTokenAmountChange: onChangeHandlerFactory(setBaseTokenAmount),
       onQuoteTokenAmountChange: onChangeHandlerFactory(setQuoteTokenAmount),
-      onTotalBracketsChange,
-      onSubmit: deployStrategy && onSubmit,
-      isSubmitting,
-      isValid: !!deployStrategy,
-      messages: error && [
-        {
-          type: "error",
-          label: error.label,
-          children: error.body,
-        },
-      ],
-    };
-  }, [
-    baseTokenAddress,
-    quoteTokenAddress,
-    lowestPrice,
-    startPrice,
-    highestPrice,
-    baseTokenAmount,
-    quoteTokenAmount,
-    totalBrackets,
-    baseTokenBrackets,
-    quoteTokenBrackets,
-    swapTokens,
-    onSelectTokenFactory,
-    deployStrategy,
-    onSubmit,
-    isSubmitting,
-    error,
-  ]);
+      onTotalBracketsChange: onChangeHandlerFactory(setTotalBrackets),
+      onSubmit,
+    }),
+    [onSubmit]
+  );
 
   return <DeployPageViewer {...viewerProps} />;
 }

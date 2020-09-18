@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import BN from "bn.js";
+import Decimal from "decimal.js";
 
 import { parseAmount } from "@gnosis.pm/dex-js";
 
@@ -19,19 +20,18 @@ export interface Params {
   startPrice: string;
 }
 
-export type Return = null | (() => Promise<void>);
+export type Return = (
+  params: Omit<Params, "baseTokenAddress" | "quoteTokenAddress">
+) => Promise<void>;
 
-export function useDeployStrategy(params: Params): Return {
-  const {
-    lowestPrice,
-    highestPrice,
-    baseTokenAmount,
-    quoteTokenAmount,
-    totalBrackets,
-    baseTokenAddress,
-    quoteTokenAddress,
-    startPrice,
-  } = params;
+function priceToBnWhyNotDecimalInstead(price: string): BN {
+  return new BN(new Decimal(price).mul(1e18).toString());
+}
+
+export function useDeployStrategy(
+  params: Pick<Params, "baseTokenAddress" | "quoteTokenAddress">
+): Return {
+  const { baseTokenAddress, quoteTokenAddress } = params;
 
   const web3Context = useContext(Web3Context);
   const { tokenDetails: baseTokenDetails } = useTokenDetails(baseTokenAddress);
@@ -39,33 +39,31 @@ export function useDeployStrategy(params: Params): Return {
     quoteTokenAddress
   );
 
-  // simple validation
-  if (
-    !lowestPrice ||
-    !highestPrice ||
-    !startPrice ||
-    !baseTokenAmount ||
-    !quoteTokenAmount ||
-    !totalBrackets ||
-    !baseTokenAddress ||
-    !quoteTokenAddress ||
-    !baseTokenDetails ||
-    !quoteTokenDetails
-  ) {
-    return null;
-  }
+  return async (params): Promise<void> => {
+    const {
+      lowestPrice,
+      highestPrice,
+      baseTokenAmount,
+      quoteTokenAmount,
+      totalBrackets,
+      startPrice,
+    } = params;
+    console.log(`Params`, params);
 
-  return async (): Promise<void> => {
     await deployStrategy(
       web3Context,
       +totalBrackets,
+      // addresses
       baseTokenAddress,
       quoteTokenAddress,
-      parseAmount(lowestPrice, baseTokenDetails.decimals),
-      parseAmount(highestPrice, baseTokenDetails.decimals),
-      new BN(baseTokenAmount),
-      new BN(quoteTokenAmount),
-      new BN(startPrice.toString())
+      // prices
+      priceToBnWhyNotDecimalInstead(lowestPrice),
+      priceToBnWhyNotDecimalInstead(highestPrice),
+      // amounts
+      parseAmount(baseTokenAmount, baseTokenDetails.decimals),
+      parseAmount(quoteTokenAmount, quoteTokenDetails.decimals),
+      // start price
+      priceToBnWhyNotDecimalInstead(startPrice)
     );
   };
 }
