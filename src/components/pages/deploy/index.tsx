@@ -24,6 +24,7 @@ import {
 } from "./atoms";
 
 import { DeployPageViewer, Props } from "./viewer";
+import { isValidSelector } from "./selectors";
 
 const onChangeHandlerFactory = (
   setter: React.Dispatch<React.SetStateAction<string>>
@@ -34,6 +35,7 @@ const onChangeHandlerFactory = (
 export function DeployPage(): JSX.Element {
   // input states
   const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
+  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
   const setLowestPrice = useSetRecoilState(lowestPriceAtom);
   const setStartPrice = useSetRecoilState(startPriceAtom);
   const setHighestPrice = useSetRecoilState(highestPriceAtom);
@@ -42,6 +44,7 @@ export function DeployPage(): JSX.Element {
 
   const deployStrategy = useDeployStrategy({
     baseTokenAddress,
+    quoteTokenAddress,
   });
 
   const onSubmit = useRecoilCallback(
@@ -51,7 +54,9 @@ export function DeployPage(): JSX.Element {
       // TODO: move on to another page/show success message
       event.preventDefault();
 
-      if (deployStrategy) {
+      const isValid = await snapshot.getPromise(isValidSelector);
+
+      if (isValid) {
         set(isSubmittingAtom, true);
         set(errorAtom, null);
 
@@ -63,7 +68,6 @@ export function DeployPage(): JSX.Element {
             baseTokenAmount,
             quoteTokenAmount,
             totalBrackets,
-            quoteTokenAddress,
             startPrice,
           ] = await Promise.all([
             snapshot.getPromise(lowestPriceAtom),
@@ -71,7 +75,6 @@ export function DeployPage(): JSX.Element {
             snapshot.getPromise(baseTokenAmountAtom),
             snapshot.getPromise(quoteTokenAmountAtom),
             snapshot.getPromise(totalBracketsAtom),
-            snapshot.getPromise(quoteTokenAddressAtom),
             snapshot.getPromise(startPriceAtom),
           ]);
 
@@ -81,7 +84,6 @@ export function DeployPage(): JSX.Element {
             baseTokenAmount,
             quoteTokenAmount,
             totalBrackets,
-            quoteTokenAddress,
             startPrice,
           });
         } catch (e) {
