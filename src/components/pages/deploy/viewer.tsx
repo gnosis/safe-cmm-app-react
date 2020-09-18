@@ -45,19 +45,7 @@ const DeployWidget = styled.div`
 
 const StyledBackdrop = withStyles(() => ({ root: { zIndex: 999 } }))(Backdrop);
 
-type OnChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => void;
-
 export interface Props {
-  // callbacks
-  swapTokens?: () => void;
-  onBaseTokenSelect?: (address: string) => void;
-  onQuoteTokenSelect?: (address: string) => void;
-  onLowestPriceChange?: OnChangeHandler;
-  onStartPriceChange?: OnChangeHandler;
-  onHighestPriceChange?: OnChangeHandler;
-  onBaseTokenAmountChange?: OnChangeHandler;
-  onQuoteTokenAmountChange?: OnChangeHandler;
-  onTotalBracketsChange?: OnChangeHandler;
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
@@ -72,9 +60,9 @@ function component(props: Props): JSX.Element {
     <PageLayout>
       <form onSubmit={props.onSubmit}>
         <DeployWidget>
-          <TokenSelectorsFragment {...props} />
+          <TokenSelectorsFragment />
           <MarketPriceFragment />
-          <PricesFragment {...props} />
+          <PricesFragment />
           <ErrorMessagesFragment />
           <DeployStrategyButtonFragment />
         </DeployWidget>

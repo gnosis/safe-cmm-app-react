@@ -1,10 +1,5 @@
 import React, { useMemo } from "react";
-import {
-  RecoilState,
-  useRecoilCallback,
-  useRecoilValue,
-  useSetRecoilState,
-} from "recoil";
+import { useRecoilCallback, useRecoilValue } from "recoil";
 
 import { useDeployStrategy } from "hooks/useDeployStrategy";
 
@@ -24,22 +19,10 @@ import {
 import { DeployPageViewer, Props } from "./viewer";
 import { isValidSelector } from "./selectors";
 
-const onChangeHandlerFactory = (
-  setter: React.Dispatch<React.SetStateAction<string>>
-) => (event: React.ChangeEvent<HTMLInputElement>): void => {
-  setter(event.target.value);
-};
-
 export function DeployPage(): JSX.Element {
   // input states
   const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
   const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
-  const setLowestPrice = useSetRecoilState(lowestPriceAtom);
-  const setStartPrice = useSetRecoilState(startPriceAtom);
-  const setHighestPrice = useSetRecoilState(highestPriceAtom);
-  const setBaseTokenAmount = useSetRecoilState(baseTokenAmountAtom);
-  const setQuoteTokenAmount = useSetRecoilState(quoteTokenAmountAtom);
-  const setTotalBrackets = useSetRecoilState(totalBracketsAtom);
 
   const deployStrategy = useDeployStrategy({
     baseTokenAddress,
@@ -98,53 +81,7 @@ export function DeployPage(): JSX.Element {
     [deployStrategy]
   );
 
-  const swapTokens = useRecoilCallback(({ snapshot, set }) => async (): Promise<
-    void
-  > => {
-    const [currBase, currQuote] = await Promise.all([
-      snapshot.getPromise(baseTokenAddressAtom),
-      snapshot.getPromise(quoteTokenAddressAtom),
-    ]);
-    set(quoteTokenAddressAtom, currBase);
-    set(baseTokenAddressAtom, currQuote);
-  });
-
-  const onSelectTokenFactory = useRecoilCallback(
-    ({ snapshot, set }) => (
-      currentSelectAtom: RecoilState<string>,
-      oppositeSelectAtom: RecoilState<string>
-    ) => async (address: string): Promise<void> => {
-      const oppositeValue = await snapshot.getPromise(oppositeSelectAtom);
-
-      if (address === oppositeValue) {
-        swapTokens();
-      } else {
-        set(currentSelectAtom, address);
-      }
-    }
-  );
-
-  const viewerProps: Props = useMemo(
-    () => ({
-      swapTokens,
-      onBaseTokenSelect: onSelectTokenFactory(
-        baseTokenAddressAtom,
-        quoteTokenAddressAtom
-      ),
-      onQuoteTokenSelect: onSelectTokenFactory(
-        quoteTokenAddressAtom,
-        baseTokenAddressAtom
-      ),
-      onLowestPriceChange: onChangeHandlerFactory(setLowestPrice),
-      onStartPriceChange: onChangeHandlerFactory(setStartPrice),
-      onHighestPriceChange: onChangeHandlerFactory(setHighestPrice),
-      onBaseTokenAmountChange: onChangeHandlerFactory(setBaseTokenAmount),
-      onQuoteTokenAmountChange: onChangeHandlerFactory(setQuoteTokenAmount),
-      onTotalBracketsChange: onChangeHandlerFactory(setTotalBrackets),
-      onSubmit,
-    }),
-    [onSubmit]
-  );
+  const viewerProps: Props = useMemo(() => ({ onSubmit }), [onSubmit]);
 
   return <DeployPageViewer {...viewerProps} />;
 }

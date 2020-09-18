@@ -1,12 +1,11 @@
-import React, { memo } from "react";
-import { useRecoilValue } from "recoil";
+import React, { memo, useCallback } from "react";
+import { RecoilState, useRecoilCallback, useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
 import { FundingInput } from "components/basic/inputs/FundingInput";
 import { TotalBrackets } from "components/basic/inputs/TotalBrackets";
 
-import { Props as ViewerProps } from "./viewer";
 import {
   baseTokenAddressAtom,
   baseTokenAmountAtom,
@@ -49,27 +48,7 @@ const Wrapper = styled.div`
   }
 `;
 
-type Props = Pick<
-  ViewerProps,
-  | "onLowestPriceChange"
-  | "onStartPriceChange"
-  | "onHighestPriceChange"
-  | "onBaseTokenAmountChange"
-  | "onQuoteTokenAmountChange"
-  | "onTotalBracketsChange"
->;
-
-function component(props: Props): JSX.Element {
-  const {
-    // callbacks
-    onLowestPriceChange,
-    onStartPriceChange,
-    onHighestPriceChange,
-    onBaseTokenAmountChange,
-    onQuoteTokenAmountChange,
-    onTotalBracketsChange,
-  } = props;
-
+function component(): JSX.Element {
   const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
   const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
   const baseTokenBrackets = useRecoilValue(baseTokenBracketsSelector);
@@ -81,6 +60,39 @@ function component(props: Props): JSX.Element {
   const startPrice = useRecoilValue(startPriceAtom);
   const lowestPrice = useRecoilValue(lowestPriceAtom);
   const highestPrice = useRecoilValue(highestPriceAtom);
+
+  const onChangeHandlerFactory = useRecoilCallback(
+    ({ set }) => (atom: RecoilState<string>) => (
+      event: React.ChangeEvent<HTMLInputElement>
+    ): void => {
+      set(atom, event.target.value);
+    }
+  );
+
+  const onLowestPriceChange = useCallback(
+    onChangeHandlerFactory(lowestPriceAtom),
+    []
+  );
+  const onBaseTokenAmountChange = useCallback(
+    onChangeHandlerFactory(baseTokenAmountAtom),
+    []
+  );
+  const onStartPriceChange = useCallback(
+    onChangeHandlerFactory(startPriceAtom),
+    []
+  );
+  const onTotalBracketsChange = useCallback(
+    onChangeHandlerFactory(totalBracketsAtom),
+    []
+  );
+  const onHighestPriceChange = useCallback(
+    onChangeHandlerFactory(highestPriceAtom),
+    []
+  );
+  const onQuoteTokenAmountChange = useCallback(
+    onChangeHandlerFactory(quoteTokenAmountAtom),
+    []
+  );
 
   return (
     <Wrapper>

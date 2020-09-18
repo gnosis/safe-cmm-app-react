@@ -1,13 +1,12 @@
-import React, { memo, useContext } from "react";
-import { useRecoilValue } from "recoil";
+import React, { memo, useCallback } from "react";
+import { RecoilState, useRecoilCallback, useRecoilValue } from "recoil";
 import styled from "styled-components";
 
-import { Button, Icon } from "@gnosis.pm/safe-react-components";
+import { Icon } from "@gnosis.pm/safe-react-components";
 
 import { TokenSelector } from "components/basic/inputs/TokenSelector";
 import { Link } from "components/basic/inputs/Link";
 
-import { Props as ViewerProps } from "./viewer";
 import { baseTokenAddressAtom, quoteTokenAddressAtom } from "./atoms";
 
 const Wrapper = styled.div`
@@ -20,15 +19,44 @@ const Wrapper = styled.div`
   }
 `;
 
-type Props = Pick<
-  ViewerProps,
-  "swapTokens" | "onBaseTokenSelect" | "onQuoteTokenSelect"
->;
-
-function component(props: Props): JSX.Element {
-  const { swapTokens, onBaseTokenSelect, onQuoteTokenSelect } = props;
+function component(): JSX.Element {
   const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
   const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
+
+  const swapTokens = useRecoilCallback(({ snapshot, set }) => async (): Promise<
+    void
+  > => {
+    const [currBase, currQuote] = await Promise.all([
+      snapshot.getPromise(baseTokenAddressAtom),
+      snapshot.getPromise(quoteTokenAddressAtom),
+    ]);
+    set(quoteTokenAddressAtom, currBase);
+    set(baseTokenAddressAtom, currQuote);
+  });
+
+  const onSelectTokenFactory = useRecoilCallback(
+    ({ snapshot, set }) => (
+      currentSelectAtom: RecoilState<string>,
+      oppositeSelectAtom: RecoilState<string>
+    ) => async (address: string): Promise<void> => {
+      const oppositeValue = await snapshot.getPromise(oppositeSelectAtom);
+
+      if (address === oppositeValue) {
+        swapTokens();
+      } else {
+        set(currentSelectAtom, address);
+      }
+    }
+  );
+
+  const onBaseTokenSelect = useCallback(
+    onSelectTokenFactory(baseTokenAddressAtom, quoteTokenAddressAtom),
+    []
+  );
+  const onQuoteTokenSelect = useCallback(
+    onSelectTokenFactory(quoteTokenAddressAtom, baseTokenAddressAtom),
+    []
+  );
 
   return (
     <Wrapper>
