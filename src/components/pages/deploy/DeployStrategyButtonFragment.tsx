@@ -4,7 +4,8 @@ import styled from "styled-components";
 
 import { Button } from "@gnosis.pm/safe-react-components";
 
-import { isSubmittingAtom, isValidAtom } from "./atoms";
+import { isSubmittingAtom } from "./atoms";
+import { isValidSelector } from "./selectors";
 
 const StyledButton = styled(Button)`
   border-radius: 16px;
@@ -12,7 +13,7 @@ const StyledButton = styled(Button)`
 `;
 
 function component(): JSX.Element {
-  const isValid = useRecoilValue(isValidAtom);
+  const isValid = useRecoilValue(isValidSelector);
   const isSubmitting = useRecoilValue(isSubmittingAtom);
 
   return (

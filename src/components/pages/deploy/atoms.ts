@@ -34,7 +34,6 @@ export const totalInvestmentAtom = atom({
 });
 
 export const isSubmittingAtom = atom({ key: "isSubmitting", default: false });
-export const isValidAtom = atom({ key: "isValid", default: false });
 export const errorAtom = atom<null | { label: string; body: string }>({
   key: "error",
   default: null,

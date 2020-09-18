@@ -22,7 +22,6 @@ import {
   quoteTokenBracketsAtom,
   errorAtom,
   isSubmittingAtom,
-  isValidAtom,
 } from "./atoms";
 
 import { DeployPageViewer, Props } from "./viewer";
@@ -47,7 +46,6 @@ export function DeployPage(): JSX.Element {
     quoteTokenAmountAtom
   );
   const totalBrackets = useRecoilValue(totalBracketsAtom);
-  const setIsValid = useSetRecoilState(isValidAtom);
 
   const deployStrategy = useDeployStrategy({
     lowestPrice,
@@ -133,10 +131,6 @@ export function DeployPage(): JSX.Element {
       }
     }
   );
-
-  useEffect(() => {
-    setIsValid(!!deployStrategy);
-  }, [deployStrategy]);
 
   const viewerProps: Props = useMemo(
     () => ({
