@@ -3,8 +3,6 @@ import styled from "styled-components";
 
 import { Text, Icon, Loader } from "@gnosis.pm/safe-react-components";
 
-import { TokenDetails } from "types";
-
 import { SubtextAmount } from "components/basic/display/SubtextAmount";
 import { TokenDisplay } from "components/basic/display/TokenDisplay";
 import { Tooltip } from "components/basic/display/Tooltip";

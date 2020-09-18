@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import BN from "bn.js";
 import Decimal from "decimal.js";
 import { Meta } from "@storybook/react";
@@ -90,11 +90,6 @@ DefaultContainer.parameters = {
   useDeployStrategy: (
     params: UseDeployStrategyParams
   ): UseDeployStrategyReturn => {
-    // Deploy Strategy button is enabled once all values are input
-    if (!Object.values(params).every(Boolean)) {
-      return null;
-    }
-
     return async (): Promise<void> => {};
   },
 };
