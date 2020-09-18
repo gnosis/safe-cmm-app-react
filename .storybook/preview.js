@@ -1,6 +1,5 @@
 import "../src/wdyr";
 import React from "react";
-import { RecoilRoot } from "recoil";
 import { addDecorator } from "@storybook/react";
 import { addParameters } from "@storybook/react";
 import { ThemeProvider } from "styled-components";
@@ -9,15 +8,17 @@ import { theme } from "theme";
 import GlobalStyles from "../src/components/GlobalStyle";
 
 import { mockHookDecorator } from "../src/mock/mockHookContext";
+import { injectRecoilStateDecorator } from "../src/mock/injectRecoilState";
 
 addDecorator((storyFn) => (
   <ThemeProvider theme={theme}>
     <GlobalStyles />
-    <RecoilRoot>{storyFn()}</RecoilRoot>
+    {storyFn()}
   </ThemeProvider>
 ));
 
 addDecorator(mockHookDecorator);
+addDecorator(injectRecoilStateDecorator);
 
 addParameters({
   options: {
