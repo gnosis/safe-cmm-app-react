@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import BN from "bn.js";
+import Decimal from "decimal.js";
 
 import { parseAmount } from "@gnosis.pm/dex-js";
 
@@ -7,7 +8,6 @@ import { Web3Context } from "components/Web3Provider";
 import deployStrategy from "api/deployStrategy";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
-import Decimal from "decimal.js";
 
 export interface Params {
   lowestPrice: string;
