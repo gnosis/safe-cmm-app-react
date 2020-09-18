@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from "react";
 import {
   RecoilState,
   useRecoilCallback,
-  useRecoilState,
   useRecoilValue,
   useSetRecoilState,
 } from "recoil";
@@ -35,31 +34,18 @@ const onChangeHandlerFactory = (
 export function DeployPage(): JSX.Element {
   // input states
   const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
-  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
-  const [lowestPrice, setLowestPrice] = useRecoilState(lowestPriceAtom);
-  const [startPrice, setStartPrice] = useRecoilState(startPriceAtom);
-  const [highestPrice, setHighestPrice] = useRecoilState(highestPriceAtom);
-  const [baseTokenAmount, setBaseTokenAmount] = useRecoilState(
-    baseTokenAmountAtom
-  );
-  const [quoteTokenAmount, setQuoteTokenAmount] = useRecoilState(
-    quoteTokenAmountAtom
-  );
-  const totalBrackets = useRecoilValue(totalBracketsAtom);
+  const setLowestPrice = useSetRecoilState(lowestPriceAtom);
+  const setStartPrice = useSetRecoilState(startPriceAtom);
+  const setHighestPrice = useSetRecoilState(highestPriceAtom);
+  const setBaseTokenAmount = useSetRecoilState(baseTokenAmountAtom);
+  const setQuoteTokenAmount = useSetRecoilState(quoteTokenAmountAtom);
 
   const deployStrategy = useDeployStrategy({
-    lowestPrice,
-    highestPrice,
-    baseTokenAmount,
-    quoteTokenAmount,
-    totalBrackets,
     baseTokenAddress,
-    quoteTokenAddress,
-    startPrice,
   });
 
   const onSubmit = useRecoilCallback(
-    ({ set }) => async (
+    ({ snapshot, set }) => async (
       event: React.FormEvent<HTMLFormElement>
     ): Promise<void> => {
       // TODO: move on to another page/show success message
@@ -68,8 +54,36 @@ export function DeployPage(): JSX.Element {
       if (deployStrategy) {
         set(isSubmittingAtom, true);
         set(errorAtom, null);
+
         try {
-          await deployStrategy();
+          // Fetch state values from snapshot
+          const [
+            lowestPrice,
+            highestPrice,
+            baseTokenAmount,
+            quoteTokenAmount,
+            totalBrackets,
+            quoteTokenAddress,
+            startPrice,
+          ] = await Promise.all([
+            snapshot.getPromise(lowestPriceAtom),
+            snapshot.getPromise(highestPriceAtom),
+            snapshot.getPromise(baseTokenAmountAtom),
+            snapshot.getPromise(quoteTokenAmountAtom),
+            snapshot.getPromise(totalBracketsAtom),
+            snapshot.getPromise(quoteTokenAddressAtom),
+            snapshot.getPromise(startPriceAtom),
+          ]);
+
+          await deployStrategy({
+            lowestPrice,
+            highestPrice,
+            baseTokenAmount,
+            quoteTokenAmount,
+            totalBrackets,
+            quoteTokenAddress,
+            startPrice,
+          });
         } catch (e) {
           console.error(`Failed to deploy strategy:`, e);
           set(errorAtom, {
@@ -149,9 +163,9 @@ export function DeployPage(): JSX.Element {
       onBaseTokenAmountChange: onChangeHandlerFactory(setBaseTokenAmount),
       onQuoteTokenAmountChange: onChangeHandlerFactory(setQuoteTokenAmount),
       onTotalBracketsChange,
-      onSubmit: deployStrategy && onSubmit,
+      onSubmit,
     }),
-    [deployStrategy, onSubmit]
+    [onSubmit]
   );
 
   return <DeployPageViewer {...viewerProps} />;

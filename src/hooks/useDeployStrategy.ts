@@ -19,43 +19,45 @@ export interface Params {
   startPrice: string;
 }
 
-export type Return = null | (() => Promise<void>);
+export type Return = (
+  params: Omit<Params, "baseTokenAddress">
+) => Promise<void>;
 
-export function useDeployStrategy(params: Params): Return {
-  const {
-    lowestPrice,
-    highestPrice,
-    baseTokenAmount,
-    quoteTokenAmount,
-    totalBrackets,
-    baseTokenAddress,
-    quoteTokenAddress,
-    startPrice,
-  } = params;
+export function useDeployStrategy(
+  params: Pick<Params, "baseTokenAddress">
+): Return {
+  const { baseTokenAddress } = params;
 
   const web3Context = useContext(Web3Context);
   const { tokenDetails: baseTokenDetails } = useTokenDetails(baseTokenAddress);
-  const { tokenDetails: quoteTokenDetails } = useTokenDetails(
-    quoteTokenAddress
-  );
 
   // simple validation
-  if (
-    !lowestPrice ||
-    !highestPrice ||
-    !startPrice ||
-    !baseTokenAmount ||
-    !quoteTokenAmount ||
-    !totalBrackets ||
-    !baseTokenAddress ||
-    !quoteTokenAddress ||
-    !baseTokenDetails ||
-    !quoteTokenDetails
-  ) {
-    return null;
-  }
+  // if (
+  //   !lowestPrice ||
+  //   !highestPrice ||
+  //   !startPrice ||
+  //   !baseTokenAmount ||
+  //   !quoteTokenAmount ||
+  //   !totalBrackets ||
+  //   !baseTokenAddress ||
+  //   !quoteTokenAddress ||
+  //   !baseTokenDetails ||
+  //   !quoteTokenDetails
+  // ) {
+  //   return null;
+  // }
 
-  return async (): Promise<void> => {
+  return async (params): Promise<void> => {
+    const {
+      lowestPrice,
+      highestPrice,
+      baseTokenAmount,
+      quoteTokenAmount,
+      totalBrackets,
+      quoteTokenAddress,
+      startPrice,
+    } = params;
+
     await deployStrategy(
       web3Context,
       +totalBrackets,
@@ -65,7 +67,7 @@ export function useDeployStrategy(params: Params): Return {
       parseAmount(highestPrice, baseTokenDetails.decimals),
       new BN(baseTokenAmount),
       new BN(quoteTokenAmount),
-      new BN(startPrice.toString())
+      new BN(startPrice)
     );
   };
 }
