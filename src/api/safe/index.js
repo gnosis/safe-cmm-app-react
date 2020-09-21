@@ -15,3 +15,10 @@ export const getTransactions = async (safeAddress) => {
 
   return txs.results;
 };
+
+export const getBalances = async (safeAddress) => {
+  const response = await fetch(
+    `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/balances`
+  );
+  return response.json();
+};
