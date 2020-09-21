@@ -25,7 +25,9 @@ const orderAndFund = async (
     safeAddresses,
     currentPriceWei,
     tokenBaseContract,
+    tokenBaseDetails,
     tokenQuoteContract,
+    // tokenQuoteDetails,
     boundsLowerWei,
     boundsUpperWei,
     investmentBaseWei,
@@ -60,13 +62,17 @@ const orderAndFund = async (
       .call(),
   ]);
 
+  const dividendForBounds = new Decimal(10).pow(
+    tokenBaseDetails.decimals.toString()
+  );
+
   const orderTransactions = await buildOrders(
     context.safeInfo.safeAddress,
     safeAddresses,
     tokenBaseId,
     tokenQuoteId,
-    new Decimal(boundsLowerWei.toString()).div(1e18).toString(),
-    new Decimal(boundsUpperWei.toString()).div(1e18).toString(),
+    new Decimal(boundsLowerWei.toString()).div(dividendForBounds).toNumber(),
+    new Decimal(boundsUpperWei.toString()).div(dividendForBounds).toNumber(),
     true
   );
 
