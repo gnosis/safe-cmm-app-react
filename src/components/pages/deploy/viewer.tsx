@@ -1,18 +1,9 @@
-import React, { memo, createContext } from "react";
-import { Container } from "@material-ui/core";
+import React, { memo } from "react";
+import { useRecoilValue } from "recoil";
+import { Backdrop, withStyles } from "@material-ui/core";
 import styled from "styled-components";
 
-import { Button, Icon } from "@gnosis.pm/safe-react-components";
-
-import { MarketPrice } from "components/basic/display/MarketPrice";
-import { TokenSelector } from "components/basic/inputs/TokenSelector";
-import { PriceInput } from "components/basic/inputs/PriceInput";
-import { TotalBrackets } from "components/basic/inputs/TotalBrackets";
-import { FundingInput } from "components/basic/inputs/FundingInput";
-import {
-  Props as MessageProps,
-  Message,
-} from "components/basic/display/Message";
+import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { SideBar } from "./SideBar";
 import { TokenSelectorsFragment } from "./TokenSelectorsFragment";
@@ -20,6 +11,7 @@ import { PricesFragment } from "./PricesFragment";
 import { MarketPriceFragment } from "./MarketPriceFragment";
 import { ErrorMessagesFragment } from "./ErrorMessagesFragment";
 import { DeployStrategyButtonFragment } from "./DeployStrategyButtonFragment";
+import { isSubmittingAtom } from "./atoms";
 
 const PageLayout = styled.div`
   display: flex;
@@ -51,41 +43,22 @@ const DeployWidget = styled.div`
   align-items: stretch;
 `;
 
+const StyledBackdrop = withStyles(() => ({ root: { zIndex: 999 } }))(Backdrop);
+
 export interface Props {
-  baseTokenAddress?: string;
-  quoteTokenAddress?: string;
-  onBaseTokenSelect: (address: string) => void;
-  onQuoteTokenSelect: (address: string) => void;
-  lowestPrice?: string;
-  highestPrice?: string;
-  startPrice?: string;
-  baseTokenAmount?: string;
-  baseTokenAmountPerBracket?: string;
-  quoteTokenAmount?: string;
-  quoteTokenAmountPerBracket?: string;
-  messages?: MessageProps[];
+  onSubmit?: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
-
-// TODO: This feels dumb.
-// I want to have things on the context that are required but are not available when I create the context
-// Will I have to make them optional and always check their existence later?
-function dummyOnSelect(_: string): void {}
-
-export const initialContext: Props = {
-  onBaseTokenSelect: dummyOnSelect,
-  onQuoteTokenSelect: dummyOnSelect,
-};
-
-export const DeployPageContext = createContext<Props>(initialContext);
 
 /**
  * All component props are passed down into a local context
  * Every fragment takes what is needs from it
  */
 function component(props: Props): JSX.Element {
+  const isSubmitting = useRecoilValue(isSubmittingAtom);
+
   return (
-    <DeployPageContext.Provider value={props}>
-      <PageLayout>
+    <PageLayout>
+      <form onSubmit={props.onSubmit}>
         <DeployWidget>
           <TokenSelectorsFragment />
           <MarketPriceFragment />
@@ -93,10 +66,13 @@ function component(props: Props): JSX.Element {
           <ErrorMessagesFragment />
           <DeployStrategyButtonFragment />
         </DeployWidget>
-        <SideBar />
-      </PageLayout>
-    </DeployPageContext.Provider>
+      </form>
+      <SideBar />
+      <StyledBackdrop open={isSubmitting}>
+        <Loader size="lg" color="primaryLight" />
+      </StyledBackdrop>
+    </PageLayout>
   );
 }
 
-export const DeployPageViewer = memo(component);
+export const DeployPageViewer: typeof component = memo(component);

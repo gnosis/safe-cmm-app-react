@@ -1,11 +1,26 @@
-import React, { memo, useContext } from "react";
+import React, { memo, useCallback } from "react";
+import { RecoilState, useRecoilCallback, useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
 import { FundingInput } from "components/basic/inputs/FundingInput";
 import { TotalBrackets } from "components/basic/inputs/TotalBrackets";
 
-import { DeployPageContext } from "./viewer";
+import {
+  baseTokenAddressAtom,
+  baseTokenAmountAtom,
+  highestPriceAtom,
+  lowestPriceAtom,
+  quoteTokenAddressAtom,
+  quoteTokenAmountAtom,
+  startPriceAtom,
+  totalBracketsAtom,
+  totalInvestmentAtom,
+} from "./atoms";
+import {
+  baseTokenBracketsSelector,
+  quoteTokenBracketsSelector,
+} from "./selectors";
 
 const Wrapper = styled.div`
   display: flex;
@@ -34,17 +49,50 @@ const Wrapper = styled.div`
 `;
 
 function component(): JSX.Element {
-  const {
-    baseTokenAddress,
-    quoteTokenAddress,
-    baseTokenAmount,
-    quoteTokenAmount,
-    baseTokenAmountPerBracket,
-    quoteTokenAmountPerBracket,
-    startPrice,
-    lowestPrice,
-    highestPrice,
-  } = useContext(DeployPageContext);
+  const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
+  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
+  const baseTokenBrackets = useRecoilValue(baseTokenBracketsSelector);
+  const quoteTokenBrackets = useRecoilValue(quoteTokenBracketsSelector);
+  const baseTokenAmount = useRecoilValue(baseTokenAmountAtom);
+  const quoteTokenAmount = useRecoilValue(quoteTokenAmountAtom);
+  const totalBrackets = useRecoilValue(totalBracketsAtom);
+  const totalInvestment = useRecoilValue(totalInvestmentAtom);
+  const startPrice = useRecoilValue(startPriceAtom);
+  const lowestPrice = useRecoilValue(lowestPriceAtom);
+  const highestPrice = useRecoilValue(highestPriceAtom);
+
+  const onChangeHandlerFactory = useRecoilCallback(
+    ({ set }) => (atom: RecoilState<string>) => (
+      event: React.ChangeEvent<HTMLInputElement>
+    ): void => {
+      set(atom, event.target.value);
+    }
+  );
+
+  const onLowestPriceChange = useCallback(
+    onChangeHandlerFactory(lowestPriceAtom),
+    []
+  );
+  const onBaseTokenAmountChange = useCallback(
+    onChangeHandlerFactory(baseTokenAmountAtom),
+    []
+  );
+  const onStartPriceChange = useCallback(
+    onChangeHandlerFactory(startPriceAtom),
+    []
+  );
+  const onTotalBracketsChange = useCallback(
+    onChangeHandlerFactory(totalBracketsAtom),
+    []
+  );
+  const onHighestPriceChange = useCallback(
+    onChangeHandlerFactory(highestPriceAtom),
+    []
+  );
+  const onQuoteTokenAmountChange = useCallback(
+    onChangeHandlerFactory(quoteTokenAmountAtom),
+    []
+  );
 
   return (
     <Wrapper>
@@ -54,11 +102,13 @@ function component(): JSX.Element {
           labelText="Lowest price"
           labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
           value={lowestPrice}
+          onChange={onLowestPriceChange}
         />
         <FundingInput
-          amountPerBracket={baseTokenAmountPerBracket}
+          brackets={baseTokenBrackets}
           tokenAddress={baseTokenAddress}
           value={baseTokenAmount}
+          onChange={onBaseTokenAmountChange}
         />
       </div>
       <div className="middle">
@@ -68,8 +118,13 @@ function component(): JSX.Element {
           labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
           value={startPrice}
           labelSize="xl"
+          onChange={onStartPriceChange}
         />
-        <TotalBrackets />
+        <TotalBrackets
+          value={totalBrackets}
+          amount={totalInvestment}
+          onChange={onTotalBracketsChange}
+        />
       </div>
       <div>
         <PriceInput
@@ -77,11 +132,13 @@ function component(): JSX.Element {
           labelText="Highest price"
           labelTooltip="The max price per token A you are willing to sell or buy"
           value={highestPrice}
+          onChange={onHighestPriceChange}
         />
         <FundingInput
-          amountPerBracket={quoteTokenAmountPerBracket}
+          brackets={quoteTokenBrackets}
           tokenAddress={quoteTokenAddress}
           value={quoteTokenAmount}
+          onChange={onQuoteTokenAmountChange}
         />
       </div>
     </Wrapper>
