@@ -1,0 +1,8 @@
+[
+  "Select your Token A and Token B.",
+  "Specify a Start price: Below the Start Price, the brackets will be funded with token A Above that price, the brackets will be funded with token B.",
+  "Specify the Lowest and Highest price to determine the range your strategy will cover.",
+  "Specify how many brackets should be created. Each bracket consists of a single Ethereum address that places a buy-low and a sell-high order. Every time the price goes through a bracket and activates both orders, the CMM provider earns the spread.",
+  "Specify the total amount of funding to provide in each token. The amount per bracket is calculated automatically. You can also fund only one side with its respective token.",
+  "Confirm your strategy and review the transaction in the safe modal. If you have a multi-signature in place, the strategy will be active upon the last signer’s transaction."
+]

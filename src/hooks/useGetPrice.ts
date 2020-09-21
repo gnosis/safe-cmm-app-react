@@ -59,7 +59,6 @@ export function useGetPrice(params: Params): Result {
       switch (source) {
         case "1inch": {
           price = await get1InchPrice(baseToken, quoteToken);
-
           break;
         }
       }

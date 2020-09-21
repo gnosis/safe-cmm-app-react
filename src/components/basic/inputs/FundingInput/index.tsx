@@ -17,7 +17,7 @@ const Wrapper = styled.div<{ width: string | number }>`
 
 export interface Props extends Omit<NumberInputPros, "customLabel"> {
   onMaxClick: (e: React.SyntheticEvent) => void;
-  amountPerBracket: string;
+  brackets?: number;
   tokenAddress: string;
 }
 
@@ -25,8 +25,9 @@ export const FundingInput = (props: Props): JSX.Element => {
   const {
     onMaxClick,
     error,
-    amountPerBracket,
+    brackets,
     tokenAddress,
+    value,
     width = DEFAULT_INPUT_WIDTH,
     ...rest
   } = props;
@@ -36,11 +37,16 @@ export const FundingInput = (props: Props): JSX.Element => {
       <NumberInput
         {...rest}
         error={error}
+        value={value}
         customLabel={<Label onClick={onMaxClick} error={error} />}
         width={width}
         tokenAddress={tokenAddress}
       />
-      <PerBracketAmount amount={amountPerBracket} tokenAddress={tokenAddress} />
+      <PerBracketAmount
+        totalAmount={value}
+        tokenAddress={tokenAddress}
+        brackets={brackets}
+      />
     </Wrapper>
   );
 };
