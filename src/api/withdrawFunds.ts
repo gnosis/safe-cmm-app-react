@@ -15,30 +15,59 @@ const runInitializerIfNotRan = (context) : any => {
   return initializedWithdrawHelpers;
 }
 
-const withdrawFunds = async (context : Web3Context, strategy : Strategy) : Promise<any> => {
+export const withdrawRequest = async (context : Web3Context, strategy : Strategy) : Promise<any> => {
   const contracts = await Promise.all([
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
-    context.getArtifact("IProxy"),
     context.getArtifact("MultiSend"),
     context.getArtifact("BatchExchange"),
-    //context.getArtifact("FleetFactoryDeterministic"),
+    context.getArtifact("FleetFactory"),
   ]);
   
   const withdrawHelpers = runInitializerIfNotRan(context);
 
-  const withdrawTransaction = await withdrawHelpers.prepareWithdrawAndTransferFundsToMaster(
+  const withdrawTransactions = await withdrawHelpers.prepareWithdrawRequest( // prepareTransferFundsToMaster
     {
       masterSafe: context.safeInfo.safeAddress,
       brackets: strategy.brackets.map(bracket => bracket.address),
-      tokenIds: [strategy.baseTokenId, strategy.quoteTokenId],
+      tokens: [strategy.baseTokenAddress, strategy.quoteTokenAddress],
     }, true
   )
-
+  console.log(withdrawTransactions)
+  
   return {
-    tx: withdrawTransaction
+    txs: withdrawTransactions
   }
 
 }
 
-export default withdrawFunds;
+export const withdrawClaim = async (context : Web3Context, strategy : Strategy) : Promise<any> => {
+  const contracts = await Promise.all([
+    context.getArtifact("IProxy"),
+    context.getArtifact("GnosisSafe"),
+    context.getArtifact("MultiSend"),
+    context.getArtifact("BatchExchange"),
+    context.getArtifact("FleetFactory"),
+  ]);
+  
+  const withdrawHelpers = runInitializerIfNotRan(context);
+
+  const argv = {
+    masterSafe: context.safeInfo.safeAddress,
+    brackets: strategy.brackets.map(bracket => bracket.address),
+    tokens: [strategy.baseTokenAddress, strategy.quoteTokenAddress],
+  };
+
+  const withdrawTransactions = await withdrawHelpers.prepareWithdraw(argv, true)
+  const withdrawTransferTransaction = await withdrawHelpers.prepareWithdrawAndTransferFundsToMaster(argv, true)
+
+  console.log({
+    claim: withdrawTransactions,
+    transfer: withdrawTransferTransaction,
+  });
+
+  return {
+    txs: [...withdrawTransactions, ...withdrawTransferTransaction]
+  }
+
+}

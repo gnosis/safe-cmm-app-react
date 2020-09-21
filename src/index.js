@@ -1,3 +1,4 @@
+import "./wdyr";
 import "regenerator-runtime/runtime";
 
 import Decimal from "decimal.js";

@@ -25,7 +25,9 @@ const orderAndFund = async (
     safeAddresses,
     currentPriceWei,
     tokenBaseContract,
+    tokenBaseDetails,
     tokenQuoteContract,
+    // tokenQuoteDetails,
     boundsLowerWei,
     boundsUpperWei,
     investmentBaseWei,
@@ -35,15 +37,15 @@ const orderAndFund = async (
   // We need to load these contracts before entering buildTransferApproveDepositFromOrders
   // because it uses artifacts.require - even though it's a shim, it still expects to receive
   // contract artifacts without delay (no promises), so we need to preload them here.
-  const contracts = await Promise.all([
+  await Promise.all([
     context.getArtifact("IProxy.sol"),
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
     context.getArtifact("MultiSend"),
     context.getArtifact("BatchExchange"),
+    context.getArtifact("FleetFactory"),
     context.getArtifact("FleetFactoryDeterministic"),
   ]);
-  console.log(contracts);
 
   const {
     buildTransferApproveDepositFromOrders,
@@ -51,7 +53,6 @@ const orderAndFund = async (
   } = runInitializerIfNotRan(context);
 
   const batchExchangeContract = await context.getDeployed("BatchExchange");
-  console.log(batchExchangeContract);
   const [tokenBaseId, tokenQuoteId] = await Promise.all([
     batchExchangeContract.methods
       .tokenAddressToIdMap(tokenBaseContract.options.address)
@@ -61,16 +62,19 @@ const orderAndFund = async (
       .call(),
   ]);
 
+  const dividendForBounds = new Decimal(10).pow(
+    tokenBaseDetails.decimals.toString()
+  );
+
   const orderTransactions = await buildOrders(
     context.safeInfo.safeAddress,
     safeAddresses,
     tokenBaseId,
     tokenQuoteId,
-    new Decimal(boundsLowerWei.toString()).div(1e18).toString(),
-    new Decimal(boundsUpperWei.toString()).div(1e18).toString(),
+    new Decimal(boundsLowerWei.toString()).div(dividendForBounds).toNumber(),
+    new Decimal(boundsUpperWei.toString()).div(dividendForBounds).toNumber(),
     true
   );
-  console.log(orderTransactions);
 
   const fundTransactions = await buildTransferApproveDepositFromOrders(
     context.safeInfo.safeAddress,
@@ -84,7 +88,6 @@ const orderAndFund = async (
     investmentBaseWei,
     false
   );
-  console.log(fundTransactions);
 
   return {
     txs: [...orderTransactions, ...fundTransactions],

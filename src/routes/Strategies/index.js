@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import { Switch, Route, useHistory } from "react-router-dom";
+import { Switch, Route, useHistory, Redirect } from "react-router-dom";
 
 import Active from "./Active";
 import Pending from "./Pending";
@@ -24,6 +24,9 @@ const STRATEGY_TAB_ITEMS = [
     counter: 1,
   },
 ];
+
+const DEFAULT_TAB = "active";
+
 const Strategies = ({ match }) => {
   const history = useHistory();
 
@@ -49,6 +52,7 @@ const Strategies = ({ match }) => {
         <Route path={`${match.path}/active`} component={Active} />
         <Route path={`${match.path}/deactivated`} component={Deactivated} />
         <Route path={`${match.path}/pending`} component={Pending} />
+        <Redirect to={`${match.path}/${DEFAULT_TAB}`} />
       </Switch>
     </>
   );

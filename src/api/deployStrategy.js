@@ -19,15 +19,18 @@ const deployStrategy = async (
   investmentQuoteWei,
   currentPriceWei
 ) => {
-  console.log([
-    numBrackets,
-    tokenAddressBase,
-    tokenAddressQuote,
-    boundsLowerWei,
-    boundsUpperWei,
-    investmentBaseWei,
-    investmentQuoteWei,
-  ]);
+  logger.log(
+    `==> Arguments for Deployment`,
+    ...[
+      numBrackets,
+      tokenAddressBase,
+      tokenAddressQuote,
+      boundsLowerWei,
+      boundsUpperWei,
+      investmentBaseWei,
+      investmentQuoteWei,
+    ].map((n) => n.toString())
+  );
 
   const {
     sdk,
@@ -49,7 +52,8 @@ const deployStrategy = async (
     getDeployed("GnosisSafe"),
   ]);
   const masterSafeAddress = masterSafeContract.options.address;
-  console.log(masterSafeContract);
+
+  logger.log(`==> Master Safe is ${masterSafeAddress}`);
   logger.log(`==> Running sanity checks`);
   const hasEnoughBalanceBase = await verifyBalance(
     tokenBaseContract,
@@ -59,7 +63,7 @@ const deployStrategy = async (
   const hasEnoughBalanceQuote = await verifyBalance(
     tokenQuoteContract,
     safeAddress,
-    investmentBaseWei
+    investmentQuoteWei
   );
 
   const tokenBaseDetails = await getErc20Details(
@@ -93,7 +97,9 @@ const deployStrategy = async (
     safeAddresses,
     masterSafeAddress,
     tokenBaseContract,
+    tokenBaseDetails,
     tokenQuoteContract,
+    tokenQuoteDetails,
     currentPriceWei,
     boundsLowerWei,
     boundsUpperWei,

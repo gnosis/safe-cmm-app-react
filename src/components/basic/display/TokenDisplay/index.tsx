@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 
 import { Text, Loader } from "@gnosis.pm/safe-react-components";
 import {
@@ -6,10 +6,12 @@ import {
   ThemeColors,
 } from "@gnosis.pm/safe-react-components/dist/theme";
 
+import { TokenDetails } from "types";
+
 import { useTokenDetails } from "hooks/useTokenDetails";
 
 export interface Props {
-  tokenAddress: string;
+  token: string | TokenDetails;
   size: ThemeTextSize;
   color?: ThemeColors;
 }
@@ -22,16 +24,23 @@ export interface Props {
  * - display shortened address with link to Etherscan when symbol/name not available
  * - add support for displaying token images
  */
-export const TokenDisplay = (props: Props): JSX.Element => {
-  const { tokenAddress, size, color } = props;
+function component(props: Props): JSX.Element {
+  const { token, size, color } = props;
 
-  const tokenDetails = useTokenDetails(tokenAddress);
+  // TODO: handle error
+  const { tokenDetails, isLoading } = useTokenDetails(token);
 
   return tokenDetails ? (
-    <Text size={size} color={color} strong>
+    <Text size={size} color={color} strong as="span">
       {tokenDetails.symbol}
     </Text>
-  ) : (
+  ) : isLoading ? (
     <Loader size={size === "xl" ? "lg" : size} />
+  ) : (
+    <Text size={size} color={color} strong as="span">
+      -
+    </Text>
   );
-};
+}
+
+export const TokenDisplay = memo(component);

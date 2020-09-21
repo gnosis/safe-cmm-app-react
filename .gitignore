@@ -4,4 +4,4 @@ node_modules/
 .DS_Store
 ngrok.yml
 storybook-static/
-ngrok.yml
+private.*

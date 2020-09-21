@@ -1,7 +1,7 @@
 import React from "react";
 import { hot } from "react-hot-loader/root";
 
-import { theme } from "@gnosis.pm/safe-react-components";
+import { theme } from "theme";
 
 import { BrowserRouter as Router } from "react-router-dom";
 

@@ -9,12 +9,20 @@ interface Bracket {
   address : string;
   events : any[];
   deposits: DepositEvent[];
+  withdrawRequests: WithdrawEvent[];
+  withdraws: any[];
 }
 
 interface DepositEvent {
   amount : string; // BN string
   token : string;
   batchId : number;
+}
+
+interface WithdrawEvent {
+  amount : string;
+  batchId : number;
+  created : Date;
 }
 
 class Strategy {
@@ -33,12 +41,16 @@ class Strategy {
   owner : string;
   created : Date;
   block : any;
+  lastWithdrawRequestEvent : WithdrawEvent;
+  lastWithdrawClaimEvent : any;
 
   constructor(fleetDeployEvent : any) {
     this.transactionHash = fleetDeployEvent.transactionHash;
     this.startBlockNumber = fleetDeployEvent.blockNumber;
     this.safeAddresses = fleetDeployEvent.returnValues.fleet;
     this.owner = fleetDeployEvent.returnValues.owner;
+    this.lastWithdrawRequestEvent = null;
+    this.lastWithdrawClaimEvent = null;
   }
 
   async fetchAllPossibleInfo(context : Web3Context) : Promise<void> {
@@ -51,6 +63,10 @@ class Strategy {
 
     let tokenIdSold;
     let tokenIdBought;
+    let orderBatchIds = [];
+    let withdrawRequestBlocks = {};
+    let allWithdrawClaims = [];
+
     const brackets = await Promise.all(this.safeAddresses.map(async (bracketAddress) : Promise<Bracket> => {
       // Bracket orders find the tokens used for the strategy
       const bracketOrderEvents = await batchExchangeContract.getPastEvents("OrderPlacement", {
@@ -68,22 +84,64 @@ class Strategy {
       const bracketDepositEvents = await batchExchangeContract.getPastEvents("Deposit", {
         fromBlock: this.startBlockNumber-1,
         filter: { user: bracketAddress }
-      })
+      });
 
-      const deposits = bracketDepositEvents.map((event) : DepositEvent => {
-        return {
-          token: event.returnValues.token,
-          amount: event.returnValues.amount,
-          batchId: event.returnValues.batchId
+      const withdrawClaims = await batchExchangeContract.getPastEvents("Withdraw", {
+        fromBlock: this.startBlockNumber-1,
+        filter: { user: bracketAddress }
+      })
+      
+      allWithdrawClaims.push(...withdrawClaims)
+
+      let withdrawRequestsWithBlock : WithdrawEvent[] = []
+      if (bracketDepositEvents[0]) {
+        const withdrawRequests = await batchExchangeContract.getPastEvents("WithdrawRequest", {
+          fromBlock: this.startBlockNumber-1,
+          filter: { batchId: bracketDepositEvents[0].batchId, user: bracketAddress }
+        });
+  
+        withdrawRequestsWithBlock = await Promise.all(
+          withdrawRequests.map(async (withdrawRequest) : Promise<WithdrawEvent> => {
+            if (!withdrawRequestBlocks[withdrawRequest.blockNumber]) {
+              withdrawRequestBlocks[withdrawRequest.blockNumber] = await context.instance.eth.getBlock(withdrawRequest.blockNumber);
+            }
+  
+            return {
+              amount: withdrawRequest.returnValues.amount,
+              batchId: parseInt(withdrawRequest.returnValues.batchId, 10),
+              created: new Date(withdrawRequestBlocks[withdrawRequest.blockNumber].timestamp * 1000),
+            }
+          })
+        )  
+      }
+
+      const deposits = bracketDepositEvents
+        .map((event) : DepositEvent => {
+          return {
+            token: event.returnValues.token,
+            amount: event.returnValues.amount,
+            batchId: event.returnValues.batchId,
+          }
+        })
+
+      deposits.forEach(({ batchId }) : void => {
+        if (!orderBatchIds.includes(batchId)) {
+          orderBatchIds.push(batchId)
         }
       })
 
       return {
         address: bracketAddress,
         events: bracketOrderEvents,
+        withdrawRequests: withdrawRequestsWithBlock,
+        withdraws: withdrawClaims,
         deposits,
       }
     }))
+
+
+
+
 
     this.baseTokenId = tokenIdSold;
     this.quoteTokenId = tokenIdBought;
@@ -120,6 +178,9 @@ class Strategy {
     }
     this.baseFunding = baseFundingBn.toString();
     this.quoteFunding = quoteFundingBn.toString();
+
+    this.lastWithdrawRequestEvent = brackets[0]?.withdrawRequests[0];
+    this.lastWithdrawClaimEvent = allWithdrawClaims[0];
 
     this.brackets = brackets;
   }

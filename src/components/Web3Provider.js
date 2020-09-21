@@ -1,11 +1,17 @@
 import React, { useEffect, useCallback, useState, useMemo } from "react";
-import initWeb3 from "../utils/initWeb3";
+
+import initWeb3 from "utils/initWeb3";
+import getLogger from "utils/logger";
 
 import PropTypes from "prop-types";
 
 import initSdk from "@gnosis.pm/safe-apps-sdk";
 
 import { getTokenAddressesForNetwork } from "../api/tokenAddresses";
+
+import { getImageUrl } from "utils/misc";
+
+const logger = getLogger("web3-provider");
 
 export const Web3Context = React.createContext({
   instance: null,
@@ -32,6 +38,7 @@ const Web3Provider = ({ children }) => {
   const handleSafeInfo = useCallback(
     (safeInfo) => {
       setSafeInfo(safeInfo);
+      logger.log(`Safe connection established`, safeInfo);
       setStatus("SUCCESS");
     },
     [setSafeInfo, setStatus]
@@ -190,8 +197,14 @@ const Web3Provider = ({ children }) => {
         contractInstance.methods.name().call(),
       ]);
 
-      console.log(`details`, decimals, symbol, name);
-      return { address, decimals, symbol, name };
+      // console.log(`details`, decimals, symbol, name);
+      return {
+        address,
+        decimals,
+        symbol,
+        name,
+        imageUrl: getImageUrl(address),
+      };
     },
     [handleGetContract]
   );
@@ -233,9 +246,18 @@ const Web3Provider = ({ children }) => {
       );
 
       const erc20Details = await Promise.all(
-        tokenAddresses.map((address) => handleGetErc20Details(address))
+        tokenAddresses.map(handleGetErc20Details)
       );
-      setErc20Cache(erc20Details);
+
+      setErc20Cache(
+        erc20Details.reduce(
+          (acc, tokenDetails) => ({
+            ...acc,
+            [tokenDetails.address]: tokenDetails,
+          }),
+          {}
+        )
+      );
     }
 
     loadErc20Details();
@@ -270,7 +292,7 @@ const Web3Provider = ({ children }) => {
     ]
   );
 
-  console.log(safeInfo);
+  logger;
 
   return (
     <Web3Context.Provider value={contextState}>
