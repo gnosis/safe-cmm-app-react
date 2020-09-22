@@ -1,21 +1,19 @@
-import React, { useContext, memo } from "react";
+import React, { memo } from "react";
+import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { Message } from "components/basic/display/Message";
 
-import { DeployPageContext } from "./viewer";
+import { messagesSelector } from "components/pages/deploy/selectors";
 
 const Wrapper = styled.div`
-  & > * {
+  & > :not(:last-child) {
     margin-bottom: 5px;
-  }
-  & > :last-child {
-    margin-bottom: 0;
   }
 `;
 
 function component(): JSX.Element {
-  const { messages } = useContext(DeployPageContext);
+  const messages = useRecoilValue(messagesSelector);
 
   if (!messages) {
     return null;
@@ -24,8 +22,8 @@ function component(): JSX.Element {
   return (
     messages && (
       <Wrapper className="messages">
-        {messages.map((msgProps) => (
-          <Message {...msgProps} />
+        {messages.map((msgProps, id) => (
+          <Message {...msgProps} key={id} />
         ))}
       </Wrapper>
     )

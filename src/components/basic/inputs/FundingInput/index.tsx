@@ -16,7 +16,7 @@ const Wrapper = styled.div<{ width: string | number }>`
 `;
 
 export interface Props extends Omit<NumberInputPros, "customLabel"> {
-  onMaxClick: (e: React.SyntheticEvent) => void;
+  onMaxClick?: (e: React.SyntheticEvent) => void;
   brackets?: number;
   tokenAddress: string;
 }

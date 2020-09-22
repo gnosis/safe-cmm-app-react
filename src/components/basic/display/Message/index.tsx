@@ -7,6 +7,7 @@ import { theme } from "theme";
 export interface Props {
   type: "error" | "warning";
   label: string;
+  children: React.ReactNode;
 }
 
 const Wrapper = styled.div<Props>`

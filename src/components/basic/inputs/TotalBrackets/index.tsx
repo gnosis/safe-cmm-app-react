@@ -16,7 +16,7 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
-export interface Props extends BracketsInputProps {
+export interface Props extends Omit<BracketsInputProps, "customLabel"> {
   amount: string;
 }
 

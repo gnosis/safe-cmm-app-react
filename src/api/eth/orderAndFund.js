@@ -30,8 +30,8 @@ const orderAndFund = async (
   ]);
 
   const {
-    buildTransferApproveDepositFromOrders,
-    buildOrders,
+    transactionsForTransferApproveDepositFromOrders,
+    transactionsForOrders,
   } = runInitializerIfNotRan(context);
 
   const batchExchangeContract = await context.getDeployed("BatchExchange");
@@ -48,7 +48,7 @@ const orderAndFund = async (
     tokenBaseDetails.decimals.toString()
   );
 
-  const orderTransactions = await buildOrders(
+  const orderTransactions = await transactionsForOrders(
     context.safeInfo.safeAddress,
     safeAddresses,
     tokenBaseId,
@@ -58,7 +58,7 @@ const orderAndFund = async (
     true
   );
 
-  const fundTransactions = await buildTransferApproveDepositFromOrders(
+  const fundTransactions = await transactionsForTransferApproveDepositFromOrders(
     context.safeInfo.safeAddress,
     safeAddresses,
     tokenBaseContract.options.address,
