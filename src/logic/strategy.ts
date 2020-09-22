@@ -5,7 +5,7 @@ const { toBN } = web3GLib.utils;
 
 let globalResolvedTokenPromises = {};
 
-interface Bracket {
+export interface Bracket {
   address : string;
   events : any[];
   deposits: DepositEvent[];
@@ -13,13 +13,13 @@ interface Bracket {
   withdraws: any[];
 }
 
-interface DepositEvent {
+export interface DepositEvent {
   amount : string; // BN string
   token : string;
   batchId : number;
 }
 
-interface WithdrawEvent {
+export interface WithdrawEvent {
   amount : string;
   batchId : number;
   created : Date;

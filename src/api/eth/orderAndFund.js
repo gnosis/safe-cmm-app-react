@@ -1,23 +1,5 @@
-import tradingHelperInit from "@gnosis.pm/dex-liquidity-provision/scripts/utils/trading_strategy_helpers";
-import makeFakeArtifacts from "utils/makeFakeArtifacts";
-
+import runInitializerIfNotRan from "api/utils/tradingHelperInit";
 import Decimal from "decimal.js";
-
-let initializedTradingStrategyHelpers;
-/**
- * Runs the initializer for trading helpers once and returns the cached return after that.
- *
- * @param {Object} context
- */
-const runInitializerIfNotRan = (context) => {
-  if (!initializedTradingStrategyHelpers) {
-    initializedTradingStrategyHelpers = tradingHelperInit(
-      context.instance,
-      makeFakeArtifacts(context)
-    );
-  }
-  return initializedTradingStrategyHelpers;
-};
 
 const orderAndFund = async (
   context,

@@ -1,7 +1,7 @@
 import { Web3Context } from "types";
-import PendingStrategy from "logic/PendingStrategy";
+import PendingStrategy from "logic/pendingStrategy";
 
-import api from "./"
+import { getPendingTransactions } from "api/safe"
 
 const findPendingStrategiesForOwner = async (
   context: Web3Context
@@ -11,15 +11,15 @@ const findPendingStrategiesForOwner = async (
     getDeployed,
   } = context;
 
-  const pendingSafeTransactions = await api.getPendingTransations(owner);
+  const pendingSafeTransactions = await getPendingTransactions(owner);
   console.log(pendingSafeTransactions)
 
   const strategies: PendingStrategy[] = await Promise.all(
-    fleetDeployEvents.map(
-      async (fleetDeployEvent): Promise<PendingStrategy> => {
-        const strategy = new PendingStrategy(fleetDeployEvent);
+    pendingSafeTransactions.map(
+      async (pendingSafeTransaction : any): Promise<PendingStrategy> => {
+        const strategy = new PendingStrategy(pendingSafeTransaction);
 
-        await strategy.fetchAllPossibleInfo(context);
+        await strategy.findFromPendingTransactions(context);
         return strategy;
       }
     )

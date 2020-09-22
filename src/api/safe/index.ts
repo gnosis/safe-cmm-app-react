@@ -6,7 +6,7 @@ if (!SAFE_ENDPOINT_URL) {
   );
 }
 
-export const getTransactions = async (safeAddress) => {
+export const getTransactions = async (safeAddress) : Promise<any[]> => {
   const response = await fetch(
     `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/transactions`
   );
@@ -16,7 +16,7 @@ export const getTransactions = async (safeAddress) => {
   return txs.results;
 };
 
-export const getPendingTransactions = async (safeAddress) => {
+export const getPendingTransactions = async (safeAddress) : Promise<any[]> => {
   const response = await fetch(
     `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/transactions?executed=false`
   );
@@ -24,4 +24,4 @@ export const getPendingTransactions = async (safeAddress) => {
   //console.log(txs);
 
   return txs.results;
-}
+};
