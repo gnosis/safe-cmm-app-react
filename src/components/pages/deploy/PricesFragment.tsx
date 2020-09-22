@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { RecoilState, useRecoilCallback, useRecoilValue } from "recoil";
+import { Field } from "react-final-form";
 import styled from "styled-components";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
@@ -84,84 +85,74 @@ function component(): JSX.Element {
     }
   }, [lowestPrice, startPrice, highestPrice, totalBrackets]);
 
-  const onChangeHandlerFactory = useRecoilCallback(
-    ({ set }) => (atom: RecoilState<string>) => (
-      event: React.ChangeEvent<HTMLInputElement>
-    ): void => {
-      set(atom, event.target.value);
-    }
-  );
-
-  const onLowestPriceChange = useCallback(
-    onChangeHandlerFactory(lowestPriceAtom),
-    []
-  );
-  const onBaseTokenAmountChange = useCallback(
-    onChangeHandlerFactory(baseTokenAmountAtom),
-    []
-  );
-  const onStartPriceChange = useCallback(
-    onChangeHandlerFactory(startPriceAtom),
-    []
-  );
-  const onTotalBracketsChange = useCallback(
-    onChangeHandlerFactory(totalBracketsAtom),
-    []
-  );
-  const onHighestPriceChange = useCallback(
-    onChangeHandlerFactory(highestPriceAtom),
-    []
-  );
-  const onQuoteTokenAmountChange = useCallback(
-    onChangeHandlerFactory(quoteTokenAmountAtom),
-    []
-  );
-
   return (
     <Wrapper>
       <div>
-        <PriceInput
-          tokenAddress={quoteTokenAddress}
-          labelText="Lowest price"
-          labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
-          value={lowestPrice}
-          onChange={onLowestPriceChange}
+        <Field<string>
+          name="lowestPrice"
+          render={({ input, meta }) => (
+            <PriceInput
+              {...input}
+              warn={meta.data?.warn}
+              error={meta.error}
+              tokenAddress={baseTokenAddress}
+              labelText="Lowest price"
+              labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
+            />
+          )}
         />
-        <FundingInput
-          brackets={baseTokenBrackets}
-          tokenAddress={baseTokenAddress}
-          value={baseTokenAmount}
-          onChange={onBaseTokenAmountChange}
+        <Field<string>
+          name="baseTokenAmount"
+          render={(props) => (
+            <FundingInput
+              {...props.input}
+              brackets={baseTokenBrackets}
+              tokenAddress={baseTokenAddress}
+            />
+          )}
         />
       </div>
       <div className="middle">
-        <PriceInput
-          tokenAddress={quoteTokenAddress}
-          labelText="Start Price"
-          labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
-          value={startPrice}
-          labelSize="xl"
-          onChange={onStartPriceChange}
+        <Field<string>
+          name="startPrice"
+          render={(props) => (
+            <PriceInput
+              {...props.input}
+              tokenAddress={baseTokenAddress}
+              labelText="Start Price"
+              labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
+              labelSize="xl"
+            />
+          )}
         />
-        <TotalBrackets
-          value={totalBrackets}
-          amount={totalInvestment}
-          onChange={onTotalBracketsChange}
+        <Field<string>
+          name="totalBrackets"
+          render={(props) => (
+            <TotalBrackets {...props.input} amount={totalInvestment} />
+          )}
         />
       </div>
       <div>
-        <PriceInput
-          tokenAddress={quoteTokenAddress}
-          labelText="Highest price"
-          labelTooltip="The max price per token A you are willing to sell or buy"
-          value={highestPrice}
-          onChange={onHighestPriceChange}
+        <Field<string>
+          name="highestPrice"
+          render={(props) => (
+            <PriceInput
+              {...props.input}
+              tokenAddress={baseTokenAddress}
+              labelText="Highest price"
+              labelTooltip="The max price per token A you are willing to sell or buy"
+            />
+          )}
         />
-        <FundingInput
-          brackets={quoteTokenBrackets}
-          tokenAddress={quoteTokenAddress}
-          value={quoteTokenAmount}
-          onChange={onQuoteTokenAmountChange}
+        <Field<string>
+          name="quoteTokenAmount"
+          render={(props) => (
+            <FundingInput
+              {...props.input}
+              brackets={quoteTokenBrackets}
+              tokenAddress={quoteTokenAddress}
+            />
+          )}
         />
       </div>
     </Wrapper>

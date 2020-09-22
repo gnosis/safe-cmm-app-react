@@ -1,10 +1,9 @@
 import React, { memo } from "react";
-import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { Message } from "components/basic/display/Message";
 
-import { messagesSelector } from "components/pages/deploy/selectors";
+import { useFormState } from "react-final-form";
 
 const Wrapper = styled.div`
   & > :not(:last-child) {
@@ -13,20 +12,18 @@ const Wrapper = styled.div`
 `;
 
 function component(): JSX.Element {
-  const messages = useRecoilValue(messagesSelector);
+  const { errors } = useFormState({ subscription: { errors: true } });
 
-  if (!messages) {
+  if (!errors) {
     return null;
   }
 
   return (
-    messages && (
-      <Wrapper className="messages">
-        {messages.map((msgProps, id) => (
-          <Message {...msgProps} key={id} />
-        ))}
-      </Wrapper>
-    )
+    <Wrapper className="messages">
+      {Object.values(errors).map((error, id) => (
+        <Message {...error} type="error" key={id} />
+      ))}
+    </Wrapper>
   );
 }
 
