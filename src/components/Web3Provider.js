@@ -8,6 +8,7 @@ import PropTypes from "prop-types";
 import initSdk from "@gnosis.pm/safe-apps-sdk";
 
 import { getTokenAddressesForNetwork } from "../api/tokenAddresses";
+import { getBalances } from "../api/safe";
 
 import { getImageUrl } from "utils/misc";
 
@@ -236,17 +237,49 @@ const Web3Provider = ({ children }) => {
 
   // Loads erc20 details for all tokens addresses for given network on load
   useEffect(() => {
-    if (!instance) {
+    if (!instance || !safeInfo?.safeAddress) {
       return;
     }
 
     async function loadErc20Details() {
+      let safeTokens = {};
+      // get all tokens from safe
+      try {
+        safeTokens = (await getBalances(safeInfo.safeAddress))
+          .filter(
+            // exclude entry without tokenAddress, which corresponds to ETH
+            (token) => !!token.tokenAddress
+          )
+          .reduce(
+            // transform it to erc20Details format
+            (acc, safeTokenDetails) => ({
+              ...acc,
+              [safeTokenDetails.tokenAddress]: {
+                ...safeTokenDetails.token,
+                imageUrl: safeTokenDetails.token.logoUri,
+                address: safeTokenDetails.tokenAddress,
+              },
+            }),
+            {}
+          );
+      } catch (e) {
+        logger.error(
+          `Failed to fetch tokens from Safe '${safeInfo.safeAddress}'`,
+          e
+        );
+      }
+
+      // get standard list of tokens to load
       const tokenAddresses = await getTokenAddressesForNetwork(
         await instance.eth.net.getId()
       );
 
       const erc20Details = await Promise.all(
-        tokenAddresses.map(handleGetErc20Details)
+        tokenAddresses
+          // except for tokens already present on the safe
+          .filter((address) => !safeTokens[address])
+          // fetch erc20 details
+          .map(handleGetErc20Details)
       );
 
       setErc20Cache(
@@ -255,13 +288,13 @@ const Web3Provider = ({ children }) => {
             ...acc,
             [tokenDetails.address]: tokenDetails,
           }),
-          {}
+          safeTokens
         )
       );
     }
 
     loadErc20Details();
-  }, [handleGetErc20Details, instance]);
+  }, [handleGetErc20Details, instance, safeInfo]);
 
   const tokenList = useMemo(() => Object.values(erc20Cache), [erc20Cache]);
 
@@ -291,8 +324,6 @@ const Web3Provider = ({ children }) => {
       handleGetErc20FromCache,
     ]
   );
-
-  logger;
 
   return (
     <Web3Context.Provider value={contextState}>

@@ -15,7 +15,7 @@ import { SubtextAmount } from "components/basic/display/SubtextAmount";
 
 import { Props } from ".";
 
-const COMPONENT_WIDTH = "305px";
+const COMPONENT_WIDTH = "200px";
 
 const Wrapper = styled.div`
   display: flex;

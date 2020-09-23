@@ -6,7 +6,7 @@ type colorsType = typeof srcTheme.colors;
 const backgroundColors = {
   backgroundError: "#FFE6EA",
   backgroundWarning: "#FFF3E2",
-  borderError: "#F1A09C",
+  backgroundSideBar: "#F7F5F5",
 };
 
 export interface Theme extends themeType {

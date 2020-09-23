@@ -7,6 +7,7 @@ import { theme } from "theme";
 export interface Props {
   type: "error" | "warning";
   label: string;
+  children: React.ReactNode;
 }
 
 const Wrapper = styled.div<Props>`
@@ -19,11 +20,6 @@ const Wrapper = styled.div<Props>`
     theme.colors[`background${type[0].toUpperCase()}${type.slice(1)}`]};
 
   border-radius: 6px;
-  border: 1px solid
-    ${({ type }): string =>
-      type === "error"
-        ? theme.colors.borderError
-        : theme.colors.backgroundWarning};
 
   & > div {
     display: flex;

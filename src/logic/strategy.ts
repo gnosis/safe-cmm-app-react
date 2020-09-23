@@ -1,11 +1,12 @@
 import { Web3Context, TokenDetails } from 'types';
 import web3GLib from "web3"
+import Decimal from 'decimal.js';
 
 const { toBN } = web3GLib.utils;
 
 let globalResolvedTokenPromises = {};
 
-interface Bracket {
+export interface Bracket {
   address : string;
   events : any[];
   deposits: DepositEvent[];
@@ -13,13 +14,13 @@ interface Bracket {
   withdraws: any[];
 }
 
-interface DepositEvent {
+export interface DepositEvent {
   amount : string; // BN string
   token : string;
   batchId : number;
 }
 
-interface WithdrawEvent {
+export interface WithdrawEvent {
   amount : string;
   batchId : number;
   created : Date;
@@ -29,6 +30,7 @@ class Strategy {
   transactionHash : string;
   safeAddresses : string[];
   brackets : Bracket[];
+  prices : Decimal[];
   startBlockNumber: number;
   baseTokenId : number;
   quoteTokenId : number;
@@ -58,6 +60,8 @@ class Strategy {
     this.block = await context.instance.eth.getBlock(this.startBlockNumber);
     this.created = new Date(this.block.timestamp * 1000);
 
+    this.prices = [];
+
     // Find all placed orders, to determine the brackets, token pairs and funding
     const batchExchangeContract = await context.getDeployed("BatchExchange");
 
@@ -65,6 +69,10 @@ class Strategy {
     let tokenIdBought;
     let orderBatchIds = [];
     let withdrawRequestBlocks = {};
+    let allWithdrawClaims = [];
+
+    let buyToken;
+    let sellToken;
 
     const brackets = await Promise.all(this.safeAddresses.map(async (bracketAddress) : Promise<Bracket> => {
       // Bracket orders find the tokens used for the strategy
@@ -72,11 +80,31 @@ class Strategy {
         fromBlock: this.startBlockNumber-1,
         filter: { owner: bracketAddress }
       })
-
+      
       if (bracketOrderEvents.length > 0) {
         const firstBracketEvent = bracketOrderEvents[0]
         tokenIdSold = firstBracketEvent.returnValues.sellToken;
         tokenIdBought = firstBracketEvent.returnValues.buyToken;
+
+        if (!buyToken) buyToken = tokenIdBought;
+        if (!sellToken) sellToken = tokenIdSold;
+
+        bracketOrderEvents.forEach((bracketOrder) => {
+          if (bracketOrder.returnValues.buyToken === buyToken) {
+            this.prices.push(
+              new Decimal(bracketOrder.returnValues.priceDenominator).div(
+                new Decimal(bracketOrder.returnValues.priceNumerator)
+              )
+            )
+          }
+          if (bracketOrder.returnValues.buyToken === sellToken) {
+            this.prices.push(
+              new Decimal(bracketOrder.returnValues.priceNumerator).div(
+                new Decimal(bracketOrder.returnValues.priceDenominator)
+              )
+            )
+          }
+        })
       }
 
       // Bracket Deposits find the funding used for the strategy
@@ -89,6 +117,8 @@ class Strategy {
         fromBlock: this.startBlockNumber-1,
         filter: { user: bracketAddress }
       })
+      
+      allWithdrawClaims.push(...withdrawClaims)
 
       let withdrawRequestsWithBlock : WithdrawEvent[] = []
       if (bracketDepositEvents[0]) {
@@ -137,9 +167,6 @@ class Strategy {
     }))
 
 
-
-
-
     this.baseTokenId = tokenIdSold;
     this.quoteTokenId = tokenIdBought;
     this.baseFunding = null;
@@ -177,8 +204,12 @@ class Strategy {
     this.quoteFunding = quoteFundingBn.toString();
 
     this.lastWithdrawRequestEvent = brackets[0]?.withdrawRequests[0];
-    this.lastWithdrawClaimEvent = brackets[0]?.withdraws[0];
+    this.lastWithdrawClaimEvent = allWithdrawClaims[0];
 
+    this.prices.sort((a, b) => {
+      if (a.eq(b)) return 0;
+      return (a.gt(b) ? 1 : -1);
+    })
     this.brackets = brackets;
   }
 }
