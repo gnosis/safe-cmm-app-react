@@ -3,6 +3,8 @@ import useInterval from "@use-it/interval";
 
 import styled from "styled-components";
 
+import Decimal from "decimal.js";
+
 import {
   Box,
   Table,
@@ -226,7 +228,7 @@ const Active = () => {
               <TableRow>
                 <TableCell>Created</TableCell>
                 <TableCell>Token Pair</TableCell>
-                <TableCell>Start Price</TableCell>
+                <TableCell>Price Range</TableCell>
                 <TableCell>Brackets</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell />
@@ -240,7 +242,38 @@ const Active = () => {
                     {strategy.quoteTokenDetails?.symbol} -{" "}
                     {strategy.baseTokenDetails?.symbol}
                   </TableCell>
-                  <TableCell>TODO</TableCell>
+                  <TableCell>
+                    {strategy.prices.length > 0 &&
+                      `${strategy.prices[0]
+                        .div(
+                          new Decimal(
+                            Math.pow(
+                              10,
+                              strategy.baseTokenDetails.decimals -
+                                strategy.quoteTokenDetails.decimals
+                            )
+                          )
+                        )
+                        // .div(Math.pow(10, strategy.quoteTokenDetails.decimals))
+                        .toSD(4)
+                        .toString()} - ${strategy.prices[
+                        strategy.prices.length - 1
+                      ]
+                        .div(
+                          new Decimal(
+                            Math.pow(
+                              10,
+                              strategy.baseTokenDetails.decimals -
+                                strategy.quoteTokenDetails.decimals
+                            )
+                          )
+                        )
+                        // .div(Math.pow(10, strategy.baseTokenDetails.decimals))
+                        .toSD(4)
+                        .toString()} ${strategy.quoteTokenDetails.symbol} per ${
+                        strategy.baseTokenDetails.symbol
+                      }`}
+                  </TableCell>
                   <TableCell>{strategy.brackets.length}</TableCell>
                   <TableCell>
                     <WithdrawButton
