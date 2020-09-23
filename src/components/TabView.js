@@ -2,8 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Tab } from "@gnosis.pm/safe-react-components";
 
 import Strategies from "routes/Strategies";
-// import Deploy from "routes/Deploy";
-import { DeployPage } from "components/pages/deploy";
+import Deploy from "routes/Deploy";
 
 import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 
@@ -11,7 +10,7 @@ const TAB_MENU_ENTRIES = [
   {
     id: "deployment",
     label: "Deploy",
-    component: DeployPage,
+    component: Deploy,
   },
   {
     id: "strategies",
@@ -46,7 +45,7 @@ const TabView = () => {
         variant="outlined"
       />
       <Switch>
-        <Route path="/deployment" component={DeployPage} />
+        <Route path="/deployment" component={Deploy} />
         <Route path="/strategies" component={Strategies} />
         <Redirect to={`/${DEFAULT_TAB}`} />
       </Switch>
