@@ -20,7 +20,7 @@ const NavButtonItem = styled(Box)`
 
 const NavButton = styled(ButtonLink)`
   text-decoration: none;
-  
+
   p {
     text-decoration: none;
     color: ${({ theme, active }) =>

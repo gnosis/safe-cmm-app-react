@@ -17,11 +17,18 @@ export const getTransactions = async (safeAddress) : Promise<any[]> => {
 };
 
 export const getPendingTransactions = async (safeAddress) : Promise<any[]> => {
-  const response = await fetch(
-    `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/transactions?executed=false`
+  const requestSafe = await fetch(
+    `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/`
+  )
+  const responseSafe = await requestSafe.json();
+  
+  const requestTxs = await fetch(
+    `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/transactions?executed=false&nonce__gte=${responseSafe.nonce}`
   );
-  const txs = await response.json();
-  //console.log(txs);
+  const responseTxs = await requestTxs.json();
 
-  return txs.results;
+  const txs = responseTxs.results.filter((tx) => tx.isSuccessful === null);
+  console.log(txs);
+
+  return txs;
 };

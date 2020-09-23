@@ -8,12 +8,10 @@ const findPendingStrategiesForOwner = async (
 ): Promise<PendingStrategy[]> => {
   const {
     safeInfo: { safeAddress: owner },
-    getDeployed,
   } = context;
 
   const pendingSafeTransactions = await getPendingTransactions(owner);
-  console.log(pendingSafeTransactions)
-
+  
   const strategies: PendingStrategy[] = await Promise.all(
     pendingSafeTransactions.map(
       async (pendingSafeTransaction : any): Promise<PendingStrategy> => {

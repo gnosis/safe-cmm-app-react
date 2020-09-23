@@ -9,7 +9,7 @@ const orderAndFund = async (
     tokenBaseContract,
     tokenBaseDetails,
     tokenQuoteContract,
-    // tokenQuoteDetails,
+    tokenQuoteDetails,
     boundsLowerWei,
     boundsUpperWei,
     investmentBaseWei,
@@ -45,7 +45,7 @@ const orderAndFund = async (
   ]);
 
   const dividendForBounds = new Decimal(10).pow(
-    tokenBaseDetails.decimals.toString()
+    Math.max(tokenBaseDetails.decimals, tokenQuoteDetails.decimals)
   );
 
   const orderTransactions = await transactionsForOrders(
