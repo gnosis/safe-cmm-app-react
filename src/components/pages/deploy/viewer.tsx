@@ -17,6 +17,7 @@ import { ErrorMessagesFragment } from "./ErrorMessagesFragment";
 import { DeployStrategyButtonFragment } from "./DeployStrategyButtonFragment";
 import { isSubmittingAtom } from "./atoms";
 import { DeployFormValues, FormFields } from "./types";
+import { ValidationErrors } from "validators/types";
 
 const PageLayout = styled.div`
   display: flex;
@@ -54,15 +55,6 @@ export interface Props {
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
-export interface ValidationError {
-  label: string;
-  body?: React.ReactNode;
-}
-export interface ValidationErrors {
-  [field: string]: ValidationError;
-}
-
-// TODO: adjust the type of `setFieldData`
 function Warnings({
   mutators: { setFieldData },
 }: Pick<FormApi, "mutators">): JSX.Element {
@@ -94,9 +86,9 @@ function component(props: Props): JSX.Element {
         mutators={{ setFieldData }}
         validate={(values: DeployFormValues) => {
           const errors: ValidationErrors = {};
-          if (!values.lowestPrice) {
-            errors["lowestPrice"] = { label: " Lowest Price is required" };
-          }
+          // if (!values.lowestPrice) {
+          //   errors["lowestPrice"] = { label: " Lowest Price is required" };
+          // }
 
           return errors;
         }}

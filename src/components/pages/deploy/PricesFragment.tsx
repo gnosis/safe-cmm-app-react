@@ -20,6 +20,16 @@ import {
   totalBracketsAtom,
   totalInvestmentAtom,
 } from "./atoms";
+import {
+  baseTokenBracketsSelector,
+  quoteTokenBracketsSelector,
+} from "./selectors";
+import { composeValidators } from "validators/misc";
+import { isRequired } from "validators/isRequired";
+import { isNumber } from "validators/isNumber";
+import { isGreaterThan } from "validators/isGreaterThan";
+import { isSmallerThan } from "validators/isSmallerThan";
+import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
 
 const Wrapper = styled.div`
   display: flex;
@@ -90,6 +100,10 @@ function component(): JSX.Element {
       <div>
         <Field<string>
           name="lowestPrice"
+          validate={composeValidators(
+            isRequired("Token A Funding"),
+            isNumber("Lowest Price")
+          )}
           render={({ input, meta }) => (
             <PriceInput
               {...input}
@@ -103,9 +117,15 @@ function component(): JSX.Element {
         />
         <Field<string>
           name="baseTokenAmount"
-          render={(props) => (
+          validate={composeValidators(
+            isRequired("Token A Funding"),
+            isNumber("Token A Funding")
+          )}
+          render={({ input, meta }) => (
             <FundingInput
-              {...props.input}
+              {...input}
+              warn={meta.data?.warn}
+              error={meta.error}
               brackets={baseTokenBrackets}
               tokenAddress={baseTokenAddress}
             />
@@ -115,9 +135,15 @@ function component(): JSX.Element {
       <div className="middle">
         <Field<string>
           name="startPrice"
-          render={(props) => (
+          validate={composeValidators(
+            isRequired("Start Price"),
+            isNumber("Start Price")
+          )}
+          render={({ input, meta }) => (
             <PriceInput
-              {...props.input}
+              {...input}
+              warn={meta.data?.warn}
+              error={meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Start Price"
               labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
@@ -127,17 +153,34 @@ function component(): JSX.Element {
         />
         <Field<string>
           name="totalBrackets"
-          render={(props) => (
-            <TotalBrackets {...props.input} amount={totalInvestment} />
+          validate={composeValidators(
+            isRequired("Total Brackets"),
+            isNumber("Total Brackets", true),
+            isGreaterThan("Total Brackets", MINIMUM_BRACKETS - 1),
+            isSmallerThan("Total Brackets", MAXIMUM_BRACKETS + 1)
+          )}
+          render={({ input, meta }) => (
+            <TotalBrackets
+              {...input}
+              warn={meta.data?.warn}
+              error={meta.error}
+              amount={totalInvestment}
+            />
           )}
         />
       </div>
       <div>
         <Field<string>
           name="highestPrice"
-          render={(props) => (
+          validate={composeValidators(
+            isRequired("Highest Price"),
+            isNumber("Highest Price")
+          )}
+          render={({ input, meta }) => (
             <PriceInput
-              {...props.input}
+              {...input}
+              warn={meta.data?.warn}
+              error={meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Highest price"
               labelTooltip="The max price per token A you are willing to sell or buy"
@@ -146,9 +189,15 @@ function component(): JSX.Element {
         />
         <Field<string>
           name="quoteTokenAmount"
-          render={(props) => (
+          validate={composeValidators(
+            isRequired("Token B Funding"),
+            isNumber("Token B Funding")
+          )}
+          render={({ input, meta }) => (
             <FundingInput
-              {...props.input}
+              {...input}
+              warn={meta.data?.warn}
+              error={meta.error}
               brackets={quoteTokenBrackets}
               tokenAddress={quoteTokenAddress}
             />
