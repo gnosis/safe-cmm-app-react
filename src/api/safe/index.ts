@@ -16,6 +16,14 @@ export const getTransactions = async (safeAddress) : Promise<any[]> => {
   return txs.results;
 };
 
+export const getBalances = async (safeAddress) : Promise<any> => {
+  const response = await fetch(
+    `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/balances`
+  );
+  return response.json();
+};
+
+
 export const getPendingTransactions = async (safeAddress) : Promise<any[]> => {
   const requestSafe = await fetch(
     `${SAFE_ENDPOINT_URL}/api/v1/safes/${safeAddress}/`

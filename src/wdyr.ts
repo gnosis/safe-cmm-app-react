@@ -7,3 +7,4 @@
 //     trackAllPureComponents: true,
 //   });
 // }
+// TODO: uncomment when testing. Otherwise it's too much noise in the console.

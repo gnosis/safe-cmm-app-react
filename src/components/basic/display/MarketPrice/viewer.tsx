@@ -18,18 +18,18 @@ const Amount = styled.span`
 export interface MarketPriceViewerProps {
   price?: string;
   isPriceLoading: boolean;
-  priceUrl: string;
   baseTokenAddress?: string;
   quoteTokenAddress?: string;
+  onClick?: () => void;
 }
 
 function component(props: MarketPriceViewerProps): JSX.Element {
   const {
     price,
     isPriceLoading,
-    priceUrl,
     baseTokenAddress,
     quoteTokenAddress,
+    onClick,
   } = props;
 
   const amount = useMemo((): JSX.Element | string => {
@@ -40,11 +40,7 @@ function component(props: MarketPriceViewerProps): JSX.Element {
     } else {
       return (
         <Amount>
-          <Link
-            color={priceUrl ? "primary" : "disabled"}
-            href={priceUrl}
-            textSize="md"
-          >
+          <Link role="button" color="primary" onClick={onClick} textSize="md">
             {price}
           </Link>
           <TokenDisplay token={quoteTokenAddress} size="md" />
@@ -58,7 +54,7 @@ function component(props: MarketPriceViewerProps): JSX.Element {
         </Amount>
       );
     }
-  }, [price, priceUrl, baseTokenAddress, quoteTokenAddress, isPriceLoading]);
+  }, [isPriceLoading, price, onClick, quoteTokenAddress, baseTokenAddress]);
 
   return <SubtextAmount subtext="Market price:" amount={amount} inline />;
 }
