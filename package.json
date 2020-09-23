@@ -17,7 +17,7 @@
   "dependencies": {
     "@gnosis.pm/dex-contracts": "^0.4.1",
     "@gnosis.pm/dex-js": "^0.4.1",
-    "@gnosis.pm/dex-liquidity-provision": "github:gnosis/dex-liquidity-provision#cmm-changes",
+    "@gnosis.pm/dex-liquidity-provision": "github:gnosis/dex-liquidity-provision#master",
     "@gnosis.pm/safe-apps-sdk": "^0.3.1",
     "@gnosis.pm/safe-react-components": "gnosis/safe-react-components#development",
     "@hot-loader/react-dom": "^16.13.0",
@@ -29,6 +29,7 @@
     "debug": "^4.1.1",
     "decimal.js": "^10.2.0",
     "ethereumjs-util": "^7.0.4",
+    "lodash": "^4.17.20",
     "moment": "^2.27.0",
     "path-to-regexp": "^1.7.0",
     "react": "^16.13.1",

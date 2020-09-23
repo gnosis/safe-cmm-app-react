@@ -12,8 +12,8 @@ export const API_KEY = process.env.INFURA_API_KEY;
 export const NETWORK_URL = `https://${NETWORK}.infura.io/v3/${API_KEY}`;
 
 const SAFE_ENDPOINT_URLS = {
-  [Network.rinkeby]: `https://safe-transaction.rinkeby.gnosis.io/`,
-  [Network.mainnet]: `https://safe-transaction.gnosis.io/`,
+  [Network.rinkeby]: `https://safe-transaction.rinkeby.gnosis.io`,
+  [Network.mainnet]: `https://safe-transaction.gnosis.io`,
 };
 
 export const SAFE_ENDPOINT_URL =

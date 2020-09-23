@@ -1,23 +1,5 @@
-import tradingHelperInit from "@gnosis.pm/dex-liquidity-provision/scripts/utils/trading_strategy_helpers";
-import makeFakeArtifacts from "utils/makeFakeArtifacts";
-
+import runInitializerIfNotRan from "api/utils/tradingHelperInit";
 import Decimal from "decimal.js";
-
-let initializedTradingStrategyHelpers;
-/**
- * Runs the initializer for trading helpers once and returns the cached return after that.
- *
- * @param {Object} context
- */
-const runInitializerIfNotRan = (context) => {
-  if (!initializedTradingStrategyHelpers) {
-    initializedTradingStrategyHelpers = tradingHelperInit(
-      context.instance,
-      makeFakeArtifacts(context)
-    );
-  }
-  return initializedTradingStrategyHelpers;
-};
 
 const orderAndFund = async (
   context,
@@ -27,7 +9,7 @@ const orderAndFund = async (
     tokenBaseContract,
     tokenBaseDetails,
     tokenQuoteContract,
-    // tokenQuoteDetails,
+    tokenQuoteDetails,
     boundsLowerWei,
     boundsUpperWei,
     investmentBaseWei,
@@ -48,8 +30,8 @@ const orderAndFund = async (
   ]);
 
   const {
-    buildTransferApproveDepositFromOrders,
-    buildOrders,
+    transactionsForTransferApproveDepositFromOrders,
+    transactionsForOrders,
   } = runInitializerIfNotRan(context);
 
   const batchExchangeContract = await context.getDeployed("BatchExchange");
@@ -63,10 +45,10 @@ const orderAndFund = async (
   ]);
 
   const dividendForBounds = new Decimal(10).pow(
-    tokenBaseDetails.decimals.toString()
+    Math.max(tokenBaseDetails.decimals, tokenQuoteDetails.decimals)
   );
 
-  const orderTransactions = await buildOrders(
+  const orderTransactions = await transactionsForOrders(
     context.safeInfo.safeAddress,
     safeAddresses,
     tokenBaseId,
@@ -76,7 +58,7 @@ const orderAndFund = async (
     true
   );
 
-  const fundTransactions = await buildTransferApproveDepositFromOrders(
+  const fundTransactions = await transactionsForTransferApproveDepositFromOrders(
     context.safeInfo.safeAddress,
     safeAddresses,
     tokenBaseContract.options.address,
