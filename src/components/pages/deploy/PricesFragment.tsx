@@ -98,7 +98,7 @@ function component(): JSX.Element {
     <Wrapper>
       <div>
         <PriceInput
-          tokenAddress={baseTokenAddress}
+          tokenAddress={quoteTokenAddress}
           labelText="Lowest price"
           labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
           value={lowestPrice}
@@ -113,7 +113,7 @@ function component(): JSX.Element {
       </div>
       <div className="middle">
         <PriceInput
-          tokenAddress={baseTokenAddress}
+          tokenAddress={quoteTokenAddress}
           labelText="Start Price"
           labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
           value={startPrice}
@@ -128,7 +128,7 @@ function component(): JSX.Element {
       </div>
       <div>
         <PriceInput
-          tokenAddress={baseTokenAddress}
+          tokenAddress={quoteTokenAddress}
           labelText="Highest price"
           labelTooltip="The max price per token A you are willing to sell or buy"
           value={highestPrice}
