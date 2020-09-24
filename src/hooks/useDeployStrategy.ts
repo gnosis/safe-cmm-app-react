@@ -6,8 +6,11 @@ import { parseAmount } from "@gnosis.pm/dex-js";
 
 import { Web3Context } from "components/Web3Provider";
 import deployStrategy from "api/deployStrategy";
+import getLogger from "utils/logger";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
+
+const logger = getLogger("useDeployStrategy");
 
 export interface Params {
   lowestPrice: string;
@@ -48,7 +51,9 @@ export function useDeployStrategy(
       totalBrackets,
       startPrice,
     } = params;
-    console.log(`Params`, params);
+    logger.log(`==> Base token '${baseTokenAddress}'`, baseTokenDetails);
+    logger.log(`==> Quote token '${quoteTokenAddress}'`, quoteTokenDetails);
+    logger.log(`==> Params`, params);
 
     await deployStrategy(
       web3Context,

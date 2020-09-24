@@ -268,6 +268,7 @@ const Web3Provider = ({ children }) => {
           e
         );
       }
+      logger.log("==> Safe tokens", safeTokens);
 
       // get standard list of tokens to load
       const tokenAddresses = await getTokenAddressesForNetwork(
@@ -281,6 +282,7 @@ const Web3Provider = ({ children }) => {
           // fetch erc20 details
           .map(handleGetErc20Details)
       );
+      logger.log("==> Additional tokens", erc20Details);
 
       setErc20Cache(
         erc20Details.reduce(
