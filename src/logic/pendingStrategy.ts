@@ -9,29 +9,29 @@ const { toBN } = web3.utils;
 
 // const logger = getLogger('pending-strategy');
 
-interface Decode_Value {
+interface DecoderValue {
   operation: number;
   to: string;
   value: number;
   data: string;
-  dataDecoded: Decode_Data;
+  dataDecoded: DecoderData;
 }
 
-interface Decode_Parameter {
+interface DecoderParameter {
   name: string;
   type: string,
   value: string,
-  valueDecoded: Decode_Value[] | Decode_Data;
+  valueDecoded: DecoderValue[] | DecoderData;
 }
 
-interface Decode_Data {
+interface DecoderData {
   method: string;
-  parameters: Decode_Parameter[];
+  parameters: DecoderParameter[];
 }
 
-interface Decode_Node {
-  data: Decode_Data | Decode_Parameter | Decode_Value;
-  parent: Decode_Node,
+interface TxTreeNode {
+  data: DecoderData | DecoderParameter | DecoderValue;
+  parent: TxTreeNode,
 }
 
 class PendingStrategy {
@@ -51,7 +51,7 @@ class PendingStrategy {
   owner : string;
   created : Date;
   block : any;
-  transactionData : Decode_Data;
+  transactionData : DecoderData;
 
   constructor(pendingStrategyTransaction : any) {
     this.transactionHash = pendingStrategyTransaction.safeTxHash;
@@ -60,7 +60,7 @@ class PendingStrategy {
     this.created = new Date(pendingStrategyTransaction.submissionDate);
   }
 
-  findParamsInTransactionData(transactionData : Decode_Data) : void {
+  findParamsInTransactionData(transactionData : DecoderData) : void {
     let sumFundingTokenBase = toBN(0);
     let sumFundingTokenQuote = toBN(0);
 
@@ -81,10 +81,10 @@ class PendingStrategy {
     // The reason I consider the structure a graph is because of mutliSend there can be
     // potentially extremely deeply nested transactions. Decode_Node includes a parent ref
     // to traverse the tree up and down.
-    let walkTransaction = (node : Decode_Node) : void => {
+    let walkTransaction = (node : TxTreeNode) : void => {
       // depth++;
       //console.log(`${"  ".repeat(depth)}==> Walking "${txData.method}" with ${txData.parameters.length} params`)
-      const txData = node.data as Decode_Data;
+      const txData = node.data as DecoderData;
 
       if (txData.method === "placeOrder") {
         // logger.log('Reading decoded placeOrder', txData);
@@ -122,18 +122,18 @@ class PendingStrategy {
             .parent // placeOrder
             .parent // execTransaction param
             .parent // multiSend param
-            .data as Decode_Value).to;
+            .data as DecoderValue).to;
         if (!bracketAddresses.includes(bracketAddress))
           bracketAddresses.push(bracketAddress)
       }
 
-      txData.parameters.forEach((parameter : Decode_Parameter) :void => {
+      txData.parameters.forEach((parameter : DecoderParameter) :void => {
         if (parameter != null && parameter.valueDecoded != null) {
           //console.log(parameter.valueDecoded)
   
           if (Array.isArray(parameter.valueDecoded)) {
             // If valueDecoded is an Array, treat as Decode_Value
-            parameter.valueDecoded.forEach((parameterValue : Decode_Value) : void => {
+            parameter.valueDecoded.forEach((parameterValue : DecoderValue) : void => {
               if (parameterValue && parameterValue.dataDecoded != null) {
                 walkTransaction({
                   data: parameterValue.dataDecoded,
@@ -148,7 +148,7 @@ class PendingStrategy {
             // if valueDecoded is no array, it's Decode_Data
             if (parameter.valueDecoded && parameter.valueDecoded.parameters) {
               walkTransaction({
-                data: parameter.valueDecoded as Decode_Data,
+                data: parameter.valueDecoded as DecoderData,
                 parent: {
                   data: parameter,
                   parent: node,
