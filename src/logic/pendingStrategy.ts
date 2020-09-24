@@ -9,11 +9,16 @@ const { toBN } = web3.utils;
 
 // const logger = getLogger('pending-strategy');
 
+<<<<<<< HEAD
 interface Decode_Value {
+=======
+interface DecoderValue {
+>>>>>>> feature/#34/pending-strategy-discovery
   operation: number;
   to: string;
   value: number;
   data: string;
+<<<<<<< HEAD
   dataDecoded: Decode_Data;
 }
 
@@ -32,6 +37,26 @@ interface Decode_Data {
 interface Decode_Node {
   data: Decode_Data | Decode_Parameter | Decode_Value;
   parent: Decode_Node,
+=======
+  dataDecoded: DecoderData;
+}
+
+interface DecoderParameter {
+  name: string;
+  type: string,
+  value: string,
+  valueDecoded: DecoderValue[] | DecoderData;
+}
+
+interface DecoderData {
+  method: string;
+  parameters: DecoderParameter[];
+}
+
+interface TxTreeNode {
+  data: DecoderData | DecoderParameter | DecoderValue;
+  parent: TxTreeNode,
+>>>>>>> feature/#34/pending-strategy-discovery
 }
 
 class PendingStrategy {
@@ -51,7 +76,11 @@ class PendingStrategy {
   owner : string;
   created : Date;
   block : any;
+<<<<<<< HEAD
   transactionData : Decode_Data;
+=======
+  transactionData : DecoderData;
+>>>>>>> feature/#34/pending-strategy-discovery
 
   constructor(pendingStrategyTransaction : any) {
     this.transactionHash = pendingStrategyTransaction.safeTxHash;
@@ -60,7 +89,11 @@ class PendingStrategy {
     this.created = new Date(pendingStrategyTransaction.submissionDate);
   }
 
+<<<<<<< HEAD
   findParamsInTransactionData(transactionData : Decode_Data) : void {
+=======
+  findParamsInTransactionData(transactionData : DecoderData) : void {
+>>>>>>> feature/#34/pending-strategy-discovery
     let sumFundingTokenBase = toBN(0);
     let sumFundingTokenQuote = toBN(0);
 
@@ -81,10 +114,17 @@ class PendingStrategy {
     // The reason I consider the structure a graph is because of mutliSend there can be
     // potentially extremely deeply nested transactions. Decode_Node includes a parent ref
     // to traverse the tree up and down.
+<<<<<<< HEAD
     let walkTransaction = (node : Decode_Node) : void => {
       // depth++;
       //console.log(`${"  ".repeat(depth)}==> Walking "${txData.method}" with ${txData.parameters.length} params`)
       const txData = node.data as Decode_Data;
+=======
+    let walkTransaction = (node : TxTreeNode) : void => {
+      // depth++;
+      //console.log(`${"  ".repeat(depth)}==> Walking "${txData.method}" with ${txData.parameters.length} params`)
+      const txData = node.data as DecoderData;
+>>>>>>> feature/#34/pending-strategy-discovery
 
       if (txData.method === "placeOrder") {
         // logger.log('Reading decoded placeOrder', txData);
@@ -122,18 +162,30 @@ class PendingStrategy {
             .parent // placeOrder
             .parent // execTransaction param
             .parent // multiSend param
+<<<<<<< HEAD
             .data as Decode_Value).to;
+=======
+            .data as DecoderValue).to;
+>>>>>>> feature/#34/pending-strategy-discovery
         if (!bracketAddresses.includes(bracketAddress))
           bracketAddresses.push(bracketAddress)
       }
 
+<<<<<<< HEAD
       txData.parameters.forEach((parameter : Decode_Parameter) :void => {
+=======
+      txData.parameters.forEach((parameter : DecoderParameter) :void => {
+>>>>>>> feature/#34/pending-strategy-discovery
         if (parameter != null && parameter.valueDecoded != null) {
           //console.log(parameter.valueDecoded)
   
           if (Array.isArray(parameter.valueDecoded)) {
             // If valueDecoded is an Array, treat as Decode_Value
+<<<<<<< HEAD
             parameter.valueDecoded.forEach((parameterValue : Decode_Value) : void => {
+=======
+            parameter.valueDecoded.forEach((parameterValue : DecoderValue) : void => {
+>>>>>>> feature/#34/pending-strategy-discovery
               if (parameterValue && parameterValue.dataDecoded != null) {
                 walkTransaction({
                   data: parameterValue.dataDecoded,
@@ -148,7 +200,11 @@ class PendingStrategy {
             // if valueDecoded is no array, it's Decode_Data
             if (parameter.valueDecoded && parameter.valueDecoded.parameters) {
               walkTransaction({
+<<<<<<< HEAD
                 data: parameter.valueDecoded as Decode_Data,
+=======
+                data: parameter.valueDecoded as DecoderData,
+>>>>>>> feature/#34/pending-strategy-discovery
                 parent: {
                   data: parameter,
                   parent: node,

@@ -1,7 +1,0 @@
-authtoken: "5nue34aMgomEjiyxPQ6rR_3m2N52Ttny8wnCtoALMEi"
-tunnels:
-  webpack:
-    addr: "8080"
-    proto: http
-    subdomain: cmm-safe-app
-    bind_tls: "true"
