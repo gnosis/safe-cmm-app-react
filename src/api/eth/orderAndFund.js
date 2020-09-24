@@ -1,6 +1,10 @@
 import runInitializerIfNotRan from "api/utils/tradingHelperInit";
 import Decimal from "decimal.js";
 
+import getLogger from "utils/logger";
+
+const logger = getLogger("orderAndFund");
+
 const orderAndFund = async (
   context,
   {
@@ -43,6 +47,12 @@ const orderAndFund = async (
       .tokenAddressToIdMap(tokenQuoteContract.options.address)
       .call(),
   ]);
+  logger.log(
+    `==> Base token address: ${tokenBaseContract.options.address}; token id: ${tokenBaseId}`
+  );
+  logger.log(
+    `==> Quote token address: ${tokenQuoteContract.options.address}; token id: ${tokenQuoteId}`
+  );
 
   const dividendForBounds = new Decimal(10).pow(
     Math.max(tokenBaseDetails.decimals, tokenQuoteDetails.decimals)
