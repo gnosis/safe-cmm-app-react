@@ -5,6 +5,7 @@ module.exports = {
     "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
       "<rootDir>/test/mocks/fileMock.ts",
     "\\.(css|less)$": "<rootDir>/test/mocks/styleMock.ts",
+    "hooks/(.*)$": "<rootDir>/src/mocks/$1",
   },
   transformIgnorePatterns: [
     // "/node_modules/(?!@gnosis.pm/dex-.*).*/",
@@ -12,7 +13,6 @@ module.exports = {
     // "node_modules/(?!@storybook/*)",
     //   "\\.pnp\\.[^\\/]+$"
   ],
-
   globals: {
     "ts-jest": {
       diagnostics: {
@@ -28,7 +28,7 @@ module.exports = {
               },
             },
           ],
-          // "@babel/preset-react",
+          "@babel/preset-react",
         ],
         plugins: [
           "@babel/plugin-syntax-dynamic-import",

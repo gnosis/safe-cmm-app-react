@@ -10,15 +10,22 @@ import GlobalStyles from "../src/components/GlobalStyle";
 import { mockHookDecorator } from "../src/mock/mockHookContext";
 import { injectRecoilStateDecorator } from "../src/mock/injectRecoilState";
 
-addDecorator((storyFn) => (
-  <ThemeProvider theme={theme}>
-    <GlobalStyles />
-    {storyFn()}
-  </ThemeProvider>
-));
+function themeDecorator(storyFn) {
+  return (
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      {storyFn()}
+    </ThemeProvider>
+  );
+}
 
-addDecorator(mockHookDecorator);
-addDecorator(injectRecoilStateDecorator);
+export const decorators = [
+  themeDecorator,
+  mockHookDecorator,
+  injectRecoilStateDecorator,
+];
+// addDecorator(mockHookDecorator);
+// addDecorator(injectRecoilStateDecorator);
 
 addParameters({
   options: {

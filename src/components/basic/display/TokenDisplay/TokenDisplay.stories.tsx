@@ -7,13 +7,13 @@ export default {
   component: TokenDisplay,
   title: "basic/display/TokenDisplay",
   // Our exports that end in "Data" are not stories.
-  excludeStories: /.*(Data|mock.*)$/,
+  excludeStories: /Data$/,
 } as Meta;
 
-export const tokenDisplayData = {
+export const tokenDisplayData: Props = {
   token: "0x4DBCdF9B62e891a7cec5A2568C3F4FAF9E8Abe2b",
   size: "sm",
-} as Props;
+};
 
 const Template = (args: Props): JSX.Element => <TokenDisplay {...args} />;
 

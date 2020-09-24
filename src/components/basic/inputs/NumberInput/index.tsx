@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import {
   Props as TextFieldWithCustomLabelProps,
@@ -20,9 +20,12 @@ export interface Props
 export const NumberInput = (props: Props): JSX.Element => {
   const { onChange, tokenAddress, ...rest } = props;
 
-  const endAdornment = tokenAddress && (
-    <TokenDisplay size="md" token={tokenAddress} />
-  );
+  const endAdornment = useMemo((): undefined | JSX.Element => {
+    if (!tokenAddress) {
+      return undefined;
+    }
+    return <TokenDisplay size="md" token={tokenAddress} />;
+  }, [tokenAddress]);
 
   const onlyAllowNumbers = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>): void => {
