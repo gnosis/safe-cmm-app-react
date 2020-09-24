@@ -306,7 +306,7 @@ const Web3Provider = ({ children }) => {
           if (!tokenDetails.onGP) {
             // exclude tokens from hardcoded list that have not been added to GP contract
             logger.warn(
-              `Token address '${tokenDetails.address}' no registered on GP`
+              `Token address '${tokenDetails.address}' not registered on GP`
             );
             return acc;
           }
