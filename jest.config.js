@@ -3,9 +3,9 @@ module.exports = {
   moduleDirectories: ["node_modules", "src"],
   moduleNameMapper: {
     "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-      "<rootDir>/test/mocks/fileMock.ts",
-    "\\.(css|less)$": "<rootDir>/test/mocks/styleMock.ts",
-    "hooks/(.*)$": "<rootDir>/src/mocks/$1",
+      "<rootDir>/src/mock/fileMock.ts",
+    "\\.(css|less)$": "<rootDir>/src/mock/fs-mock.js",
+    // "hooks/(.*)$": "<rootDir>/src/mocks/$1",
   },
   transformIgnorePatterns: [
     // "/node_modules/(?!@gnosis.pm/dex-.*).*/",
@@ -13,6 +13,7 @@ module.exports = {
     // "node_modules/(?!@storybook/*)",
     //   "\\.pnp\\.[^\\/]+$"
   ],
+  setupFilesAfterEnv: ["<rootDir>/test/setupEnzyme.ts"],
   globals: {
     "ts-jest": {
       diagnostics: {

@@ -1,0 +1,972 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots basic/display/Message Default 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      label="This is an error"
+      type="error"
+    >
+      <Message__Wrapper
+        label="This is an error"
+        type="error"
+      >
+        <div
+          className="Message__Wrapper-sc-11ggxo0-0 cueRSQ"
+          label="This is an error"
+          type="error"
+        >
+          <div>
+            <St
+              color="error"
+              size="sm"
+              type="error"
+            >
+              <styled.span
+                color="error"
+              >
+                <span
+                  className="sc-fujyUd cUegfu"
+                  color="error"
+                >
+                  <svg
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g
+                      fill="none"
+                      fillRule="evenodd"
+                    >
+                      <path
+                        d="M0 0H16V16H0z"
+                      />
+                      <rect
+                        className="icon-color"
+                        height="5"
+                        rx="1"
+                        width="2"
+                        x="7"
+                        y="4"
+                      />
+                      <path
+                        className="icon-color"
+                        d="M8 9.9c.608 0 1.1.492 1.1 1.1 0 .608-.492 1.1-1.1 1.1-.608 0-1.1-.492-1.1-1.1 0-.608.492-1.1 1.1-1.1z"
+                        fillRule="nonzero"
+                      />
+                      <path
+                        className="icon-color"
+                        d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                        fillRule="nonzero"
+                      />
+                    </g>
+                  </svg>
+                </span>
+              </styled.span>
+            </St>
+            <Ft
+              size="lg"
+              strong={true}
+            >
+              <styled.p
+                size="lg"
+                strong={true}
+              >
+                <p
+                  className="sc-pNWxx kqjPsd"
+                  size="lg"
+                >
+                  This is an error
+                </p>
+              </styled.p>
+            </Ft>
+          </div>
+        </div>
+      </Message__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
+
+exports[`Storyshots basic/display/Message Warning 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      label="This is a warning"
+      type="warning"
+    >
+      <Message__Wrapper
+        label="This is a warning"
+        type="warning"
+      >
+        <div
+          className="Message__Wrapper-sc-11ggxo0-0 zwFwx"
+          label="This is a warning"
+          type="warning"
+        >
+          <div>
+            <St
+              color="warning"
+              size="sm"
+              type="alert"
+            >
+              <styled.span
+                color="warning"
+              >
+                <span
+                  className="sc-fujyUd gaLBot"
+                  color="warning"
+                >
+                  <svg
+                    height="16"
+                    viewBox="0 0 17 16"
+                    width="17"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g
+                      fill="none"
+                      fillRule="evenodd"
+                    >
+                      <path
+                        d="M0 0H16V16H0z"
+                      />
+                      <path
+                        className="icon-color"
+                        d="M8 5.996c.553 0 1 .447 1 1v.998c0 .553-.447 1-1 1-.552 0-1-.447-1-1v-.998c0-.553.448-1 1-1M8 9.895c.607 0 1.101.492 1.101 1.1 0 .607-.494 1.1-1.1 1.1-.608 0-1.1-.493-1.1-1.1 0-.608.492-1.1 1.1-1.1"
+                      />
+                      <path
+                        className="icon-color"
+                        d="M8 0c-.383 0-.766.193-.975.581L.133 13.373c-.396.734.138 1.624.974 1.624h13.786c.836 0 1.37-.89.974-1.624L8.974.581C8.766.193 8.384 0 8 0m0 3l5.386 9.997H2.613L8 3"
+                      />
+                    </g>
+                  </svg>
+                </span>
+              </styled.span>
+            </St>
+            <Ft
+              size="lg"
+              strong={true}
+            >
+              <styled.p
+                size="lg"
+                strong={true}
+              >
+                <p
+                  className="sc-pNWxx kqjPsd"
+                  size="lg"
+                >
+                  This is a warning
+                </p>
+              </styled.p>
+            </Ft>
+          </div>
+        </div>
+      </Message__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
+
+exports[`Storyshots basic/display/Message With Component Children 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      label="This is an error"
+      type="error"
+    >
+      <Message__Wrapper
+        label="This is an error"
+        type="error"
+      >
+        <div
+          className="Message__Wrapper-sc-11ggxo0-0 cueRSQ"
+          label="This is an error"
+          type="error"
+        >
+          <div>
+            <St
+              color="error"
+              size="sm"
+              type="error"
+            >
+              <styled.span
+                color="error"
+              >
+                <span
+                  className="sc-fujyUd cUegfu"
+                  color="error"
+                >
+                  <svg
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g
+                      fill="none"
+                      fillRule="evenodd"
+                    >
+                      <path
+                        d="M0 0H16V16H0z"
+                      />
+                      <rect
+                        className="icon-color"
+                        height="5"
+                        rx="1"
+                        width="2"
+                        x="7"
+                        y="4"
+                      />
+                      <path
+                        className="icon-color"
+                        d="M8 9.9c.608 0 1.1.492 1.1 1.1 0 .608-.492 1.1-1.1 1.1-.608 0-1.1-.492-1.1-1.1 0-.608.492-1.1 1.1-1.1z"
+                        fillRule="nonzero"
+                      />
+                      <path
+                        className="icon-color"
+                        d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                        fillRule="nonzero"
+                      />
+                    </g>
+                  </svg>
+                </span>
+              </styled.span>
+            </St>
+            <Ft
+              size="lg"
+              strong={true}
+            >
+              <styled.p
+                size="lg"
+                strong={true}
+              >
+                <p
+                  className="sc-pNWxx kqjPsd"
+                  size="lg"
+                >
+                  This is an error
+                </p>
+              </styled.p>
+            </Ft>
+          </div>
+          <div
+            className="msgBody"
+          >
+            <Ft
+              color="shadow"
+              size="sm"
+            >
+              <styled.p
+                color="shadow"
+                size="sm"
+              >
+                <p
+                  className="sc-pNWxx cbKbyz"
+                  color="shadow"
+                  size="sm"
+                >
+                  The specified
+                   
+                  <Ft
+                    as="span"
+                    size="sm"
+                    strong={true}
+                  >
+                    <styled.p
+                      as="span"
+                      size="sm"
+                      strong={true}
+                    >
+                      <span
+                        className="sc-pNWxx hcuugb"
+                        size="sm"
+                      >
+                        Start Price
+                      </span>
+                    </styled.p>
+                  </Ft>
+                   
+                  is at least 2% higher than the current indicated market price. If intentional continue with your order.
+                </p>
+              </styled.p>
+            </Ft>
+          </div>
+        </div>
+      </Message__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
+
+exports[`Storyshots basic/display/Message With Text Children 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      label="This is an error"
+      type="error"
+    >
+      <Message__Wrapper
+        label="This is an error"
+        type="error"
+      >
+        <div
+          className="Message__Wrapper-sc-11ggxo0-0 cueRSQ"
+          label="This is an error"
+          type="error"
+        >
+          <div>
+            <St
+              color="error"
+              size="sm"
+              type="error"
+            >
+              <styled.span
+                color="error"
+              >
+                <span
+                  className="sc-fujyUd cUegfu"
+                  color="error"
+                >
+                  <svg
+                    height="16"
+                    viewBox="0 0 16 16"
+                    width="16"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g
+                      fill="none"
+                      fillRule="evenodd"
+                    >
+                      <path
+                        d="M0 0H16V16H0z"
+                      />
+                      <rect
+                        className="icon-color"
+                        height="5"
+                        rx="1"
+                        width="2"
+                        x="7"
+                        y="4"
+                      />
+                      <path
+                        className="icon-color"
+                        d="M8 9.9c.608 0 1.1.492 1.1 1.1 0 .608-.492 1.1-1.1 1.1-.608 0-1.1-.492-1.1-1.1 0-.608.492-1.1 1.1-1.1z"
+                        fillRule="nonzero"
+                      />
+                      <path
+                        className="icon-color"
+                        d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                        fillRule="nonzero"
+                      />
+                    </g>
+                  </svg>
+                </span>
+              </styled.span>
+            </St>
+            <Ft
+              size="lg"
+              strong={true}
+            >
+              <styled.p
+                size="lg"
+                strong={true}
+              >
+                <p
+                  className="sc-pNWxx kqjPsd"
+                  size="lg"
+                >
+                  This is an error
+                </p>
+              </styled.p>
+            </Ft>
+          </div>
+          <Ft
+            className="msgBody"
+            color="shadow"
+            size="md"
+          >
+            <styled.p
+              className="msgBody"
+              color="shadow"
+              size="md"
+            >
+              <p
+                className="sc-pNWxx gihEqi msgBody"
+                color="shadow"
+                size="md"
+              >
+                The specified Start Price is at least 2% higher than the current indicated market price. If intentional continue with your order.
+              </p>
+            </styled.p>
+          </Ft>
+        </div>
+      </Message__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;

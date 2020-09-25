@@ -1,0 +1,2047 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots basic/display/TextWithTooltip Component As Text 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      color="error"
+      size="lg"
+      tooltip="This is a nice tooltip"
+    >
+      <TextWithTooltip__Wrapper>
+        <span
+          className="TextWithTooltip__Wrapper-fy5psz-0 bJaFOb"
+        >
+          <Ft
+            as="span"
+            color="error"
+            size="lg"
+            strong={true}
+          >
+            <styled.p
+              as="span"
+              color="error"
+              size="lg"
+              strong={true}
+            >
+              <span
+                className="sc-pNWxx GzZgV"
+                color="error"
+                size="lg"
+              >
+                <span>
+                  I'm a component
+                </span>
+              </span>
+            </styled.p>
+          </Ft>
+          <Memo(component)
+            title="This is a nice tooltip"
+          >
+            <WithStyles(WithStyles(ForwardRef(Tooltip)))
+              arrow={true}
+              title="This is a nice tooltip"
+            >
+              <WithStyles(ForwardRef(Tooltip))
+                arrow={true}
+                classes={
+                  Object {
+                    "arrow": "WithStyles(ForwardRef(Tooltip))-arrow-2",
+                    "tooltip": "WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                    "tooltipPlacementBottom": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                    "tooltipPlacementLeft": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                    "tooltipPlacementRight": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                    "tooltipPlacementTop": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                  }
+                }
+                title="This is a nice tooltip"
+              >
+                <ForwardRef(Tooltip)
+                  arrow={true}
+                  classes={
+                    Object {
+                      "arrow": "MuiTooltip-arrow WithStyles(ForwardRef(Tooltip))-arrow-2",
+                      "popper": "MuiTooltip-popper",
+                      "popperArrow": "MuiTooltip-popperArrow",
+                      "popperInteractive": "MuiTooltip-popperInteractive",
+                      "tooltip": "MuiTooltip-tooltip WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                      "tooltipArrow": "MuiTooltip-tooltipArrow",
+                      "tooltipPlacementBottom": "MuiTooltip-tooltipPlacementBottom WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                      "tooltipPlacementLeft": "MuiTooltip-tooltipPlacementLeft WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                      "tooltipPlacementRight": "MuiTooltip-tooltipPlacementRight WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                      "tooltipPlacementTop": "MuiTooltip-tooltipPlacementTop WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                      "touch": "MuiTooltip-touch",
+                    }
+                  }
+                  title="This is a nice tooltip"
+                >
+                  <span
+                    aria-describedby={null}
+                    className=""
+                    onBlur={[Function]}
+                    onFocus={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchStart={[Function]}
+                    title="This is a nice tooltip"
+                  >
+                    <St
+                      size="sm"
+                      type="question"
+                    >
+                      <styled.span>
+                        <span
+                          className="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fillRule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fillRule="nonzero"
+                              />
+                              <rect
+                                className="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fillRule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </styled.span>
+                    </St>
+                  </span>
+                  <ForwardRef(Popper)
+                    anchorEl={
+                      <span
+                        class=""
+                        title="This is a nice tooltip"
+                      >
+                        <span
+                          class="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fill-rule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fill-rule="nonzero"
+                              />
+                              <rect
+                                class="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fill-rule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </span>
+                    }
+                    className="MuiTooltip-popper MuiTooltip-popperArrow"
+                    id={null}
+                    open={false}
+                    placement="bottom"
+                    popperOptions={
+                      Object {
+                        "modifiers": Object {
+                          "arrow": Object {
+                            "element": null,
+                            "enabled": false,
+                          },
+                        },
+                      }
+                    }
+                    transition={true}
+                  />
+                </ForwardRef(Tooltip)>
+              </WithStyles(ForwardRef(Tooltip))>
+            </WithStyles(WithStyles(ForwardRef(Tooltip)))>
+          </Memo(component)>
+        </span>
+      </TextWithTooltip__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
+
+exports[`Storyshots basic/display/TextWithTooltip Deactivated 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      color="shadow"
+      size="lg"
+      tooltip="This is a nice tooltip"
+    >
+      <TextWithTooltip__Wrapper>
+        <span
+          className="TextWithTooltip__Wrapper-fy5psz-0 bJaFOb"
+        >
+          <Ft
+            as="span"
+            color="shadow"
+            size="lg"
+            strong={true}
+          >
+            <styled.p
+              as="span"
+              color="shadow"
+              size="lg"
+              strong={true}
+            >
+              <span
+                className="sc-pNWxx eFDhan"
+                color="shadow"
+                size="lg"
+              >
+                Label label
+              </span>
+            </styled.p>
+          </Ft>
+          <Memo(component)
+            title="This is a nice tooltip"
+          >
+            <WithStyles(WithStyles(ForwardRef(Tooltip)))
+              arrow={true}
+              title="This is a nice tooltip"
+            >
+              <WithStyles(ForwardRef(Tooltip))
+                arrow={true}
+                classes={
+                  Object {
+                    "arrow": "WithStyles(ForwardRef(Tooltip))-arrow-2",
+                    "tooltip": "WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                    "tooltipPlacementBottom": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                    "tooltipPlacementLeft": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                    "tooltipPlacementRight": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                    "tooltipPlacementTop": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                  }
+                }
+                title="This is a nice tooltip"
+              >
+                <ForwardRef(Tooltip)
+                  arrow={true}
+                  classes={
+                    Object {
+                      "arrow": "MuiTooltip-arrow WithStyles(ForwardRef(Tooltip))-arrow-2",
+                      "popper": "MuiTooltip-popper",
+                      "popperArrow": "MuiTooltip-popperArrow",
+                      "popperInteractive": "MuiTooltip-popperInteractive",
+                      "tooltip": "MuiTooltip-tooltip WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                      "tooltipArrow": "MuiTooltip-tooltipArrow",
+                      "tooltipPlacementBottom": "MuiTooltip-tooltipPlacementBottom WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                      "tooltipPlacementLeft": "MuiTooltip-tooltipPlacementLeft WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                      "tooltipPlacementRight": "MuiTooltip-tooltipPlacementRight WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                      "tooltipPlacementTop": "MuiTooltip-tooltipPlacementTop WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                      "touch": "MuiTooltip-touch",
+                    }
+                  }
+                  title="This is a nice tooltip"
+                >
+                  <span
+                    aria-describedby={null}
+                    className=""
+                    onBlur={[Function]}
+                    onFocus={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchStart={[Function]}
+                    title="This is a nice tooltip"
+                  >
+                    <St
+                      size="sm"
+                      type="question"
+                    >
+                      <styled.span>
+                        <span
+                          className="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fillRule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fillRule="nonzero"
+                              />
+                              <rect
+                                className="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fillRule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </styled.span>
+                    </St>
+                  </span>
+                  <ForwardRef(Popper)
+                    anchorEl={
+                      <span
+                        class=""
+                        title="This is a nice tooltip"
+                      >
+                        <span
+                          class="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fill-rule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fill-rule="nonzero"
+                              />
+                              <rect
+                                class="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fill-rule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </span>
+                    }
+                    className="MuiTooltip-popper MuiTooltip-popperArrow"
+                    id={null}
+                    open={false}
+                    placement="bottom"
+                    popperOptions={
+                      Object {
+                        "modifiers": Object {
+                          "arrow": Object {
+                            "element": null,
+                            "enabled": false,
+                          },
+                        },
+                      }
+                    }
+                    transition={true}
+                  />
+                </ForwardRef(Tooltip)>
+              </WithStyles(ForwardRef(Tooltip))>
+            </WithStyles(WithStyles(ForwardRef(Tooltip)))>
+          </Memo(component)>
+        </span>
+      </TextWithTooltip__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
+
+exports[`Storyshots basic/display/TextWithTooltip Default 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      size="lg"
+      tooltip="This is a nice tooltip"
+    >
+      <TextWithTooltip__Wrapper>
+        <span
+          className="TextWithTooltip__Wrapper-fy5psz-0 bJaFOb"
+        >
+          <Ft
+            as="span"
+            size="lg"
+            strong={true}
+          >
+            <styled.p
+              as="span"
+              size="lg"
+              strong={true}
+            >
+              <span
+                className="sc-pNWxx kqjPsd"
+                size="lg"
+              >
+                Label label
+              </span>
+            </styled.p>
+          </Ft>
+          <Memo(component)
+            title="This is a nice tooltip"
+          >
+            <WithStyles(WithStyles(ForwardRef(Tooltip)))
+              arrow={true}
+              title="This is a nice tooltip"
+            >
+              <WithStyles(ForwardRef(Tooltip))
+                arrow={true}
+                classes={
+                  Object {
+                    "arrow": "WithStyles(ForwardRef(Tooltip))-arrow-2",
+                    "tooltip": "WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                    "tooltipPlacementBottom": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                    "tooltipPlacementLeft": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                    "tooltipPlacementRight": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                    "tooltipPlacementTop": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                  }
+                }
+                title="This is a nice tooltip"
+              >
+                <ForwardRef(Tooltip)
+                  arrow={true}
+                  classes={
+                    Object {
+                      "arrow": "MuiTooltip-arrow WithStyles(ForwardRef(Tooltip))-arrow-2",
+                      "popper": "MuiTooltip-popper",
+                      "popperArrow": "MuiTooltip-popperArrow",
+                      "popperInteractive": "MuiTooltip-popperInteractive",
+                      "tooltip": "MuiTooltip-tooltip WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                      "tooltipArrow": "MuiTooltip-tooltipArrow",
+                      "tooltipPlacementBottom": "MuiTooltip-tooltipPlacementBottom WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                      "tooltipPlacementLeft": "MuiTooltip-tooltipPlacementLeft WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                      "tooltipPlacementRight": "MuiTooltip-tooltipPlacementRight WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                      "tooltipPlacementTop": "MuiTooltip-tooltipPlacementTop WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                      "touch": "MuiTooltip-touch",
+                    }
+                  }
+                  title="This is a nice tooltip"
+                >
+                  <span
+                    aria-describedby={null}
+                    className=""
+                    onBlur={[Function]}
+                    onFocus={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchStart={[Function]}
+                    title="This is a nice tooltip"
+                  >
+                    <St
+                      size="sm"
+                      type="question"
+                    >
+                      <styled.span>
+                        <span
+                          className="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fillRule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fillRule="nonzero"
+                              />
+                              <rect
+                                className="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fillRule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </styled.span>
+                    </St>
+                  </span>
+                  <ForwardRef(Popper)
+                    anchorEl={
+                      <span
+                        class=""
+                        title="This is a nice tooltip"
+                      >
+                        <span
+                          class="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fill-rule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fill-rule="nonzero"
+                              />
+                              <rect
+                                class="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fill-rule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </span>
+                    }
+                    className="MuiTooltip-popper MuiTooltip-popperArrow"
+                    id={null}
+                    open={false}
+                    placement="bottom"
+                    popperOptions={
+                      Object {
+                        "modifiers": Object {
+                          "arrow": Object {
+                            "element": null,
+                            "enabled": false,
+                          },
+                        },
+                      }
+                    }
+                    transition={true}
+                  />
+                </ForwardRef(Tooltip)>
+              </WithStyles(ForwardRef(Tooltip))>
+            </WithStyles(WithStyles(ForwardRef(Tooltip)))>
+          </Memo(component)>
+        </span>
+      </TextWithTooltip__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
+
+exports[`Storyshots basic/display/TextWithTooltip Error 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      color="error"
+      size="lg"
+      tooltip="This is a nice tooltip"
+    >
+      <TextWithTooltip__Wrapper>
+        <span
+          className="TextWithTooltip__Wrapper-fy5psz-0 bJaFOb"
+        >
+          <Ft
+            as="span"
+            color="error"
+            size="lg"
+            strong={true}
+          >
+            <styled.p
+              as="span"
+              color="error"
+              size="lg"
+              strong={true}
+            >
+              <span
+                className="sc-pNWxx GzZgV"
+                color="error"
+                size="lg"
+              >
+                Label label
+              </span>
+            </styled.p>
+          </Ft>
+          <Memo(component)
+            title="This is a nice tooltip"
+          >
+            <WithStyles(WithStyles(ForwardRef(Tooltip)))
+              arrow={true}
+              title="This is a nice tooltip"
+            >
+              <WithStyles(ForwardRef(Tooltip))
+                arrow={true}
+                classes={
+                  Object {
+                    "arrow": "WithStyles(ForwardRef(Tooltip))-arrow-2",
+                    "tooltip": "WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                    "tooltipPlacementBottom": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                    "tooltipPlacementLeft": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                    "tooltipPlacementRight": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                    "tooltipPlacementTop": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                  }
+                }
+                title="This is a nice tooltip"
+              >
+                <ForwardRef(Tooltip)
+                  arrow={true}
+                  classes={
+                    Object {
+                      "arrow": "MuiTooltip-arrow WithStyles(ForwardRef(Tooltip))-arrow-2",
+                      "popper": "MuiTooltip-popper",
+                      "popperArrow": "MuiTooltip-popperArrow",
+                      "popperInteractive": "MuiTooltip-popperInteractive",
+                      "tooltip": "MuiTooltip-tooltip WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                      "tooltipArrow": "MuiTooltip-tooltipArrow",
+                      "tooltipPlacementBottom": "MuiTooltip-tooltipPlacementBottom WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                      "tooltipPlacementLeft": "MuiTooltip-tooltipPlacementLeft WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                      "tooltipPlacementRight": "MuiTooltip-tooltipPlacementRight WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                      "tooltipPlacementTop": "MuiTooltip-tooltipPlacementTop WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                      "touch": "MuiTooltip-touch",
+                    }
+                  }
+                  title="This is a nice tooltip"
+                >
+                  <span
+                    aria-describedby={null}
+                    className=""
+                    onBlur={[Function]}
+                    onFocus={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchStart={[Function]}
+                    title="This is a nice tooltip"
+                  >
+                    <St
+                      size="sm"
+                      type="question"
+                    >
+                      <styled.span>
+                        <span
+                          className="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fillRule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fillRule="nonzero"
+                              />
+                              <rect
+                                className="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fillRule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </styled.span>
+                    </St>
+                  </span>
+                  <ForwardRef(Popper)
+                    anchorEl={
+                      <span
+                        class=""
+                        title="This is a nice tooltip"
+                      >
+                        <span
+                          class="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fill-rule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fill-rule="nonzero"
+                              />
+                              <rect
+                                class="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fill-rule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </span>
+                    }
+                    className="MuiTooltip-popper MuiTooltip-popperArrow"
+                    id={null}
+                    open={false}
+                    placement="bottom"
+                    popperOptions={
+                      Object {
+                        "modifiers": Object {
+                          "arrow": Object {
+                            "element": null,
+                            "enabled": false,
+                          },
+                        },
+                      }
+                    }
+                    transition={true}
+                  />
+                </ForwardRef(Tooltip)>
+              </WithStyles(ForwardRef(Tooltip))>
+            </WithStyles(WithStyles(ForwardRef(Tooltip)))>
+          </Memo(component)>
+        </span>
+      </TextWithTooltip__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
+
+exports[`Storyshots basic/display/TextWithTooltip Small 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      size="sm"
+      tooltip="This is a nice tooltip"
+    >
+      <TextWithTooltip__Wrapper>
+        <span
+          className="TextWithTooltip__Wrapper-fy5psz-0 bJaFOb"
+        >
+          <Ft
+            as="span"
+            size="sm"
+            strong={true}
+          >
+            <styled.p
+              as="span"
+              size="sm"
+              strong={true}
+            >
+              <span
+                className="sc-pNWxx hcuugb"
+                size="sm"
+              >
+                Label label
+              </span>
+            </styled.p>
+          </Ft>
+          <Memo(component)
+            title="This is a nice tooltip"
+          >
+            <WithStyles(WithStyles(ForwardRef(Tooltip)))
+              arrow={true}
+              title="This is a nice tooltip"
+            >
+              <WithStyles(ForwardRef(Tooltip))
+                arrow={true}
+                classes={
+                  Object {
+                    "arrow": "WithStyles(ForwardRef(Tooltip))-arrow-2",
+                    "tooltip": "WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                    "tooltipPlacementBottom": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                    "tooltipPlacementLeft": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                    "tooltipPlacementRight": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                    "tooltipPlacementTop": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                  }
+                }
+                title="This is a nice tooltip"
+              >
+                <ForwardRef(Tooltip)
+                  arrow={true}
+                  classes={
+                    Object {
+                      "arrow": "MuiTooltip-arrow WithStyles(ForwardRef(Tooltip))-arrow-2",
+                      "popper": "MuiTooltip-popper",
+                      "popperArrow": "MuiTooltip-popperArrow",
+                      "popperInteractive": "MuiTooltip-popperInteractive",
+                      "tooltip": "MuiTooltip-tooltip WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                      "tooltipArrow": "MuiTooltip-tooltipArrow",
+                      "tooltipPlacementBottom": "MuiTooltip-tooltipPlacementBottom WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                      "tooltipPlacementLeft": "MuiTooltip-tooltipPlacementLeft WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                      "tooltipPlacementRight": "MuiTooltip-tooltipPlacementRight WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                      "tooltipPlacementTop": "MuiTooltip-tooltipPlacementTop WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                      "touch": "MuiTooltip-touch",
+                    }
+                  }
+                  title="This is a nice tooltip"
+                >
+                  <span
+                    aria-describedby={null}
+                    className=""
+                    onBlur={[Function]}
+                    onFocus={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchStart={[Function]}
+                    title="This is a nice tooltip"
+                  >
+                    <St
+                      size="sm"
+                      type="question"
+                    >
+                      <styled.span>
+                        <span
+                          className="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fillRule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fillRule="nonzero"
+                              />
+                              <rect
+                                className="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fillRule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </styled.span>
+                    </St>
+                  </span>
+                  <ForwardRef(Popper)
+                    anchorEl={
+                      <span
+                        class=""
+                        title="This is a nice tooltip"
+                      >
+                        <span
+                          class="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fill-rule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fill-rule="nonzero"
+                              />
+                              <rect
+                                class="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fill-rule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </span>
+                    }
+                    className="MuiTooltip-popper MuiTooltip-popperArrow"
+                    id={null}
+                    open={false}
+                    placement="bottom"
+                    popperOptions={
+                      Object {
+                        "modifiers": Object {
+                          "arrow": Object {
+                            "element": null,
+                            "enabled": false,
+                          },
+                        },
+                      }
+                    }
+                    transition={true}
+                  />
+                </ForwardRef(Tooltip)>
+              </WithStyles(ForwardRef(Tooltip))>
+            </WithStyles(WithStyles(ForwardRef(Tooltip)))>
+          </Memo(component)>
+        </span>
+      </TextWithTooltip__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
+
+exports[`Storyshots basic/display/TextWithTooltip Warning 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      color="warning"
+      size="lg"
+      tooltip="This is a nice tooltip"
+    >
+      <TextWithTooltip__Wrapper>
+        <span
+          className="TextWithTooltip__Wrapper-fy5psz-0 bJaFOb"
+        >
+          <Ft
+            as="span"
+            color="warning"
+            size="lg"
+            strong={true}
+          >
+            <styled.p
+              as="span"
+              color="warning"
+              size="lg"
+              strong={true}
+            >
+              <span
+                className="sc-pNWxx beZLye"
+                color="warning"
+                size="lg"
+              >
+                Label label
+              </span>
+            </styled.p>
+          </Ft>
+          <Memo(component)
+            title="This is a nice tooltip"
+          >
+            <WithStyles(WithStyles(ForwardRef(Tooltip)))
+              arrow={true}
+              title="This is a nice tooltip"
+            >
+              <WithStyles(ForwardRef(Tooltip))
+                arrow={true}
+                classes={
+                  Object {
+                    "arrow": "WithStyles(ForwardRef(Tooltip))-arrow-2",
+                    "tooltip": "WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                    "tooltipPlacementBottom": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                    "tooltipPlacementLeft": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                    "tooltipPlacementRight": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                    "tooltipPlacementTop": "WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                  }
+                }
+                title="This is a nice tooltip"
+              >
+                <ForwardRef(Tooltip)
+                  arrow={true}
+                  classes={
+                    Object {
+                      "arrow": "MuiTooltip-arrow WithStyles(ForwardRef(Tooltip))-arrow-2",
+                      "popper": "MuiTooltip-popper",
+                      "popperArrow": "MuiTooltip-popperArrow",
+                      "popperInteractive": "MuiTooltip-popperInteractive",
+                      "tooltip": "MuiTooltip-tooltip WithStyles(ForwardRef(Tooltip))-tooltip-1",
+                      "tooltipArrow": "MuiTooltip-tooltipArrow",
+                      "tooltipPlacementBottom": "MuiTooltip-tooltipPlacementBottom WithStyles(ForwardRef(Tooltip))-tooltipPlacementBottom-6",
+                      "tooltipPlacementLeft": "MuiTooltip-tooltipPlacementLeft WithStyles(ForwardRef(Tooltip))-tooltipPlacementLeft-3",
+                      "tooltipPlacementRight": "MuiTooltip-tooltipPlacementRight WithStyles(ForwardRef(Tooltip))-tooltipPlacementRight-4",
+                      "tooltipPlacementTop": "MuiTooltip-tooltipPlacementTop WithStyles(ForwardRef(Tooltip))-tooltipPlacementTop-5",
+                      "touch": "MuiTooltip-touch",
+                    }
+                  }
+                  title="This is a nice tooltip"
+                >
+                  <span
+                    aria-describedby={null}
+                    className=""
+                    onBlur={[Function]}
+                    onFocus={[Function]}
+                    onMouseLeave={[Function]}
+                    onMouseOver={[Function]}
+                    onTouchEnd={[Function]}
+                    onTouchStart={[Function]}
+                    title="This is a nice tooltip"
+                  >
+                    <St
+                      size="sm"
+                      type="question"
+                    >
+                      <styled.span>
+                        <span
+                          className="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fillRule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fillRule="nonzero"
+                              />
+                              <rect
+                                className="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                className="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fillRule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </styled.span>
+                    </St>
+                  </span>
+                  <ForwardRef(Popper)
+                    anchorEl={
+                      <span
+                        class=""
+                        title="This is a nice tooltip"
+                      >
+                        <span
+                          class="sc-fujyUd dFgrIu"
+                        >
+                          <svg
+                            height="16"
+                            viewBox="0 0 16 16"
+                            width="16"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <g
+                              fill="none"
+                              fill-rule="evenodd"
+                            >
+                              <path
+                                d="M0 0H16V16H0z"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M8 15c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm0-2c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5-2.239 5-5 5z"
+                                fill-rule="nonzero"
+                              />
+                              <rect
+                                class="icon-color"
+                                height="2"
+                                rx="1"
+                                width="2"
+                                x="7"
+                                y="10"
+                              />
+                              <path
+                                class="icon-color"
+                                d="M7.385 5.933c0-.3.259-.548.585-.548.325 0 .583.249.583.548.003.222-.026.266-.366.514l-.027.02c-.774.565-1.049 1.035-1.007 1.856v.098c-.001.453.365.819.817.819.451 0 .817-.366.817-.818v-.14c-.01-.228.005-.252.337-.495l.027-.02c.767-.56 1.05-1.03 1.037-1.847 0-1.196-.997-2.17-2.218-2.17-1.224 0-2.22.975-2.22 2.183 0 .451.366.817.818.817.451 0 .817-.366.817-.817z"
+                                fill-rule="nonzero"
+                              />
+                            </g>
+                          </svg>
+                        </span>
+                      </span>
+                    }
+                    className="MuiTooltip-popper MuiTooltip-popperArrow"
+                    id={null}
+                    open={false}
+                    placement="bottom"
+                    popperOptions={
+                      Object {
+                        "modifiers": Object {
+                          "arrow": Object {
+                            "element": null,
+                            "enabled": false,
+                          },
+                        },
+                      }
+                    }
+                    transition={true}
+                  />
+                </ForwardRef(Tooltip)>
+              </WithStyles(ForwardRef(Tooltip))>
+            </WithStyles(WithStyles(ForwardRef(Tooltip)))>
+          </Memo(component)>
+        </span>
+      </TextWithTooltip__Wrapper>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;

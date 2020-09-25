@@ -1,0 +1,391 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Storyshots basic/input/Link Default 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      color="primary"
+      href="http://going.somewhere"
+      onClick={[Function]}
+      textSize="lg"
+      type="button"
+    >
+      <Link__StyledLink
+        color="primary"
+        href="http://going.somewhere"
+        onClick={[Function]}
+        rel="noopener noreferrer"
+        target="_blank"
+        textSize="lg"
+        type="button"
+      >
+        <a
+          className="Link__StyledLink-sc-1fldheq-0 isSVSR"
+          color="primary"
+          href="http://going.somewhere"
+          onClick={[Function]}
+          rel="noopener noreferrer"
+          target="_blank"
+          type="button"
+        >
+          <Ft
+            as="span"
+            color="primary"
+            size="lg"
+          >
+            <styled.p
+              as="span"
+              color="primary"
+              size="lg"
+            >
+              <span
+                className="sc-pNWxx fjvhwv"
+                color="primary"
+                size="lg"
+              >
+                link
+              </span>
+            </styled.p>
+          </Ft>
+        </a>
+      </Link__StyledLink>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
+
+exports[`Storyshots basic/input/Link Text Is A Number 1`] = `
+<RecoilRoot
+  initializeState={[Function]}
+>
+  <Batcher
+    setNotifyBatcherOfChange={[Function]}
+  />
+  <Component
+    theme={
+      Object {
+        "buttons": Object {
+          "size": Object {
+            "lg": Object {
+              "height": "52px",
+              "padding": "0 25px",
+            },
+            "md": Object {
+              "height": "36px",
+              "padding": "0 16px",
+            },
+          },
+        },
+        "colors": Object {
+          "background": "#F7F5F5",
+          "backgroundError": "#FFE6EA",
+          "backgroundSideBar": "#F7F5F5",
+          "backgroundWarning": "#FFF3E2",
+          "disabled": Object {
+            "opacity": 0.5,
+          },
+          "error": "#DB3A3D",
+          "errorHover": "#C31717",
+          "icon": "#B2B5B2",
+          "inputField": "#F0EFEE",
+          "overlay": Object {
+            "color": "#E8E7E6",
+            "opacity": 0.75,
+          },
+          "pendingTagHover": "#FBE5C5",
+          "placeHolder": "#5D6D74",
+          "primary": "#008C73",
+          "primaryHover": "#005546",
+          "primaryLight": "#A1D2CA",
+          "rinkeby": "#E8673C",
+          "secondary": "#001428",
+          "secondaryHover": "#5D6D74",
+          "secondaryLight": "#B2B5B2",
+          "separator": "#E8E7E6",
+          "shadow": Object {
+            "blur": "18px",
+            "color": "#28363D",
+            "opacity": 0.75,
+          },
+          "tag": "#D4D5D3",
+          "text": "#001428",
+          "warning": "#FFC05F",
+          "white": "#ffffff",
+        },
+        "fonts": Object {
+          "fontFamily": "'Averta', 'Roboto', 'Helvetica Neue', 'Arial', 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', '-apple-system', 'BlinkMacSystemFont', sans-serif",
+          "fontFamilyCode": "source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace",
+        },
+        "iconText": Object {
+          "size": Object {
+            "md": null,
+            "sm": null,
+          },
+        },
+        "icons": Object {
+          "size": Object {
+            "md": "24",
+            "sm": "16",
+          },
+        },
+        "identicon": Object {
+          "size": Object {
+            "lg": "40px",
+            "md": "32px",
+            "sm": "16px",
+            "xs": "10px",
+          },
+        },
+        "loader": Object {
+          "size": Object {
+            "lg": "70px",
+            "md": "50px",
+            "sm": "30px",
+            "xs": "10px",
+          },
+        },
+        "statusDot": Object {
+          "size": Object {
+            "md": "10px",
+            "sm": "5px",
+          },
+        },
+        "text": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "14px",
+              "lineHeight": "20px",
+            },
+            "md": Object {
+              "fontSize": "12px",
+              "lineHeight": "16px",
+            },
+            "sm": Object {
+              "fontSize": "11px",
+              "lineHeight": "14px",
+            },
+            "xl": Object {
+              "fontSize": "16px",
+              "lineHeight": "22px",
+            },
+          },
+        },
+        "title": Object {
+          "size": Object {
+            "lg": Object {
+              "fontSize": "44px",
+              "lineHeight": "52px",
+            },
+            "md": Object {
+              "fontSize": "32px",
+              "lineHeight": "36px",
+            },
+            "sm": Object {
+              "fontSize": "24px",
+              "lineHeight": "30px",
+            },
+            "xl": Object {
+              "fontSize": "60px",
+              "lineHeight": "64px",
+            },
+            "xs": Object {
+              "fontSize": "20px",
+              "lineHeight": "26px",
+            },
+          },
+        },
+      }
+    }
+  >
+    <Memo(l) />
+    <Memo(component)
+      color="primary"
+      href="http://going.somewhere"
+      onClick={[Function]}
+      textSize="lg"
+      type="button"
+    >
+      <Link__StyledLink
+        color="primary"
+        href="http://going.somewhere"
+        onClick={[Function]}
+        rel="noopener noreferrer"
+        target="_blank"
+        textSize="lg"
+        type="button"
+      >
+        <a
+          className="Link__StyledLink-sc-1fldheq-0 isSVSR"
+          color="primary"
+          href="http://going.somewhere"
+          onClick={[Function]}
+          rel="noopener noreferrer"
+          target="_blank"
+          type="button"
+        >
+          <Ft
+            as="span"
+            color="primary"
+            size="lg"
+          >
+            <styled.p
+              as="span"
+              color="primary"
+              size="lg"
+            >
+              <span
+                className="sc-pNWxx fjvhwv"
+                color="primary"
+                size="lg"
+              >
+                56446.44
+              </span>
+            </styled.p>
+          </Ft>
+        </a>
+      </Link__StyledLink>
+    </Memo(component)>
+  </Component>
+</RecoilRoot>
+`;
