@@ -182,32 +182,31 @@ const Web3Provider = ({ children }) => {
    */
   const handleGetErc20Details = useCallback(
     async (address) => {
-      const contractInstance = await handleGetContract(
-        "ERC20Detailed",
-        address
-      );
-
-      const [decimals, symbol, name] = await Promise.all([
-        (async () => {
-          const decimalsString = await contractInstance.methods
-            .decimals()
-            .call();
-          return parseInt(decimalsString, 10);
-        })(),
-        contractInstance.methods.symbol().call(),
-        contractInstance.methods.name().call(),
+      const [erc20Contract, batchExchangeContract] = await Promise.all([
+        handleGetContract("ERC20Detailed", address),
+        handleGetDeployed("BatchExchange"),
       ]);
 
-      // console.log(`details`, decimals, symbol, name);
+      const [decimals, symbol, name, onGP] = await Promise.all([
+        (async () => {
+          const decimalsString = await erc20Contract.methods.decimals().call();
+          return parseInt(decimalsString, 10);
+        })(),
+        erc20Contract.methods.symbol().call(),
+        erc20Contract.methods.name().call(),
+        batchExchangeContract.methods.hasToken(address).call(),
+      ]);
+
       return {
         address,
         decimals,
         symbol,
         name,
+        onGP,
         imageUrl: getImageUrl(address),
       };
     },
-    [handleGetContract]
+    [handleGetContract, handleGetDeployed]
   );
 
   /**
@@ -268,6 +267,7 @@ const Web3Provider = ({ children }) => {
           e
         );
       }
+      logger.log("==> Safe tokens", safeTokens);
 
       // get standard list of tokens to load
       const tokenAddresses = await getTokenAddressesForNetwork(
@@ -281,20 +281,45 @@ const Web3Provider = ({ children }) => {
           // fetch erc20 details
           .map(handleGetErc20Details)
       );
+      logger.log("==> Additional tokens", erc20Details);
+
+      // exclude tokens from Safe that have not been added to GP contract
+      const batchExchangeContract = await handleGetDeployed("BatchExchange");
+      (
+        await Promise.all(
+          Object.keys(safeTokens).map(async (address) => [
+            address,
+            await batchExchangeContract.methods.hasToken(address).call(),
+          ])
+        )
+      ).forEach(([address, onGP]) => {
+        if (!onGP) {
+          logger.warn(
+            `Token address '${address}' from Safe not registered on GP`
+          );
+          delete safeTokens[address];
+        }
+      });
 
       setErc20Cache(
-        erc20Details.reduce(
-          (acc, tokenDetails) => ({
+        erc20Details.reduce((acc, tokenDetails) => {
+          if (!tokenDetails.onGP) {
+            // exclude tokens from hardcoded list that have not been added to GP contract
+            logger.warn(
+              `Token address '${tokenDetails.address}' not registered on GP`
+            );
+            return acc;
+          }
+          return {
             ...acc,
             [tokenDetails.address]: tokenDetails,
-          }),
-          safeTokens
-        )
+          };
+        }, safeTokens)
       );
     }
 
     loadErc20Details();
-  }, [handleGetErc20Details, instance, safeInfo]);
+  }, [handleGetDeployed, handleGetErc20Details, instance, safeInfo]);
 
   const tokenList = useMemo(() => Object.values(erc20Cache), [erc20Cache]);
 
