@@ -14,16 +14,28 @@ const Wrapper = styled.span`
 interface Props {
   onClick?: (e: React.SyntheticEvent) => void;
   error?: boolean;
+  disabled?: boolean;
 }
 
 function component(props: Props): JSX.Element {
-  const { onClick, error } = props;
+  const { onClick, error, disabled } = props;
   return (
     <Wrapper {...props}>
-      <Text size="lg" strong color={error ? "error" : null} as="span">
+      <Text
+        size="lg"
+        strong
+        color={error ? "error" : disabled ? "disabled" : null}
+        as="span"
+      >
         Funding
       </Text>
-      <ButtonLink type="button" color="primary" textSize="lg" onClick={onClick}>
+      <ButtonLink
+        type="button"
+        color="primary"
+        textSize="lg"
+        onClick={onClick}
+        disabled={disabled}
+      >
         max
       </ButtonLink>
     </Wrapper>

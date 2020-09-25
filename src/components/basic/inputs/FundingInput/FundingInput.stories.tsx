@@ -51,3 +51,6 @@ ErrorInput.args = { ...Default.args, error: true };
 
 export const WarningInput = Template.bind({});
 WarningInput.args = { ...Default.args, warn: true };
+
+export const DisabledInput = Template.bind({});
+DisabledInput.args = { ...Default.args, brackets: 0 };
