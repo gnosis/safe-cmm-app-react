@@ -1,3 +1,5 @@
+import Decimal from "decimal.js";
+
 export enum Network {
   mainnet = 1,
   ropsten = 3,
@@ -20,3 +22,5 @@ export const SAFE_ENDPOINT_URL =
   SAFE_ENDPOINT_URLS[Network[NETWORK]] || SAFE_ENDPOINT_URLS[Network.rinkeby];
 
 export const DEFAULT_INPUT_WIDTH = "130px";
+
+export const ONE_DECIMAL = new Decimal("1");
