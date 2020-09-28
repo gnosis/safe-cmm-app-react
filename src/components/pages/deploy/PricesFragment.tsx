@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { RecoilState, useRecoilCallback, useRecoilValue } from "recoil";
-import { Field } from "react-final-form";
+import { Field, useFormState } from "react-final-form";
 import styled from "styled-components";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
@@ -59,11 +59,11 @@ function component(): JSX.Element {
   const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
   const baseTokenAmount = useRecoilValue(baseTokenAmountAtom);
   const quoteTokenAmount = useRecoilValue(quoteTokenAmountAtom);
-  const totalBrackets = useRecoilValue(totalBracketsAtom);
   const totalInvestment = useRecoilValue(totalInvestmentAtom);
-  const startPrice = useRecoilValue(startPriceAtom);
-  const lowestPrice = useRecoilValue(lowestPriceAtom);
-  const highestPrice = useRecoilValue(highestPriceAtom);
+
+  const {
+    values: { lowestPrice, startPrice, highestPrice, totalBrackets },
+  } = useFormState({ subscription: { values: true } });
 
   const { baseTokenBrackets, quoteTokenBrackets } = useMemo(() => {
     const lp = Number(lowestPrice);
