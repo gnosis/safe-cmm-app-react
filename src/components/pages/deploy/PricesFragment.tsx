@@ -9,6 +9,13 @@ import { TotalBrackets } from "components/basic/inputs/TotalBrackets";
 
 import { calculateBrackets } from "utils/calculateBrackets";
 
+import { composeValidators } from "validators/misc";
+import { isRequired } from "validators/isRequired";
+import { isNumber } from "validators/isNumber";
+import { isGreaterThan } from "validators/isGreaterThan";
+import { isSmallerThan } from "validators/isSmallerThan";
+import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
+
 import {
   baseTokenAddressAtom,
   baseTokenAmountAtom,
@@ -20,16 +27,6 @@ import {
   totalBracketsAtom,
   totalInvestmentAtom,
 } from "./atoms";
-import {
-  baseTokenBracketsSelector,
-  quoteTokenBracketsSelector,
-} from "./selectors";
-import { composeValidators } from "validators/misc";
-import { isRequired } from "validators/isRequired";
-import { isNumber } from "validators/isNumber";
-import { isGreaterThan } from "validators/isGreaterThan";
-import { isSmallerThan } from "validators/isSmallerThan";
-import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
 
 const Wrapper = styled.div`
   display: flex;
