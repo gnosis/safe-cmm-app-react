@@ -72,3 +72,57 @@ test("startPrice == bracket boundary", () => {
     quoteTokenBrackets: 1,
   });
 });
+
+describe("invalid params", () => {
+  const invalidResponse = {
+    baseTokenBrackets: 0,
+    quoteTokenBrackets: 0,
+  };
+  test("invalid lowestPrice", () => {
+    const params = clone(baseParams);
+    params.lowestPrice = "";
+    expect(calculateBrackets(params)).toEqual(invalidResponse);
+  });
+
+  test("invalid startPrice", () => {
+    const params = clone(baseParams);
+    params.startPrice = "sfas";
+    expect(calculateBrackets(params)).toEqual(invalidResponse);
+  });
+
+  test("invalid highestPrice", () => {
+    const params = clone(baseParams);
+    params.highestPrice = "234de";
+    expect(calculateBrackets(params)).toEqual(invalidResponse);
+  });
+
+  test("invalid totalBrackets", () => {
+    const params = clone(baseParams);
+    params.totalBrackets = "";
+    expect(calculateBrackets(params)).toEqual(invalidResponse);
+  });
+
+  test("lowestPrice < 0", () => {
+    const params = clone(baseParams);
+    params.lowestPrice = "-1";
+    expect(calculateBrackets(params)).toEqual(invalidResponse);
+  });
+
+  test("lowestPrice > startPrice", () => {
+    const params = clone(baseParams);
+    params.lowestPrice = "1" + params.startPrice;
+    expect(calculateBrackets(params)).toEqual(invalidResponse);
+  });
+
+  test("startPrice > highestPrice", () => {
+    const params = clone(baseParams);
+    params.startPrice = "1" + params.highestPrice;
+    expect(calculateBrackets(params)).toEqual(invalidResponse);
+  });
+
+  test("totalBrackets === 0", () => {
+    const params = clone(baseParams);
+    params.totalBrackets = "0";
+    expect(calculateBrackets(params)).toEqual(invalidResponse);
+  });
+});

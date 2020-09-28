@@ -17,7 +17,7 @@ interface Result {
 /**
  * Calculates how many brackets will be used to fund base and quote amounts
  * All inputs are strings, to be converted internally
- * Assumes all prices are valid: lowestPrice <= startPrice <= highestPrice
+ * Minimal validation, returning both 0 when failed
  *
  * Based on https://github.com/gnosis/dex-liquidity-provision/blob/525138d8eab5e85536b98a621e6f9abf537fcca/scripts/utils/trading_strategy_helpers.js#L722-L751
  */
@@ -29,11 +29,28 @@ export function calculateBrackets(params: Params): Result {
     totalBrackets: totalBracketsStr,
   } = params;
 
+  const lowestPriceNum = Number(lowestPriceStr);
+  const startPriceNum = Number(startPriceStr);
+  const highestPriceNum = Number(highestPriceStr);
+  const totalBrackets = Number(totalBracketsStr);
+  // Minimal validation
+  if (
+    isNaN(lowestPriceNum) ||
+    isNaN(startPriceNum) ||
+    isNaN(highestPriceNum) ||
+    isNaN(totalBrackets) ||
+    lowestPriceNum <= 0 ||
+    lowestPriceNum > startPriceNum ||
+    startPriceNum > highestPriceNum ||
+    totalBrackets <= 0
+  ) {
+    return { baseTokenBrackets: 0, quoteTokenBrackets: 0 };
+  }
+
   //  Working with Decimals for enhanced precision
   const lowestPrice = new Decimal(lowestPriceStr);
   const startPrice = new Decimal(startPriceStr);
   const highestPrice = new Decimal(highestPriceStr);
-  const totalBrackets = Number(totalBracketsStr);
 
   const stepSizeAsMultiplier = highestPrice
     .div(lowestPrice)
