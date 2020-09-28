@@ -1,4 +1,4 @@
-import runInitializerIfNotRan from "api/utils/tradingHelperInit";
+import { importTradingStrategyHelpers } from "api/utils/dexImports";
 import Decimal from "decimal.js";
 
 import getLogger from "utils/logger";
@@ -36,7 +36,7 @@ const orderAndFund = async (
   const {
     transactionsForTransferApproveDepositFromOrders,
     transactionsForOrders,
-  } = runInitializerIfNotRan(context);
+  } = importTradingStrategyHelpers(context);
 
   const batchExchangeContract = await context.getDeployed("BatchExchange");
   const [tokenBaseId, tokenQuoteId] = await Promise.all([

@@ -159,18 +159,20 @@ const Active = () => {
         "LOADING"
       );
       try {
-        const { txs } = await withdrawRequest(context, strategy);
-        if (txs.length === 0) {
+        const txs = await withdrawRequest(context, strategy);
+        if (txs == null || txs.length === 0) {
           throw new Error(
             "No funds available to request withdraw.\nNo bracket contains more than >1 USD in value."
           );
         }
-        await context.sdk.sendTransactions(txs);
+        console.log("send tx", txs);
+        console.log(await context.sdk.sendTransactions(txs));
         handleSetWithdrawStatusForStrategyWithBlockhash(
           strategy.transactionHash,
           "SUCCESS"
         );
       } catch (err) {
+        console.error(err);
         handleSetWithdrawStatusForStrategyWithBlockhash(
           strategy.transactionHash,
           "ERROR",
@@ -189,8 +191,9 @@ const Active = () => {
       );
 
       try {
-        const { txs } = await withdrawClaim(context, strategy);
-        if (txs.length === 0) {
+        const txs = await withdrawClaim(context, strategy);
+        console.log(txs);
+        if (txs == null || txs.length === 0) {
           throw new Error(
             "No funds available to claim withdraw.\nNo bracket contains more than >1 USD in value."
           );
