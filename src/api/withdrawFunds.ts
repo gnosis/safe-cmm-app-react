@@ -2,7 +2,6 @@ import { amountUSDValue } from "@gnosis.pm/dex-liquidity-provision/scripts/utils
 import { MAXUINT256, ONE } from "@gnosis.pm/dex-liquidity-provision/scripts/utils/constants";
 import { importTradingStrategyHelpers, importWithdrawWrapper } from "api/utils/dexImports";
 import { getWithdrawableAmount } from "@gnosis.pm/dex-contracts";
-import makeFakeArtifacts from "utils/makeFakeArtifacts";
 
 import getLogger from "utils/logger";
 
