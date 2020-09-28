@@ -1,73 +1,91 @@
-import withdrawHelperInit from "@gnosis.pm/dex-liquidity-provision/scripts/wrapper/withdraw";
-import makeFakeArtifacts from "utils/makeFakeArtifacts";
+import { amountUSDValue } from "@gnosis.pm/dex-liquidity-provision/scripts/utils/price_utils";
+import { MAXUINT256, ONE } from "@gnosis.pm/dex-liquidity-provision/scripts/utils/constants";
+import { importTradingStrategyHelpers, importWithdrawWrapper } from "api/utils/dexImports";
+import { getWithdrawableAmount } from "@gnosis.pm/dex-contracts";
+
+import getLogger from "utils/logger";
+
 import { Web3Context } from 'types';
 import Strategy from 'logic/strategy';
 
-let initializedWithdrawHelpers;
+import BN from "bn.js";
 
-const runInitializerIfNotRan = (context) : any => {
-  if (!initializedWithdrawHelpers) {
-    initializedWithdrawHelpers = withdrawHelperInit(
-      context.instance,
-      makeFakeArtifacts(context)
-    )
-  }
-  return initializedWithdrawHelpers;
-}
+const logger = getLogger("withdraw");
 
-export const withdrawRequest = async (context : Web3Context, strategy : Strategy) : Promise<any> => {
+export const withdrawRequest = async (context : Web3Context, strategy : Strategy) : Promise<void> => {
   const contracts = await Promise.all([
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
     context.getArtifact("MultiSend"),
     context.getArtifact("BatchExchange"),
     context.getArtifact("FleetFactory"),
+    context.getArtifact("GnosisSafeProxyFactory"),
   ]);
-  
-  const withdrawHelpers = runInitializerIfNotRan(context);
 
-  const withdrawTransactions = await withdrawHelpers.prepareWithdrawRequest( // prepareTransferFundsToMaster
-    {
-      masterSafe: context.safeInfo.safeAddress,
-      brackets: strategy.brackets.map(bracket => bracket.address),
-      tokens: [strategy.baseTokenAddress, strategy.quoteTokenAddress],
-    }, true
+  const  amountFunction = async function (bracketAddress, tokenData, exchange) : Promise<String> {
+    const amount = (await exchange.getBalance(bracketAddress, tokenData.address)).toString()
+    const usdValue = await amountUSDValue(amount, tokenData, {})
+    logger.log(`(request) ${bracketAddress} holds ${amount} (${usdValue}$) in ${tokenData.symbol}`);
+    if (usdValue.gte(ONE)) {
+      return MAXUINT256.toString()
+    } else {
+      return "0"
+    }
+  }
+
+  const { getWithdrawalsAndTokenInfo } = importWithdrawWrapper(context);
+
+  const { withdrawals } = await getWithdrawalsAndTokenInfo(
+    amountFunction,
+    undefined,
+    strategy.brackets.map((bracket) => bracket.address),
+    [strategy.baseTokenAddress, strategy.quoteTokenAddress],
+    [strategy.baseTokenId, strategy.quoteTokenId],
+    true,
   )
-  console.log(withdrawTransactions)
-  
-  return {
-    txs: withdrawTransactions
-  }
 
+  logger.log(`(request) started building withdraw transaction for ${withdrawals.length} withdraws`);
+  
+  const {
+    transactionGenericFundMovement
+  } = importTradingStrategyHelpers(context);
+
+  return transactionGenericFundMovement(context.safeInfo.safeAddress, withdrawals, "requestWithdraw");
 }
 
-export const withdrawClaim = async (context : Web3Context, strategy : Strategy) : Promise<any> => {
+export const withdrawClaim = async (context : Web3Context, strategy : Strategy) : Promise<void> => {
   const contracts = await Promise.all([
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
     context.getArtifact("MultiSend"),
     context.getArtifact("BatchExchange"),
     context.getArtifact("FleetFactory"),
+    context.getArtifact("GnosisSafeProxyFactory"),
   ]);
-  
-  const withdrawHelpers = runInitializerIfNotRan(context);
 
-  const argv = {
-    masterSafe: context.safeInfo.safeAddress,
-    brackets: strategy.brackets.map(bracket => bracket.address),
-    tokens: [strategy.baseTokenAddress, strategy.quoteTokenAddress],
-  };
-
-  const withdrawTransactions = await withdrawHelpers.prepareWithdraw(argv, true)
-  const withdrawTransferTransaction = await withdrawHelpers.prepareWithdrawAndTransferFundsToMaster(argv, true)
-
-  console.log({
-    claim: withdrawTransactions,
-    transfer: withdrawTransferTransaction,
-  });
-
-  return {
-    txs: [...withdrawTransactions, ...withdrawTransferTransaction]
+  const  amountFunction = async function (bracketAddress, tokenData, exchange) : Promise<String|BN> {
+    const amount = await getWithdrawableAmount(bracketAddress, tokenData.address, exchange, context.instance)
+    logger.log(`(claim) requesting to claim ${amount.toString()} of ${tokenData.symbol} from ${bracketAddress}`);
+    return amount;
   }
 
+  const { getWithdrawalsAndTokenInfo } = importWithdrawWrapper(context);
+
+  const { withdrawals } = await getWithdrawalsAndTokenInfo(
+    amountFunction,
+    undefined,
+    strategy.brackets.map((bracket) => bracket.address),
+    [strategy.baseTokenAddress, strategy.quoteTokenAddress],
+    [strategy.baseTokenId, strategy.quoteTokenId],
+    true,
+
+  )
+
+  logger.log(`(claim) started building withdraw claim transaction for ${withdrawals.length} withdraws`);
+  
+  const {
+    transactionsWithdrawAndTransferFundsToMaster
+  } = importTradingStrategyHelpers(context);
+
+  return transactionsWithdrawAndTransferFundsToMaster(context.safeInfo.safeAddress, withdrawals);
 }

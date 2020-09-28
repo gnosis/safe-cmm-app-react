@@ -1,10 +1,12 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import { RecoilState, useRecoilCallback, useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
 import { FundingInput } from "components/basic/inputs/FundingInput";
 import { TotalBrackets } from "components/basic/inputs/TotalBrackets";
+
+import { calculateBrackets } from "utils/calculateBrackets";
 
 import {
   baseTokenAddressAtom,
@@ -17,10 +19,6 @@ import {
   totalBracketsAtom,
   totalInvestmentAtom,
 } from "./atoms";
-import {
-  baseTokenBracketsSelector,
-  quoteTokenBracketsSelector,
-} from "./selectors";
 
 const Wrapper = styled.div`
   display: flex;
@@ -51,8 +49,6 @@ const Wrapper = styled.div`
 function component(): JSX.Element {
   const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
   const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
-  const baseTokenBrackets = useRecoilValue(baseTokenBracketsSelector);
-  const quoteTokenBrackets = useRecoilValue(quoteTokenBracketsSelector);
   const baseTokenAmount = useRecoilValue(baseTokenAmountAtom);
   const quoteTokenAmount = useRecoilValue(quoteTokenAmountAtom);
   const totalBrackets = useRecoilValue(totalBracketsAtom);
@@ -60,6 +56,33 @@ function component(): JSX.Element {
   const startPrice = useRecoilValue(startPriceAtom);
   const lowestPrice = useRecoilValue(lowestPriceAtom);
   const highestPrice = useRecoilValue(highestPriceAtom);
+
+  const { baseTokenBrackets, quoteTokenBrackets } = useMemo(() => {
+    const lp = Number(lowestPrice);
+    const sp = Number(startPrice);
+    const hp = Number(highestPrice);
+    const tb = Number(totalBrackets);
+
+    if (
+      isNaN(lp) ||
+      isNaN(sp) ||
+      isNaN(hp) ||
+      isNaN(tb) ||
+      lp <= 0 ||
+      lp > sp ||
+      sp > hp ||
+      tb <= 0
+    ) {
+      return { baseTokenBrackets: 0, quoteTokenBrackets: 0 };
+    } else {
+      return calculateBrackets({
+        lowestPrice,
+        startPrice,
+        highestPrice,
+        totalBrackets,
+      });
+    }
+  }, [lowestPrice, startPrice, highestPrice, totalBrackets]);
 
   const onChangeHandlerFactory = useRecoilCallback(
     ({ set }) => (atom: RecoilState<string>) => (
@@ -98,7 +121,7 @@ function component(): JSX.Element {
     <Wrapper>
       <div>
         <PriceInput
-          tokenAddress={baseTokenAddress}
+          tokenAddress={quoteTokenAddress}
           labelText="Lowest price"
           labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
           value={lowestPrice}
@@ -113,7 +136,7 @@ function component(): JSX.Element {
       </div>
       <div className="middle">
         <PriceInput
-          tokenAddress={baseTokenAddress}
+          tokenAddress={quoteTokenAddress}
           labelText="Start Price"
           labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
           value={startPrice}
@@ -128,7 +151,7 @@ function component(): JSX.Element {
       </div>
       <div>
         <PriceInput
-          tokenAddress={baseTokenAddress}
+          tokenAddress={quoteTokenAddress}
           labelText="Highest price"
           labelTooltip="The max price per token A you are willing to sell or buy"
           value={highestPrice}

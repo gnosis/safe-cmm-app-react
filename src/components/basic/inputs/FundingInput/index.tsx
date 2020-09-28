@@ -9,10 +9,17 @@ import { NumberInput, Props as NumberInputPros } from "../NumberInput";
 import { PerBracketAmount } from "./PerBracketAmount";
 import { Label } from "./Label";
 
-const Wrapper = styled.div<{ width: string | number }>`
+interface WrapperProps {
+  width: string | number;
+  disabled?: boolean;
+}
+
+const Wrapper = styled.div<WrapperProps>`
   width: ${({ width }) => pxOrCustomCssUnits(width)};
   display: flex;
   flex-direction: column;
+
+  ${({ disabled }) => (disabled ? `opacity: 0.5;` : "")}
 `;
 
 export interface Props extends Omit<NumberInputPros, "customLabel"> {
@@ -32,13 +39,19 @@ export const FundingInput = (props: Props): JSX.Element => {
     ...rest
   } = props;
 
+  const disabled = !brackets;
+
   return (
-    <Wrapper width={width}>
+    <Wrapper width={width} disabled={disabled}>
       <NumberInput
         {...rest}
+        readOnly={disabled}
+        disabled={disabled}
         error={error}
         value={value}
-        customLabel={<Label onClick={onMaxClick} error={error} />}
+        customLabel={
+          <Label onClick={onMaxClick} error={error} disabled={disabled} />
+        }
         width={width}
         tokenAddress={tokenAddress}
       />

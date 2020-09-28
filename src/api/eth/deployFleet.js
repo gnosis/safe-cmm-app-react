@@ -1,21 +1,9 @@
 import uuidAsInt from "./utils/uuidAsInt";
 
 import getLogger from "utils/logger";
-
-import calcFleetAddressesInitializer from "@gnosis.pm/dex-liquidity-provision/scripts/utils/calculate_fleet_addresses";
 import makeFakeArtifacts from "utils/makeFakeArtifacts";
 
-let instance;
-const runFleetAddressCalcInitializerIfNotRan = (context) => {
-  if (!instance) {
-    instance = calcFleetAddressesInitializer(
-      context.instance,
-      makeFakeArtifacts(context)
-    );
-  }
-
-  return instance;
-};
+import { importCalculateFleetAddresses } from "api/utils/dexImports";
 
 const logger = getLogger("deploy-fleet");
 
@@ -27,10 +15,11 @@ const deployFleet = async (context, { numBrackets, masterSafeAddress }) => {
 
   await getDeployed("GnosisSafeProxyFactory");
 
-  const { calcSafeAddresses } = runFleetAddressCalcInitializerIfNotRan(context);
+  const { calcSafeAddresses } = importCalculateFleetAddresses(context);
 
   const fleetFactory = await getDeployed("FleetFactoryDeterministic");
 
+  // Contract needs to be a truffle contract. Use makeFakeArtifacts to quickly get an instance
   const makeArtifacts = makeFakeArtifacts(context);
   const fleetFactoryDeterministicContract = makeArtifacts.require(
     "FleetFactoryDeterministic"
