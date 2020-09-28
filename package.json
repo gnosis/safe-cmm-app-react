@@ -56,6 +56,7 @@
     "@truffle/error": "0.0.10",
     "@types/bn.js": "^4.11.6",
     "@types/jest": "^26.0.9",
+    "@types/lodash": "^4.14.161",
     "@types/node": "^14.0.27",
     "@types/react": "^16.9.46",
     "@typescript-eslint/eslint-plugin": "^3.9.0",
