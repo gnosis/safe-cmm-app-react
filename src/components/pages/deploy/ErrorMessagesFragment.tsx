@@ -12,21 +12,27 @@ const Wrapper = styled.div`
 `;
 
 function component(): JSX.Element {
-  const { errors } = useFormState({ subscription: { errors: true } });
+  const { errors, touched } = useFormState({
+    subscription: { errors: true, touched: true },
+  });
 
-  if (!errors) {
+  if (!errors || !Object.values(touched).some(Boolean)) {
     return null;
   }
 
   return (
-    <Wrapper className="messages">
-      {Object.values(errors)
-        // Only show errors messages when we have one
-        // Sometimes a field is set with 'error === true' only to highlight the component
-        // to avoid multiple messages for the same error that affects multiple components
-        .filter((error) => typeof error !== "boolean")
-        .map((error, id) => (
-          <Message {...error} type="error" key={id} />
+    <Wrapper>
+      {Object.keys(errors)
+        .filter(
+          (fieldName) =>
+            // Only show errors messages when we have one
+            // Sometimes a field is set with 'error === true' only to highlight the component
+            // to avoid multiple messages for the same error that affects multiple components
+            // Also, do not show error messages for fields not `touched`
+            typeof errors[fieldName] !== "boolean" && touched[fieldName]
+        )
+        .map((fieldName, id) => (
+          <Message {...errors[fieldName]} type="error" key={id} />
         ))}
     </Wrapper>
   );

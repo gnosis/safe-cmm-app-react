@@ -78,8 +78,8 @@ function component(): JSX.Element {
           render={({ input, meta }) => (
             <PriceInput
               {...input}
-              warn={meta.data?.warn}
-              error={meta.error}
+              warn={meta.touched && meta.data?.warn}
+              error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Lowest price"
               labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
@@ -96,8 +96,8 @@ function component(): JSX.Element {
               render={({ input, meta }) => (
                 <FundingInput
                   {...input}
-                  warn={meta.data?.warn}
-                  error={meta.error}
+                  warn={meta.touched && meta.data?.warn}
+                  error={meta.touched && meta.error}
                   brackets={getBracketValue(value, "base")}
                   tokenAddress={baseTokenAddress}
                 />
@@ -117,8 +117,8 @@ function component(): JSX.Element {
           render={({ input, meta }) => (
             <PriceInput
               {...input}
-              warn={meta.data?.warn}
-              error={meta.error}
+              warn={meta.touched && meta.data?.warn}
+              error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Start Price"
               labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
@@ -137,8 +137,8 @@ function component(): JSX.Element {
           render={({ input, meta }) => (
             <TotalBrackets
               {...input}
-              warn={meta.data?.warn}
-              error={meta.error}
+              warn={meta.touched && meta.data?.warn}
+              error={meta.touched && meta.error}
               amount={totalInvestment}
             />
           )}
@@ -155,8 +155,8 @@ function component(): JSX.Element {
           render={({ input, meta }) => (
             <PriceInput
               {...input}
-              warn={meta.data?.warn}
-              error={meta.error}
+              warn={meta.touched && meta.data?.warn}
+              error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Highest price"
               labelTooltip="The max price per token A you are willing to sell or buy"
@@ -173,8 +173,8 @@ function component(): JSX.Element {
               render={({ input, meta }) => (
                 <FundingInput
                   {...input}
-                  warn={meta.data?.warn}
-                  error={meta.error}
+                  warn={meta.touched && meta.data?.warn}
+                  error={meta.touched && meta.error}
                   brackets={getBracketValue(value, "quote")}
                   tokenAddress={quoteTokenAddress}
                 />
