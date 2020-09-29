@@ -75,7 +75,6 @@ function component(): JSX.Element {
             isNumber(),
             isGreaterThan(0),
           ])}
-          validateFields={["baseTokenAmount", "quoteTokenAmount"]}
           render={({ input, meta }) => (
             <PriceInput
               {...input}
@@ -115,7 +114,6 @@ function component(): JSX.Element {
             isNumber(),
             isGreaterThan(0),
           ])}
-          validateFields={["baseTokenAmount", "quoteTokenAmount"]}
           render={({ input, meta }) => (
             <PriceInput
               {...input}
@@ -136,7 +134,6 @@ function component(): JSX.Element {
             isGreaterThan(MINIMUM_BRACKETS - 1),
             isSmallerThan(MAXIMUM_BRACKETS + 1),
           ])}
-          validateFields={["baseTokenAmount", "quoteTokenAmount"]}
           render={({ input, meta }) => (
             <TotalBrackets
               {...input}
@@ -155,7 +152,6 @@ function component(): JSX.Element {
             isNumber(),
             isGreaterThan(0),
           ])}
-          validateFields={["baseTokenAmount", "quoteTokenAmount"]}
           render={({ input, meta }) => (
             <PriceInput
               {...input}
