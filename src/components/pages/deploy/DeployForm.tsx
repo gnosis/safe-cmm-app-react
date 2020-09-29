@@ -38,10 +38,11 @@ function validate(values: DeployFormValues): ValidationErrors {
   const totalBrackets = Number(values.totalBrackets);
 
   // this is a calculated field where we store two integers in a single string
-  const [
-    baseTokenBrackets,
-    quoteTokenBrackets,
-  ] = values.calculatedBrackets?.split("|") || [0, 0];
+  const baseTokenBrackets = getBracketValue(values.calculatedBrackets, "base");
+  const quoteTokenBrackets = getBracketValue(
+    values.calculatedBrackets,
+    "quote"
+  );
 
   if (lowestPrice > startPrice) {
     errors["lowestPrice"] = {
@@ -81,6 +82,8 @@ function validate(values: DeployFormValues): ValidationErrors {
   return errors;
 }
 
+// Calculate brackets based on all form fields
+// Returns string with base/quote tokens concatenated separated by a `|`
 function updateCalculatedBrackets(
   _: string | number,
   allValues: DeployFormValues
@@ -95,7 +98,20 @@ function updateCalculatedBrackets(
   return `${baseTokenBrackets}|${quoteTokenBrackets}`;
 }
 
+// Syntactic sugar to extract bracket value from stored input field value
+export function getBracketValue(
+  value: string | undefined,
+  type: "base" | "quote"
+): number {
+  if (!value || !/\d+|\d+/.test(value)) {
+    return 0;
+  }
+  const [base, quote] = value.split("|");
+  return type === "base" ? +base : +quote;
+}
+
 const calculateFieldsDecorator = createCalculatedFieldsDecorator(
+  // Calculate brackets whenever (lowest/start/highest)Price or totalBrackets change
   {
     field: /Price$/,
     updates: { calculatedBrackets: updateCalculatedBrackets },

@@ -26,6 +26,8 @@ import {
   totalInvestmentAtom,
 } from "./atoms";
 
+import { getBracketValue } from "./DeployForm";
+
 const Wrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -97,7 +99,7 @@ function component(): JSX.Element {
                   {...input}
                   warn={meta.data?.warn}
                   error={meta.error}
-                  brackets={Number(value?.split("|")[0] || 0)}
+                  brackets={getBracketValue(value, "base")}
                   tokenAddress={baseTokenAddress}
                 />
               )}
@@ -177,7 +179,7 @@ function component(): JSX.Element {
                   {...input}
                   warn={meta.data?.warn}
                   error={meta.error}
-                  brackets={Number(value.split("|")[1] || 0)}
+                  brackets={getBracketValue(value, "quote")}
                   tokenAddress={quoteTokenAddress}
                 />
               )}
