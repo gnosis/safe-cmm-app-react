@@ -1,4 +1,4 @@
 import { Validator } from "./misc";
 
-export const isRequired = (fieldName: string): Validator => (value) =>
+export const isRequired = (): Validator => (fieldName: string) => (value) =>
   !value ? { label: `${fieldName} is required` } : undefined;

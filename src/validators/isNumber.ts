@@ -1,9 +1,8 @@
 import { Validator } from "./misc";
 
-export const isNumber = (
-  fieldName: string,
-  checkInteger?: boolean
-): Validator => (value) =>
+export const isNumber = (checkInteger?: boolean): Validator => (
+  fieldName: string
+) => (value) =>
   isNaN(+value)
     ? { label: `${fieldName} must be a number` }
     : checkInteger && !Number.isInteger(+value)
