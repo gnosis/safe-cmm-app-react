@@ -1,13 +1,11 @@
-import React, { memo, useCallback, useMemo } from "react";
-import { RecoilState, useRecoilCallback, useRecoilValue } from "recoil";
-import { Field, useFormState } from "react-final-form";
+import React, { memo } from "react";
+import { useRecoilValue } from "recoil";
+import { Field } from "react-final-form";
 import styled from "styled-components";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
 import { FundingInput } from "components/basic/inputs/FundingInput";
 import { TotalBrackets } from "components/basic/inputs/TotalBrackets";
-
-import { calculateBrackets } from "utils/calculateBrackets";
 
 import { composeValidators } from "validators/misc";
 import { isRequired } from "validators/isRequired";
@@ -54,6 +52,10 @@ const Wrapper = styled.div`
   }
 `;
 
+const InvisibleField = styled(Field)`
+  display: none;
+`;
+
 function component(): JSX.Element {
   const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
   const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
@@ -61,46 +63,17 @@ function component(): JSX.Element {
   const quoteTokenAmount = useRecoilValue(quoteTokenAmountAtom);
   const totalInvestment = useRecoilValue(totalInvestmentAtom);
 
-  const {
-    values: { lowestPrice, startPrice, highestPrice, totalBrackets },
-  } = useFormState({ subscription: { values: true } });
-
-  const { baseTokenBrackets, quoteTokenBrackets } = useMemo(() => {
-    const lp = Number(lowestPrice);
-    const sp = Number(startPrice);
-    const hp = Number(highestPrice);
-    const tb = Number(totalBrackets);
-
-    if (
-      isNaN(lp) ||
-      isNaN(sp) ||
-      isNaN(hp) ||
-      isNaN(tb) ||
-      lp <= 0 ||
-      lp > sp ||
-      sp > hp ||
-      tb <= 0
-    ) {
-      return { baseTokenBrackets: 0, quoteTokenBrackets: 0 };
-    } else {
-      return calculateBrackets({
-        lowestPrice,
-        startPrice,
-        highestPrice,
-        totalBrackets,
-      });
-    }
-  }, [lowestPrice, startPrice, highestPrice, totalBrackets]);
-
   return (
     <Wrapper>
       <div>
         <Field<string>
           name="lowestPrice"
-          validate={composeValidators(
-            isRequired("Token A Funding"),
-            isNumber("Lowest Price")
-          )}
+          validate={composeValidators("Lowest Price", [
+            isRequired(),
+            isNumber(),
+            isGreaterThan(0),
+          ])}
+          validateFields={["baseTokenAmount", "quoteTokenAmount"]}
           render={({ input, meta }) => (
             <PriceInput
               {...input}
@@ -112,30 +85,35 @@ function component(): JSX.Element {
             />
           )}
         />
-        <Field<string>
-          name="baseTokenAmount"
-          validate={composeValidators(
-            isRequired("Token A Funding"),
-            isNumber("Token A Funding")
-          )}
-          render={({ input, meta }) => (
-            <FundingInput
-              {...input}
-              warn={meta.data?.warn}
-              error={meta.error}
-              brackets={baseTokenBrackets}
-              tokenAddress={baseTokenAddress}
+        <Field<string> name="calculatedBrackets" subscription={{ value: true }}>
+          {({ input: { value } }) => (
+            // Field `baseTokenAmount` is "subscribed" to field `calculatedBrackets`
+            // `calculatedBrackets` value is a string storing "base|quote" brackets value
+            <Field<string>
+              name="baseTokenAmount"
+              // validation done at form level since this field might not be used
+              render={({ input, meta }) => (
+                <FundingInput
+                  {...input}
+                  warn={meta.data?.warn}
+                  error={meta.error}
+                  brackets={Number(value?.split("|")[0] || 0)}
+                  tokenAddress={baseTokenAddress}
+                />
+              )}
             />
           )}
-        />
+        </Field>
       </div>
       <div className="middle">
         <Field<string>
           name="startPrice"
-          validate={composeValidators(
-            isRequired("Start Price"),
-            isNumber("Start Price")
-          )}
+          validate={composeValidators("Start Price", [
+            isRequired(),
+            isNumber(),
+            isGreaterThan(0),
+          ])}
+          validateFields={["baseTokenAmount", "quoteTokenAmount"]}
           render={({ input, meta }) => (
             <PriceInput
               {...input}
@@ -150,12 +128,13 @@ function component(): JSX.Element {
         />
         <Field<string>
           name="totalBrackets"
-          validate={composeValidators(
-            isRequired("Total Brackets"),
-            isNumber("Total Brackets", true),
-            isGreaterThan("Total Brackets", MINIMUM_BRACKETS - 1),
-            isSmallerThan("Total Brackets", MAXIMUM_BRACKETS + 1)
-          )}
+          validate={composeValidators("Total Brackets", [
+            isRequired(),
+            isNumber(true),
+            isGreaterThan(MINIMUM_BRACKETS - 1),
+            isSmallerThan(MAXIMUM_BRACKETS + 1),
+          ])}
+          validateFields={["baseTokenAmount", "quoteTokenAmount"]}
           render={({ input, meta }) => (
             <TotalBrackets
               {...input}
@@ -169,10 +148,12 @@ function component(): JSX.Element {
       <div>
         <Field<string>
           name="highestPrice"
-          validate={composeValidators(
-            isRequired("Highest Price"),
-            isNumber("Highest Price")
-          )}
+          validate={composeValidators("Highest Price", [
+            isRequired(),
+            isNumber(),
+            isGreaterThan(0),
+          ])}
+          validateFields={["baseTokenAmount", "quoteTokenAmount"]}
           render={({ input, meta }) => (
             <PriceInput
               {...input}
@@ -184,23 +165,28 @@ function component(): JSX.Element {
             />
           )}
         />
-        <Field<string>
-          name="quoteTokenAmount"
-          validate={composeValidators(
-            isRequired("Token B Funding"),
-            isNumber("Token B Funding")
-          )}
-          render={({ input, meta }) => (
-            <FundingInput
-              {...input}
-              warn={meta.data?.warn}
-              error={meta.error}
-              brackets={quoteTokenBrackets}
-              tokenAddress={quoteTokenAddress}
+        <Field<string> name="calculatedBrackets" subscription={{ value: true }}>
+          {({ input: { value } }) => (
+            // Field `quoteTokenAmount` is "subscribed" to field `calculatedBrackets`
+            // `calculatedBrackets` value is a string storing "base|quote" brackets value
+            <Field<string>
+              name="quoteTokenAmount"
+              // validation done at form level since this field might not be used
+              render={({ input, meta }) => (
+                <FundingInput
+                  {...input}
+                  warn={meta.data?.warn}
+                  error={meta.error}
+                  brackets={Number(value.split("|")[1] || 0)}
+                  tokenAddress={quoteTokenAddress}
+                />
+              )}
             />
           )}
-        />
+        </Field>
       </div>
+      {/* stores the calculated brackets as string separated by a '|' */}
+      <InvisibleField name="calculatedBrackets" component="input" />
     </Wrapper>
   );
 }

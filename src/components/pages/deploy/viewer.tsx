@@ -2,7 +2,8 @@ import React, { memo, useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { Backdrop, withStyles } from "@material-ui/core";
 import styled from "styled-components";
-import { Config, FormApi, FormState } from "final-form";
+import { FormApi, FormState } from "final-form";
+import createCalculatedFieldsDecorator from "final-form-calculate";
 import { Form, FormSpy } from "react-final-form";
 
 import { Loader } from "@gnosis.pm/safe-react-components";
@@ -18,6 +19,11 @@ import { DeployStrategyButtonFragment } from "./DeployStrategyButtonFragment";
 import { isSubmittingAtom } from "./atoms";
 import { DeployFormValues, FormFields } from "./types";
 import { ValidationErrors } from "validators/types";
+import { isNumber } from "validators/isNumber";
+import { composeValidators } from "validators/misc";
+import { isRequired } from "validators/isRequired";
+import { isGreaterThan } from "validators/isGreaterThan";
+import { calculateBrackets } from "utils/calculateBrackets";
 
 const PageLayout = styled.div`
   display: flex;
@@ -70,6 +76,84 @@ function Warnings({
   return <FormSpy subscription={{ values: true }} onChange={handleWarnings} />;
 }
 
+function validate(values: DeployFormValues): ValidationErrors {
+  const errors: ValidationErrors = {};
+
+  // prices values
+  const lowestPrice = Number(values.lowestPrice);
+  const startPrice = Number(values.startPrice);
+  const highestPrice = Number(values.highestPrice);
+  const totalBrackets = Number(values.totalBrackets);
+
+  // this is a calculated field where we store two integers in a single string
+  const [
+    baseTokenBrackets,
+    quoteTokenBrackets,
+  ] = values.calculatedBrackets?.split("|") || [0, 0];
+
+  if (lowestPrice > startPrice) {
+    errors["lowestPrice"] = {
+      label: "Lowest price can't be greater than Start price",
+    };
+    errors["startPrice"] = true;
+  }
+  if (highestPrice < startPrice) {
+    errors["highestPrice"] = {
+      label: "Highest price can't be smaller than Start price",
+    };
+    errors["startPrice"] = true;
+  }
+  if (lowestPrice === startPrice && startPrice === highestPrice) {
+    errors["startPrice"] = { label: "All prices cannot be equal" };
+    errors["lowestPrice"] = true;
+    errors["highestPrice"] = true;
+  }
+
+  // Validate only if/when set
+  if (baseTokenBrackets > 0) {
+    errors["baseTokenAmount"] = composeValidators("Token A Funding", [
+      isRequired(),
+      isNumber(),
+      isGreaterThan(0),
+    ])(values.baseTokenAmount);
+  }
+
+  if (quoteTokenBrackets > 0) {
+    errors["quoteTokenAmount"] = composeValidators("Token B Funding", [
+      isRequired(),
+      isNumber(),
+      isGreaterThan(0),
+    ])(values.quoteTokenAmount);
+  }
+
+  return errors;
+}
+
+function updateCalculatedBrackets(
+  _: string | number,
+  allValues: DeployFormValues
+): string {
+  const { lowestPrice, startPrice, highestPrice, totalBrackets } = allValues;
+  const { baseTokenBrackets, quoteTokenBrackets } = calculateBrackets({
+    lowestPrice,
+    startPrice,
+    highestPrice,
+    totalBrackets,
+  });
+  return `${baseTokenBrackets}|${quoteTokenBrackets}`;
+}
+
+const calculateFieldsDecorator = createCalculatedFieldsDecorator(
+  {
+    field: /Price$/,
+    updates: { calculatedBrackets: updateCalculatedBrackets },
+  },
+  {
+    field: "totalBrackets",
+    updates: { calculatedBrackets: updateCalculatedBrackets },
+  }
+);
+
 function component(props: Props): JSX.Element {
   const { onSubmit } = props;
   const isSubmitting = useRecoilValue(isSubmittingAtom);
@@ -84,14 +168,8 @@ function component(props: Props): JSX.Element {
           return;
         }}
         mutators={{ setFieldData }}
-        validate={(values: DeployFormValues) => {
-          const errors: ValidationErrors = {};
-          // if (!values.lowestPrice) {
-          //   errors["lowestPrice"] = { label: " Lowest Price is required" };
-          // }
-
-          return errors;
-        }}
+        decorators={[calculateFieldsDecorator]}
+        validate={validate}
         render={({ handleSubmit, form }) => (
           <form onSubmit={handleSubmit}>
             <DeployWidget>
