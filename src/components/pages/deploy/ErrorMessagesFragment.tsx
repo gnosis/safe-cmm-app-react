@@ -20,9 +20,14 @@ function component(): JSX.Element {
 
   return (
     <Wrapper className="messages">
-      {Object.values(errors).map((error, id) => (
-        <Message {...error} type="error" key={id} />
-      ))}
+      {Object.values(errors)
+        // Only show errors messages when we have one
+        // Sometimes a field is set with 'error === true' only to highlight the component
+        // to avoid multiple messages for the same error that affects multiple components
+        .filter((error) => typeof error !== "boolean")
+        .map((error, id) => (
+          <Message {...error} type="error" key={id} />
+        ))}
     </Wrapper>
   );
 }
