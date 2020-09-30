@@ -91,22 +91,6 @@ function validate(values: DeployFormValues): ValidationErrors {
   return errors;
 }
 
-// Calculate brackets based on all form fields
-// Returns string with base/quote tokens concatenated separated by a `|`
-function updateCalculatedBrackets(
-  _: string | number,
-  allValues: DeployFormValues
-): string {
-  const { lowestPrice, startPrice, highestPrice, totalBrackets } = allValues;
-  const { baseTokenBrackets, quoteTokenBrackets } = calculateBrackets({
-    lowestPrice,
-    startPrice,
-    highestPrice,
-    totalBrackets,
-  });
-  return `${baseTokenBrackets}|${quoteTokenBrackets}`;
-}
-
 // Syntactic sugar to extract bracket value from stored input field value
 export function getBracketValue(
   value: string | undefined,
@@ -118,6 +102,31 @@ export function getBracketValue(
   const [base, quote] = value.split("|");
   return type === "base" ? +base : +quote;
 }
+
+// Calculate brackets based on all form fields
+// Returns string with base/quote tokens concatenated separated by a `|`
+const updateCalculatedBracketsFactory = (
+  field: FormFields | RegExp
+): Calculation => ({
+  field,
+  updates: {
+    calculatedBrackets: (_: any, allValues: DeployFormValues): string => {
+      const {
+        lowestPrice,
+        startPrice,
+        highestPrice,
+        totalBrackets,
+      } = allValues;
+      const { baseTokenBrackets, quoteTokenBrackets } = calculateBrackets({
+        lowestPrice,
+        startPrice,
+        highestPrice,
+        totalBrackets,
+      });
+      return `${baseTokenBrackets}|${quoteTokenBrackets}`;
+    },
+  },
+});
 
 // To be used on the swap tokens arrow
 const swapTokens: Mutator = (
@@ -153,14 +162,8 @@ const swapTokensCalculationFactory = (
 
 const calculateFieldsDecorator = createCalculatedFieldsDecorator(
   // Calculate brackets whenever (lowest/start/highest)Price or totalBrackets change
-  {
-    field: /Price$/,
-    updates: { calculatedBrackets: updateCalculatedBrackets },
-  },
-  {
-    field: "totalBrackets",
-    updates: { calculatedBrackets: updateCalculatedBrackets },
-  },
+  updateCalculatedBracketsFactory(/Price$/),
+  updateCalculatedBracketsFactory("totalBrackets"),
   // Whenever one of the select changes update the opposite selector
   swapTokensCalculationFactory("baseTokenAddress", "quoteTokenAddress"),
   swapTokensCalculationFactory("quoteTokenAddress", "baseTokenAddress")
