@@ -79,7 +79,6 @@ export const pricesToRange = (bracketPrices : Decimal[], baseTokenDetails : Toke
 }
 
 export const calculateFundsFromEvents = (bracketOrderEvents : any[], bracketAddresses : string[]) : FundingDetails => {
-  console.log(bracketOrderEvents);
   const firstBracketEvent = bracketOrderEvents[0]
   const baseToken = firstBracketEvent.returnValues.buyToken;
   const quoteToken = firstBracketEvent.returnValues.sellToken;
