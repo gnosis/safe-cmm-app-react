@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useState, useMemo } from "react";
+import BN from "bn.js";
 
 import initWeb3 from "utils/initWeb3";
 import getLogger from "utils/logger";
@@ -187,13 +188,14 @@ const Web3Provider = ({ children }) => {
         handleGetDeployed("BatchExchange"),
       ]);
 
-      const [decimals, symbol, name, onGP] = await Promise.all([
+      const [decimals, symbol, name, balance, onGP] = await Promise.all([
         (async () => {
           const decimalsString = await erc20Contract.methods.decimals().call();
           return parseInt(decimalsString, 10);
         })(),
         erc20Contract.methods.symbol().call(),
         erc20Contract.methods.name().call(),
+        erc20Contract.methods.balanceOf(safeInfo.safeAddress).call(),
         batchExchangeContract.methods.hasToken(address).call(),
       ]);
 
@@ -204,9 +206,10 @@ const Web3Provider = ({ children }) => {
         name,
         onGP,
         imageUrl: getImageUrl(address),
+        balance: new BN(balance),
       };
     },
-    [handleGetContract, handleGetDeployed]
+    [handleGetContract, handleGetDeployed, safeInfo]
   );
 
   /**
@@ -257,6 +260,7 @@ const Web3Provider = ({ children }) => {
                 ...safeTokenDetails.token,
                 imageUrl: safeTokenDetails.token.logoUri,
                 address: safeTokenDetails.tokenAddress,
+                balance: new BN(safeTokenDetails.balance),
               },
             }),
             {}
@@ -320,6 +324,42 @@ const Web3Provider = ({ children }) => {
 
     loadErc20Details();
   }, [handleGetDeployed, handleGetErc20Details, instance, safeInfo]);
+
+  const handleUpdateBalances = useCallback(async () => {
+    if (!safeInfo?.safeAddress) {
+      return;
+    }
+
+    logger.log("---> Updating balances");
+
+    const updatedBalances = await Promise.all(
+      Object.keys(erc20Cache).map(async (address) => {
+        const contract = await handleGetContract("ERC20Detailed", address);
+        const balance = await contract.methods
+          .balanceOf(safeInfo.safeAddress)
+          .call();
+        const token = erc20Cache[address];
+        token.balance = new BN(balance);
+
+        return token;
+      }, {})
+    );
+
+    setErc20Cache(
+      updatedBalances.reduce((tokens, token) => {
+        tokens[token.address] = token;
+        return tokens;
+      }, {})
+    );
+  }, [erc20Cache, handleGetContract, safeInfo]);
+
+  useEffect(() => {
+    // Poor's man background token balance updates
+    // TODO: do it once a new block in mined instead, this is not nice.
+    const interval = setInterval(handleUpdateBalances, 30000);
+
+    return () => clearInterval(interval);
+  }, [handleUpdateBalances]);
 
   const tokenList = useMemo(() => Object.values(erc20Cache), [erc20Cache]);
 
