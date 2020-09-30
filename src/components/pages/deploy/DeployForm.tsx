@@ -12,12 +12,15 @@ import createCalculatedFieldsDecorator, {
   Calculation,
 } from "final-form-calculate";
 
+import { Web3Context } from "components/Web3Provider";
+
 import { setFieldData } from "utils/finalForm";
 import { calculateBrackets } from "utils/calculateBrackets";
 
 import { isGreaterThan } from "validators/isGreaterThan";
 import { isNumber } from "validators/isNumber";
 import { isRequired } from "validators/isRequired";
+import { hasBalanceFactory } from "validators/hasBalance";
 import { composeValidators } from "validators/misc";
 
 import { DeployFormValues, FormFields } from "./types";
@@ -37,7 +40,9 @@ function Warnings({
   return <FormSpy subscription={{ values: true }} onChange={handleWarnings} />;
 }
 
-function validate(values: DeployFormValues): ValidationErrors {
+const validateFactory = (
+  hasBalance: ReturnType<typeof hasBalanceFactory>
+) => async (values: DeployFormValues): Promise<ValidationErrors> => {
   const errors: ValidationErrors = {};
 
   // prices values
@@ -73,23 +78,25 @@ function validate(values: DeployFormValues): ValidationErrors {
 
   // Validate only if/when set
   if (baseTokenBrackets > 0) {
-    errors["baseTokenAmount"] = composeValidators("Token A Funding", [
+    errors["baseTokenAmount"] = await composeValidators("Token A Funding", [
       isRequired(),
       isNumber(),
       isGreaterThan(0),
+      hasBalance(values.baseTokenAddress),
     ])(values.baseTokenAmount);
   }
 
   if (quoteTokenBrackets > 0) {
-    errors["quoteTokenAmount"] = composeValidators("Token B Funding", [
+    errors["quoteTokenAmount"] = await composeValidators("Token B Funding", [
       isRequired(),
       isNumber(),
       isGreaterThan(0),
+      hasBalance(values.quoteTokenAddress),
     ])(values.quoteTokenAmount);
   }
 
   return errors;
-}
+};
 
 // Syntactic sugar to extract bracket value from stored input field value
 export function getBracketValue(
@@ -170,6 +177,13 @@ const calculateFieldsDecorator = createCalculatedFieldsDecorator(
 );
 
 const component: React.FC = ({ children }) => {
+  const { getErc20Details } = useContext(Web3Context);
+
+  const validate = useCallback(
+    validateFactory(hasBalanceFactory(getErc20Details)),
+    [getErc20Details]
+  );
+
   return (
     // TODO: if I set the form type like this, TS goes bananas with mutator type
     // <Form<DeployFormValues>
