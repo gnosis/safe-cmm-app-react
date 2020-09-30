@@ -13,6 +13,8 @@ export interface UseTokenBalanceResult {
  * Fetches balance of current Safe for given token address.
  * Returns the balance as BN, if any
  *
+ * Syntactic sugar over `getErc20Details` and getting the returned object's `balance`
+ *
  * @param tokenAddress Address of token to query the balance for current Safe
  */
 export function useTokenBalance(tokenAddress?: string): UseTokenBalanceResult {
@@ -20,40 +22,29 @@ export function useTokenBalance(tokenAddress?: string): UseTokenBalanceResult {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { safeInfo, getContract } = useContext(Web3Context);
+  const { getErc20Details } = useContext(Web3Context);
 
-  // TODO: cache responses so we don't have to query the network on every single change
-  // TODO: also, we should subscribe to new block header if available and query the balance
-  // on every change
   useEffect(() => {
-    setIsLoading(true);
-    setError("");
+    if (!tokenAddress) {
+      return;
+    }
 
     async function getBalance(): Promise<void> {
-      if (!tokenAddress || !safeInfo.safeAddress) {
-        setIsLoading(false);
-        return;
-      }
+      setIsLoading(true);
+      setError("");
 
       try {
-        const contract = await getContract("ERC20Detailed", tokenAddress);
-        const balance = await contract.methods
-          .balanceOf(safeInfo.safeAddress)
-          .call();
-
-        setBalance(new BN(balance));
+        const details = await getErc20Details(tokenAddress);
+        setBalance(details.balance);
       } catch (e) {
-        console.error(
-          `Failed to fetch balance of token '${tokenAddress}' for Safe '${safeInfo.safeAddress}'`,
-          e
-        );
+        console.error(`Failed to fetch balance of token '${tokenAddress}'`, e);
         setError(`Failed to fetch balance of token '${tokenAddress}'`);
       }
       setIsLoading(false);
     }
 
     getBalance();
-  }, [tokenAddress, safeInfo]);
+  }, [tokenAddress, getErc20Details]);
 
   return { balance, isLoading, error };
 }
