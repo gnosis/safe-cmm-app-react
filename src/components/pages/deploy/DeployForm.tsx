@@ -1,7 +1,16 @@
-import React, { memo, useCallback } from "react";
-import { FormApi, FormState, ValidationErrors } from "final-form";
+import React, { memo, useCallback, useContext } from "react";
+import {
+  FormApi,
+  FormState,
+  MutableState,
+  Mutator,
+  Tools,
+  ValidationErrors,
+} from "final-form";
 import { Form, FormSpy } from "react-final-form";
-import createCalculatedFieldsDecorator from "final-form-calculate";
+import createCalculatedFieldsDecorator, {
+  Calculation,
+} from "final-form-calculate";
 
 import { setFieldData } from "utils/finalForm";
 import { calculateBrackets } from "utils/calculateBrackets";
@@ -11,7 +20,7 @@ import { isNumber } from "validators/isNumber";
 import { isRequired } from "validators/isRequired";
 import { composeValidators } from "validators/misc";
 
-import { DeployFormValues } from "./types";
+import { DeployFormValues, FormFields } from "./types";
 
 function Warnings({
   mutators: { setFieldData },
@@ -110,6 +119,38 @@ export function getBracketValue(
   return type === "base" ? +base : +quote;
 }
 
+// To be used on the swap tokens arrow
+const swapTokens: Mutator = (
+  _: any[],
+  state: MutableState<any>, // not happy with DeployFormValues type :/
+  { getIn, changeValue }: Tools<any>
+) => {
+  changeValue(state, "baseTokenAddress", () =>
+    getIn(state, "quoteTokenAddress")
+  );
+  changeValue(state, "quoteTokenAddress", () =>
+    getIn(state, "baseTokenAddress")
+  );
+};
+
+// To be used inside calculate field decorator
+const swapTokensCalculationFactory = (
+  field: FormFields,
+  oppositeField: FormFields
+): Calculation => ({
+  field,
+  updates: {
+    [oppositeField]: (
+      value: string,
+      allValues: DeployFormValues,
+      prevValues: DeployFormValues
+    ): string =>
+      value === allValues[oppositeField]
+        ? prevValues[field]
+        : allValues[oppositeField],
+  },
+});
+
 const calculateFieldsDecorator = createCalculatedFieldsDecorator(
   // Calculate brackets whenever (lowest/start/highest)Price or totalBrackets change
   {
@@ -119,7 +160,10 @@ const calculateFieldsDecorator = createCalculatedFieldsDecorator(
   {
     field: "totalBrackets",
     updates: { calculatedBrackets: updateCalculatedBrackets },
-  }
+  },
+  // Whenever one of the select changes update the opposite selector
+  swapTokensCalculationFactory("baseTokenAddress", "quoteTokenAddress"),
+  swapTokensCalculationFactory("quoteTokenAddress", "baseTokenAddress")
 );
 
 const component: React.FC = ({ children }) => {
@@ -131,7 +175,7 @@ const component: React.FC = ({ children }) => {
         console.log(`form!!!`, values);
         return;
       }}
-      mutators={{ setFieldData }}
+      mutators={{ setFieldData, swapTokens }}
       decorators={[calculateFieldsDecorator]}
       validate={validate}
       render={({ handleSubmit, form }) => (
