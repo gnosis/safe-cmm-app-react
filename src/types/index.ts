@@ -25,5 +25,5 @@ export interface Web3Context {
   getDeployed: (contractName: string) => Promise<any>;
   getArtifact: (contractName: string) => Promise<any>;
   getCachedArtifact: (contractName: string) => any; // TruffleContract
-  getErc20Details: (tokenName: string) => Promise<any>;
+  getErc20Details: (tokenName: string) => Promise<TokenBalance>;
 }
