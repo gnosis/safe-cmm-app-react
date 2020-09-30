@@ -7,18 +7,22 @@ export type Validator = (
   value: string,
   allValues?: object,
   meta?: FieldState<string>
-) => undefined | ValidationError;
+) => Promise<undefined | ValidationError>;
 
 export const composeValidators = (
   displayFieldName: string,
   validators: Validator[]
-) => (
+) => async (
   value: string,
   allValues?: object,
   meta?: FieldState<string>
-): undefined | ValidationError =>
-  validators.reduce(
-    (error: ValidationError | undefined, validator: Validator) =>
-      error || validator(displayFieldName)(value, allValues, meta),
-    undefined
-  );
+): Promise<undefined | ValidationError> => {
+  for (const validator of validators) {
+    const validatorFn = validator(displayFieldName);
+    const result = await validatorFn(value, allValues, meta);
+    if (result) {
+      return result;
+    }
+  }
+  return undefined;
+};
