@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { useRecoilValue } from "recoil";
-import { Field } from "react-final-form";
+import { Field, useField } from "react-final-form";
 import styled from "styled-components";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
@@ -14,17 +14,7 @@ import { isGreaterThan } from "validators/isGreaterThan";
 import { isSmallerThan } from "validators/isSmallerThan";
 import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
 
-import {
-  baseTokenAddressAtom,
-  baseTokenAmountAtom,
-  highestPriceAtom,
-  lowestPriceAtom,
-  quoteTokenAddressAtom,
-  quoteTokenAmountAtom,
-  startPriceAtom,
-  totalBracketsAtom,
-  totalInvestmentAtom,
-} from "./atoms";
+import { totalInvestmentAtom } from "./atoms";
 
 import { getBracketValue } from "./DeployForm";
 
@@ -59,11 +49,14 @@ const InvisibleField = styled(Field)`
 `;
 
 function component(): JSX.Element {
-  const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
-  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
-  const baseTokenAmount = useRecoilValue(baseTokenAmountAtom);
-  const quoteTokenAmount = useRecoilValue(quoteTokenAmountAtom);
   const totalInvestment = useRecoilValue(totalInvestmentAtom);
+
+  const {
+    input: { value: baseTokenAddress },
+  } = useField("baseTokenAddress");
+  const {
+    input: { value: quoteTokenAddress },
+  } = useField("quoteTokenAddress");
 
   return (
     <Wrapper>
