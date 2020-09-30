@@ -5,18 +5,27 @@ import {
   MutableState,
   Mutator,
   Tools,
-  ValidationErrors,
+  FORM_ERROR,
 } from "final-form";
+import BN from "bn.js";
+import Decimal from "decimal.js";
+
 import { Form, FormSpy } from "react-final-form";
 import createCalculatedFieldsDecorator, {
   Calculation,
 } from "final-form-calculate";
 
+import { parseAmount, ZERO } from "@gnosis.pm/dex-js";
+
+import deployStrategy from "api/deployStrategy";
+
 import { Web3Context } from "components/Web3Provider";
+import { Web3Context as Web3ContextType } from "types";
 
 import { setFieldData } from "utils/finalForm";
 import { calculateBrackets } from "utils/calculateBrackets";
 
+import { ValidationErrors } from "validators/types";
 import { isGreaterThan } from "validators/isGreaterThan";
 import { isNumber } from "validators/isNumber";
 import { isRequired } from "validators/isRequired";
@@ -176,11 +185,80 @@ const calculateFieldsDecorator = createCalculatedFieldsDecorator(
   swapTokensCalculationFactory("quoteTokenAddress", "baseTokenAddress")
 );
 
+// TODO: move this somewhere else
+function priceToBn(price: string): BN {
+  return new BN(new Decimal(price).mul(1e18).toString());
+}
+
 const component: React.FC = ({ children }) => {
-  const { getErc20Details } = useContext(Web3Context);
+  const context = useContext(Web3Context) as Web3ContextType;
+  const { getErc20Details } = context;
 
   const validate = useCallback(
     validateFactory(hasBalanceFactory(getErc20Details)),
+    [getErc20Details]
+  );
+
+  // The initial idea was to keep all the logic only on the container (index) component
+  // But with the validations and final-form I didn't manage to.
+  // Get back here later on and try to abide by that rule
+
+  const onSubmit = useCallback(
+    async (values: DeployFormValues): Promise<undefined | ValidationErrors> => {
+      const {
+        lowestPrice,
+        highestPrice,
+        baseTokenAmount,
+        quoteTokenAmount,
+        totalBrackets,
+        startPrice,
+        baseTokenAddress,
+        quoteTokenAddress,
+      } = values;
+
+      const baseTokenDetails = await getErc20Details(baseTokenAddress);
+      const quoteTokenDetails = await getErc20Details(quoteTokenAddress);
+
+      console.log(
+        "trying to submit",
+        values,
+        baseTokenDetails,
+        quoteTokenDetails
+      );
+      if (!baseTokenDetails || !quoteTokenDetails) {
+        return {
+          [FORM_ERROR]: {
+            label: "Failed to submit",
+            body: "Couldn't to load required token data",
+          },
+        };
+      }
+
+      try {
+        await deployStrategy(
+          context,
+          Number(totalBrackets),
+          // addresses
+          baseTokenAddress,
+          quoteTokenAddress,
+          // prices
+          priceToBn(lowestPrice),
+          priceToBn(highestPrice),
+          // amounts
+          parseAmount(baseTokenAmount, baseTokenDetails.decimals) || ZERO,
+          parseAmount(quoteTokenAmount, quoteTokenDetails.decimals) || ZERO,
+          // start price
+          priceToBn(startPrice)
+        );
+        // success
+        // TODO: go to tx screen maybe?
+        return undefined;
+      } catch (e) {
+        return {
+          [FORM_ERROR]: { label: "Failed to deploy strategy", body: e.message },
+        };
+      }
+    },
     [getErc20Details]
   );
 
@@ -188,10 +266,7 @@ const component: React.FC = ({ children }) => {
     // TODO: if I set the form type like this, TS goes bananas with mutator type
     // <Form<DeployFormValues>
     <Form
-      onSubmit={async (values) => {
-        console.log(`form!!!`, values);
-        return;
-      }}
+      onSubmit={onSubmit}
       mutators={{ setFieldData, swapTokens }}
       decorators={[calculateFieldsDecorator]}
       validate={validate}
