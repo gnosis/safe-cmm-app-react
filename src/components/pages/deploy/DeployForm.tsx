@@ -22,7 +22,7 @@ import deployStrategy from "api/deployStrategy";
 import { Web3Context } from "components/Web3Provider";
 import { Web3Context as Web3ContextType } from "types";
 
-import { setFieldData } from "utils/finalForm";
+import { setFieldData, setFieldValue } from "utils/finalForm";
 import { calculateBrackets } from "utils/calculateBrackets";
 
 import { ValidationErrors } from "validators/types";
@@ -270,7 +270,7 @@ const component: React.FC = ({ children }) => {
     // <Form<DeployFormValues>
     <Form
       onSubmit={onSubmit}
-      mutators={{ setFieldData, swapTokens }}
+      mutators={{ setFieldData, setFieldValue, swapTokens }}
       decorators={[calculateFieldsDecorator]}
       validate={validate}
       render={({ handleSubmit, form }) => (

@@ -13,3 +13,14 @@ export const setFieldData: Mutator = <T, Data extends {}>(
     field.data = { ...field.data, ...data };
   }
 };
+
+// Mutator to set field's `value`
+// `setFieldData` only allows to set field's metadata
+export const setFieldValue: Mutator = <T>(
+  args: [string, { value: string }],
+  state: MutableState<T>,
+  { changeValue }: Tools<T>
+) => {
+  const [field, { value }] = args;
+  changeValue(state, field, () => value);
+};
