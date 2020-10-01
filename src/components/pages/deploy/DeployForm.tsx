@@ -229,7 +229,7 @@ const component: React.FC = ({ children }) => {
         return {
           [FORM_ERROR]: {
             label: "Failed to submit",
-            body: "Couldn't to load required token data",
+            children: "Couldn't to load required token data",
           },
         };
       }
@@ -255,7 +255,10 @@ const component: React.FC = ({ children }) => {
         return undefined;
       } catch (e) {
         return {
-          [FORM_ERROR]: { label: "Failed to deploy strategy", body: e.message },
+          [FORM_ERROR]: {
+            label: "Failed to deploy strategy",
+            children: e.message,
+          },
         };
       }
     },
