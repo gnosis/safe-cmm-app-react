@@ -112,7 +112,7 @@ function component(): JSX.Element {
           render={({ input, meta }) => (
             <PriceInput
               {...input}
-              warn={meta.touched && meta.data?.warn}
+              warn={meta.touched && !!meta.data?.warn}
               error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Lowest price"
@@ -130,7 +130,7 @@ function component(): JSX.Element {
               render={({ input, meta }) => (
                 <FundingInput
                   {...input}
-                  warn={meta.touched && meta.data?.warn}
+                  warn={meta.touched && !!meta.data?.warn}
                   error={meta.touched && meta.error}
                   brackets={getBracketValue(value, "base")}
                   tokenAddress={baseTokenAddress}
@@ -152,7 +152,7 @@ function component(): JSX.Element {
           render={({ input, meta }) => (
             <PriceInput
               {...input}
-              warn={meta.touched && meta.data?.warn}
+              warn={meta.touched && !!meta.data?.warn}
               error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Start Price"
@@ -172,7 +172,7 @@ function component(): JSX.Element {
           render={({ input, meta }) => (
             <TotalBrackets
               {...input}
-              warn={meta.touched && meta.data?.warn}
+              warn={meta.touched && !!meta.data?.warn}
               error={meta.touched && meta.error}
               amount={totalInvestment}
             />
@@ -190,7 +190,7 @@ function component(): JSX.Element {
           render={({ input, meta }) => (
             <PriceInput
               {...input}
-              warn={meta.touched && meta.data?.warn}
+              warn={meta.touched && !!meta.data?.warn}
               error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Highest price"
@@ -208,7 +208,7 @@ function component(): JSX.Element {
               render={({ input, meta }) => (
                 <FundingInput
                   {...input}
-                  warn={meta.touched && meta.data?.warn}
+                  warn={meta.touched && !!meta.data?.warn}
                   error={meta.touched && meta.error}
                   brackets={getBracketValue(value, "quote")}
                   tokenAddress={quoteTokenAddress}
