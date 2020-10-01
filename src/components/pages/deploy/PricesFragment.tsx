@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import { Field, useField, useForm } from "react-final-form";
 import styled from "styled-components";
 
-import { formatAmount } from "@gnosis.pm/dex-js";
+import { formatAmountFull } from "@gnosis.pm/dex-js";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
 
@@ -61,7 +61,7 @@ const onMaxClickFactory = (
   setFieldValue: (field: FormFields, data: { value: string }) => void
 ) => () => {
   if (tokenBalance) {
-    const value = formatAmount({
+    const value = formatAmountFull({
       amount: tokenBalance.balance,
       precision: tokenBalance.decimals,
       thousandSeparator: false,
