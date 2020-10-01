@@ -120,7 +120,7 @@ class PendingStrategy {
     this.quoteFunding = new Decimal(quoteFundingWei.toString()).div(
       Math.pow(10, this.quoteTokenDetails.decimals)
     )
-    this.priceRange = pricesToRange(this.prices, this.quoteTokenDetails, this.baseTokenDetails);
+    this.priceRange = pricesToRange(this.prices, this.baseTokenDetails, this.quoteTokenDetails);
   }
 }
 
