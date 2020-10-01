@@ -7,6 +7,8 @@ import { Icon } from "@gnosis.pm/safe-react-components";
 import { TokenSelector } from "components/basic/inputs/TokenSelector";
 import { Link } from "components/basic/inputs/Link";
 
+import { isRequired } from "validators/isRequired";
+
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
@@ -26,6 +28,7 @@ function component(): JSX.Element {
     <Wrapper>
       <Field<string>
         name="baseTokenAddress"
+        validate={isRequired()("Token A")}
         render={({ input }) => (
           <TokenSelector
             label="Pick Token A"
@@ -40,6 +43,7 @@ function component(): JSX.Element {
       </Link>
       <Field<string>
         name="quoteTokenAddress"
+        validate={isRequired()("Token B")}
         render={({ input }) => (
           <TokenSelector
             label="Pick Token B"
