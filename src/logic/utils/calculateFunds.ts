@@ -57,7 +57,7 @@ export const pricesToRange = (bracketPrices : Decimal[], baseTokenDetails : Toke
     new Decimal(
       Math.pow(
         10,
-        baseTokenDetails.decimals - quoteTokenDetails.decimals
+        quoteTokenDetails.decimals - baseTokenDetails.decimals
       )
     )
   )
@@ -66,7 +66,7 @@ export const pricesToRange = (bracketPrices : Decimal[], baseTokenDetails : Toke
     new Decimal(
       Math.pow(
         10,
-        baseTokenDetails.decimals - quoteTokenDetails.decimals
+        quoteTokenDetails.decimals - baseTokenDetails.decimals
       )
     )
   )
