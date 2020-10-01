@@ -16,7 +16,7 @@ function component(): JSX.Element {
     subscription: { errors: true, touched: true, submitErrors: true },
   });
 
-  if (!errors || !Object.values(touched).some(Boolean) || !submitErrors) {
+  if ((!errors || !Object.values(touched).some(Boolean)) && !submitErrors) {
     return null;
   }
 
