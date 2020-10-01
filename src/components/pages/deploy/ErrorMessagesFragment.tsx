@@ -12,7 +12,7 @@ const Wrapper = styled.div`
 `;
 
 function component(): JSX.Element {
-  const { errors, touched, submitErrors } = useFormState({
+  const { errors = {}, touched = {}, submitErrors = {} } = useFormState({
     subscription: { errors: true, touched: true, submitErrors: true },
   });
 
