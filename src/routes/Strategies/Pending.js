@@ -15,7 +15,6 @@ import {
   TableContainer,
 } from "@material-ui/core";
 
-import Decimal from "decimal.js";
 const Pending = () => {
   const context = useContext(Web3Context);
   const [strategies, setStrategies] = useState(null);
@@ -62,37 +61,23 @@ const Pending = () => {
                 </TableCell>
                 <TableCell>{strategy.nonce}</TableCell>
                 <TableCell>
-                  {strategy.prices[0]
-                    .div(
-                      new Decimal(
-                        Math.pow(
-                          10,
-                          strategy.quoteTokenDetails.decimals -
-                            strategy.baseTokenDetails.decimals
-                        )
-                      )
-                    )
-                    // .div(Math.pow(10, strategy.quoteTokenDetails.decimals))
-                    .toSD(4)
-                    .toString()}
-                  {" - "}
-                  {strategy.prices[strategy.prices.length - 1]
-                    .div(
-                      new Decimal(
-                        Math.pow(
-                          10,
-                          strategy.quoteTokenDetails.decimals -
-                            strategy.baseTokenDetails.decimals
-                        )
-                      )
-                    )
-                    // .div(Math.pow(10, strategy.baseTokenDetails.decimals))
-                    .toSD(4)
-                    .toString()}{" "}
-                  {strategy.quoteTokenDetails.symbol} per{" "}
-                  {strategy.baseTokenDetails.symbol}
+                  {strategy.priceRange &&
+                    `${strategy.priceRange.lower
+                      .toSD(4)
+                      .toString()} - ${strategy.priceRange.upper
+                      .toSD(4)
+                      .toString()} ${strategy.quoteTokenDetails.symbol} per ${
+                      strategy.baseTokenDetails.symbol
+                    }`}
                 </TableCell>
-                <TableCell>{strategy.bracketAddresses.length}</TableCell>
+                <TableCell>
+                  {Object.keys(strategy.bracketsWithBaseToken).length} w/{" "}
+                  {strategy.baseFunding.toSD(4).toString()}{" "}
+                  {strategy.baseTokenDetails.symbol} <br />
+                  {Object.keys(strategy.bracketsWithQuoteToken).length} w/{" "}
+                  {strategy.quoteFunding.toSD(4).toString()}{" "}
+                  {strategy.quoteTokenDetails.symbol}
+                </TableCell>
                 <TableCell>Waiting to be confirmed</TableCell>
               </TableRow>
             );

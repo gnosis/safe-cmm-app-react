@@ -1,38 +1,15 @@
 import { Web3Context, TokenDetails } from 'types';
-import find from "lodash/find";
 import web3 from 'web3'
+import find from "lodash/find"
 
 import BN from 'bn.js';
 import Decimal from 'decimal.js';
 
 const { toBN } = web3.utils;
 
+import { DecoderData, FundingDetails, calculateFundsFromTxData, pricesToRange, PriceRange } from "./utils/calculateFunds";
+
 // const logger = getLogger('pending-strategy');
-
-interface DecoderValue {
-  operation: number;
-  to: string;
-  value: number;
-  data: string;
-  dataDecoded: DecoderData;
-}
-
-interface DecoderParameter {
-  name: string;
-  type: string,
-  value: string,
-  valueDecoded: DecoderValue[] | DecoderData;
-}
-
-interface DecoderData {
-  method: string;
-  parameters: DecoderParameter[];
-}
-
-interface TxTreeNode {
-  data: DecoderData | DecoderParameter | DecoderValue;
-  parent: TxTreeNode,
-}
 
 class PendingStrategy {
   transactionHash : string;
@@ -46,12 +23,15 @@ class PendingStrategy {
   quoteTokenAddress : string;
   baseTokenDetails : TokenDetails;
   quoteTokenDetails : TokenDetails;
-  baseFunding : BN;
-  quoteFunding : BN;
+  baseFunding : Decimal;
+  quoteFunding : Decimal;
   owner : string;
   created : Date;
   block : any;
   transactionData : DecoderData;
+  priceRange: PriceRange;
+  bracketsWithBaseToken: string[];
+  bracketsWithQuoteToken: string[];
 
   constructor(pendingStrategyTransaction : any) {
     this.transactionHash = pendingStrategyTransaction.safeTxHash;
@@ -60,124 +40,31 @@ class PendingStrategy {
     this.created = new Date(pendingStrategyTransaction.submissionDate);
   }
 
-  findParamsInTransactionData(transactionData : DecoderData) : void {
-    let sumFundingTokenBase = toBN(0);
-    let sumFundingTokenQuote = toBN(0);
+  /**
+   * Check if a transaction includes any indication that it is for a
+   * pending strategy deployment and not something else.
+   * 
+   * @param pendingStrategyTransaction 
+   * @returns {Boolean} - Is the transaction for a strategy deployment?
+   */
+  static isPendingStrategyTx(pendingStrategyTransaction : any) : Boolean {
+    // FIXME: Sorry, this is awful. Needs to be fixed later.
+    // Either implement the walkTransaction as a generic tx graph class, or come
+    // up with something cooler.
+    const txDataStr = JSON.stringify(pendingStrategyTransaction.dataDecoded);
 
-    let tokenIdBase;
-    let tokenIdQuote;
-
-    let prices = [];
-
-    let bracketAddresses = [];
-
-    if (transactionData.method !== "multiSend") {
-      throw new Error("Expected multiSend to handle pending transaction walking");
-    }
-
-    // let depth = 0
-
-    // This function is responsible for "walking" down the transaction graph.
-    // The reason I consider the structure a graph is because of mutliSend there can be
-    // potentially extremely deeply nested transactions. Decode_Node includes a parent ref
-    // to traverse the tree up and down.
-    let walkTransaction = (node : TxTreeNode) : void => {
-      // depth++;
-      //console.log(`${"  ".repeat(depth)}==> Walking "${txData.method}" with ${txData.parameters.length} params`)
-      const txData = node.data as DecoderData;
-
-      if (txData.method === "placeOrder") {
-        // logger.log('Reading decoded placeOrder', txData);
-        // In placeOrder events we will find the buyToken/sellToken, the buy/sellAmounts (prices)
-        // and if we collect the `to` addresses, the bracket addresses.
-
-        // Find buy and sell token. The first occurrences will be used to determine base/quote
-        // FIXME: I don't know how reliable this will be - it's an assumption that might be wrong
-        //        It might be possible to compare this with current prices for this token pair
-        //        and to do a sanity check if the prices are clsoe enough?
-        const tokenIdBuy = find(txData.parameters, { name: 'buyToken' })?.value;
-        const tokenIdSell = find(txData.parameters, { name: 'sellToken' })?.value;
-        if (tokenIdBase == null && tokenIdQuote == null) {
-          tokenIdBase = tokenIdBuy;
-          tokenIdQuote = tokenIdSell;
-        }
-
-        // Amounts to sell and buy in eth-wei
-        const sellAmount = find(txData.parameters, { name: 'buyAmount' })?.value || "0";
-        const buyAmount = find(txData.parameters, { name: 'sellAmount' })?.value || "0";
-        // Check to see if we sum onto base/quote depending on which tokenId we have
-        if (tokenIdBase === tokenIdBuy) {
-          prices.push(new Decimal(buyAmount).div(sellAmount))
-          sumFundingTokenBase.iadd(toBN(buyAmount));
-          sumFundingTokenQuote.iadd(toBN(sellAmount));
-        } else {
-          prices.push(new Decimal(sellAmount).div(buyAmount))
-          sumFundingTokenBase.iadd(toBN(sellAmount));
-          sumFundingTokenQuote.iadd(toBN(buyAmount));
-        }
-
-        // Collect bracket address, as this transaction will be executed from a bracket
-        const bracketAddress = (
-          node
-            .parent // placeOrder
-            .parent // execTransaction param
-            .parent // multiSend param
-            .data as DecoderValue).to;
-        if (!bracketAddresses.includes(bracketAddress))
-          bracketAddresses.push(bracketAddress)
-      }
-
-      txData.parameters.forEach((parameter : DecoderParameter) :void => {
-        if (parameter != null && parameter.valueDecoded != null) {
-          //console.log(parameter.valueDecoded)
-  
-          if (Array.isArray(parameter.valueDecoded)) {
-            // If valueDecoded is an Array, treat as Decode_Value
-            parameter.valueDecoded.forEach((parameterValue : DecoderValue) : void => {
-              if (parameterValue && parameterValue.dataDecoded != null) {
-                walkTransaction({
-                  data: parameterValue.dataDecoded,
-                  parent: {
-                    data: parameterValue,
-                    parent: node,
-                  },
-                });
-              }
-            });
-          } else {
-            // if valueDecoded is no array, it's Decode_Data
-            if (parameter.valueDecoded && parameter.valueDecoded.parameters) {
-              walkTransaction({
-                data: parameter.valueDecoded as DecoderData,
-                parent: {
-                  data: parameter,
-                  parent: node,
-                },
-              });
-            }
-          }
-        }
-      });
-      // depth--;
-    }
-
-    walkTransaction({
-      data: transactionData,
-      parent: null
-    });
-
-    this.prices = prices;
-    this.baseTokenId = tokenIdBase;
-    this.quoteTokenId = tokenIdQuote;
-
-    this.baseFunding = sumFundingTokenBase;
-    this.quoteFunding = sumFundingTokenQuote;
-
-    this.bracketAddresses = bracketAddresses;
+    return (
+      txDataStr.includes("placeOrder") || txDataStr.includes("deployFleet") || txDataStr.includes("deployFleetWithNonce")
+    )
   }
-  
+
   async findFromPendingTransactions(context : Web3Context) : Promise<void> {
-    this.findParamsInTransactionData(this.transactionData);
+    const fundingDetails : FundingDetails = calculateFundsFromTxData(this.transactionData);
+    this.baseTokenId = fundingDetails.baseTokenId;
+    this.quoteTokenId = fundingDetails.quoteTokenId;
+
+    this.prices = fundingDetails.bracketPrices;
+    this.bracketAddresses = fundingDetails.bracketAddresses;
 
     // Prefetch before we initialize tradingHelper
     await Promise.all([
@@ -191,6 +78,12 @@ class PendingStrategy {
     ])
 
     const batchExchangeContract = await context.getDeployed("BatchExchange");
+
+    if (this.baseTokenId == null || this.quoteTokenId == null) {
+      console.error(`Missing tokenIds for pending strategy`, this)
+      return;
+    }
+
     const [tokenBaseAddress, tokenQuoteAddress] = await Promise.all([
       batchExchangeContract.methods
         .tokenIdToAddressMap(this.baseTokenId)
@@ -204,6 +97,30 @@ class PendingStrategy {
 
     this.baseTokenDetails = await context.getErc20Details(this.baseTokenAddress);
     this.quoteTokenDetails = await context.getErc20Details(this.quoteTokenAddress);
+
+    const bracketsWithBaseToken = fundingDetails.bracketsByToken[this.baseTokenAddress];
+    const bracketsWithQuoteToken = fundingDetails.bracketsByToken[this.quoteTokenAddress]
+
+    this.bracketsWithBaseToken = bracketsWithBaseToken || [];
+    this.bracketsWithQuoteToken = bracketsWithQuoteToken || [];
+    
+    const baseFundingWei = Object.keys(bracketsWithBaseToken)
+      .reduce((acc : BN, bracketAddress : string) => {
+        console.log(bracketsWithBaseToken[bracketAddress].toString())
+        return acc.iadd(bracketsWithBaseToken[bracketAddress])
+      }, toBN(0));
+    this.baseFunding = new Decimal(baseFundingWei.toString()).div(
+      Math.pow(10, this.baseTokenDetails.decimals)
+    )
+
+    const quoteFundingWei = Object.keys(bracketsWithQuoteToken)
+      .reduce((acc : BN, bracketAddress : string) => {
+        return acc.iadd(bracketsWithQuoteToken[bracketAddress])
+      }, toBN(0));
+    this.quoteFunding = new Decimal(quoteFundingWei.toString()).div(
+      Math.pow(10, this.quoteTokenDetails.decimals)
+    )
+    this.priceRange = pricesToRange(this.prices, this.quoteTokenDetails, this.baseTokenDetails);
   }
 }
 

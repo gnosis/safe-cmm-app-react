@@ -13,14 +13,16 @@ const findPendingStrategiesForOwner = async (
   const pendingSafeTransactions = await getPendingTransactions(owner);
   
   const strategies: PendingStrategy[] = await Promise.all(
-    pendingSafeTransactions.map(
-      async (pendingSafeTransaction : any): Promise<PendingStrategy> => {
-        const strategy = new PendingStrategy(pendingSafeTransaction);
+    pendingSafeTransactions
+      .filter((pendingSafeTransaction : any) => PendingStrategy.isPendingStrategyTx(pendingSafeTransaction))
+      .map(
+        async (pendingSafeTransaction : any): Promise<PendingStrategy> => {
+          const strategy = new PendingStrategy(pendingSafeTransaction);
 
-        await strategy.findFromPendingTransactions(context);
-        return strategy;
-      }
-    )
+          await strategy.findFromPendingTransactions(context);
+          return strategy;
+        }
+      )
   );
 
   return strategies;
