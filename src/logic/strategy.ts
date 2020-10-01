@@ -2,6 +2,8 @@ import { Web3Context, TokenDetails } from 'types';
 import web3GLib from "web3"
 import Decimal from 'decimal.js';
 
+import { calculateFundsFromEvents, pricesToRange, PriceRange } from "./utils/calculateFunds";
+
 const { toBN } = web3GLib.utils;
 
 let globalResolvedTokenPromises = {};
@@ -45,6 +47,7 @@ class Strategy {
   block : any;
   lastWithdrawRequestEvent : WithdrawEvent;
   lastWithdrawClaimEvent : any;
+  priceRange: PriceRange;
 
   constructor(fleetDeployEvent : any) {
     this.transactionHash = fleetDeployEvent.transactionHash;
@@ -65,48 +68,20 @@ class Strategy {
     // Find all placed orders, to determine the brackets, token pairs and funding
     const batchExchangeContract = await context.getDeployed("BatchExchange");
 
-    let tokenIdSold;
-    let tokenIdBought;
     let orderBatchIds = [];
     let withdrawRequestBlocks = {};
     let allWithdrawClaims = [];
 
-    let buyToken;
-    let sellToken;
-
+    let allBracketOrderEvents = []
     const brackets = await Promise.all(this.safeAddresses.map(async (bracketAddress) : Promise<Bracket> => {
       // Bracket orders find the tokens used for the strategy
       const bracketOrderEvents = await batchExchangeContract.getPastEvents("OrderPlacement", {
         fromBlock: this.startBlockNumber-1,
         filter: { owner: bracketAddress }
       })
+
+      allBracketOrderEvents.push(...bracketOrderEvents);
       
-      if (bracketOrderEvents.length > 0) {
-        const firstBracketEvent = bracketOrderEvents[0]
-        tokenIdSold = firstBracketEvent.returnValues.sellToken;
-        tokenIdBought = firstBracketEvent.returnValues.buyToken;
-
-        if (!buyToken) buyToken = tokenIdBought;
-        if (!sellToken) sellToken = tokenIdSold;
-
-        bracketOrderEvents.forEach((bracketOrder) => {
-          if (bracketOrder.returnValues.buyToken === buyToken) {
-            this.prices.push(
-              new Decimal(bracketOrder.returnValues.priceDenominator).div(
-                new Decimal(bracketOrder.returnValues.priceNumerator)
-              )
-            )
-          }
-          if (bracketOrder.returnValues.buyToken === sellToken) {
-            this.prices.push(
-              new Decimal(bracketOrder.returnValues.priceNumerator).div(
-                new Decimal(bracketOrder.returnValues.priceDenominator)
-              )
-            )
-          }
-        })
-      }
-
       // Bracket Deposits find the funding used for the strategy
       const bracketDepositEvents = await batchExchangeContract.getPastEvents("Deposit", {
         fromBlock: this.startBlockNumber-1,
@@ -166,20 +141,24 @@ class Strategy {
       }
     }))
 
+    if (allBracketOrderEvents.length > 0) {
+      const fundingDetails = calculateFundsFromEvents(allBracketOrderEvents, this.safeAddresses);
+      this.baseTokenId = fundingDetails.baseTokenId;
+      this.quoteTokenId = fundingDetails.quoteTokenId;
+      this.prices = fundingDetails.bracketPrices;
+    }
 
-    this.baseTokenId = tokenIdSold;
-    this.quoteTokenId = tokenIdBought;
     this.baseFunding = null;
     this.quoteFunding = null;
 
-    if (tokenIdSold != null) {
+    if (this.baseTokenId != null) {
       if (!globalResolvedTokenPromises[this.baseTokenId]) {
         globalResolvedTokenPromises[this.baseTokenId] = batchExchangeContract.methods.tokenIdToAddressMap(this.baseTokenId).call()
       }
       this.baseTokenAddress = await globalResolvedTokenPromises[this.baseTokenId]
       this.baseTokenDetails = await context.getErc20Details(this.baseTokenAddress)
     }
-    if (tokenIdBought != null) {
+    if (this.quoteTokenId != null) {
       if (!globalResolvedTokenPromises[this.quoteTokenId]) {
         globalResolvedTokenPromises[this.quoteTokenId] = batchExchangeContract.methods.tokenIdToAddressMap(this.quoteTokenId).call()
       }
@@ -210,6 +189,7 @@ class Strategy {
       if (a.eq(b)) return 0;
       return (a.gt(b) ? 1 : -1);
     })
+    this.priceRange = pricesToRange(this.prices, this.baseTokenDetails, this.quoteTokenDetails);
     this.brackets = brackets;
   }
 }

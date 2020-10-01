@@ -3,8 +3,6 @@ import useInterval from "@use-it/interval";
 
 import styled from "styled-components";
 
-import Decimal from "decimal.js";
-
 import {
   Box,
   Table,
@@ -246,32 +244,10 @@ const Active = () => {
                     {strategy.baseTokenDetails?.symbol}
                   </TableCell>
                   <TableCell>
-                    {strategy.prices.length > 0 &&
-                      `${strategy.prices[0]
-                        .div(
-                          new Decimal(
-                            Math.pow(
-                              10,
-                              strategy.baseTokenDetails.decimals -
-                                strategy.quoteTokenDetails.decimals
-                            )
-                          )
-                        )
-                        // .div(Math.pow(10, strategy.quoteTokenDetails.decimals))
+                    {strategy.priceRange &&
+                      `${strategy.priceRange.lower
                         .toSD(4)
-                        .toString()} - ${strategy.prices[
-                        strategy.prices.length - 1
-                      ]
-                        .div(
-                          new Decimal(
-                            Math.pow(
-                              10,
-                              strategy.baseTokenDetails.decimals -
-                                strategy.quoteTokenDetails.decimals
-                            )
-                          )
-                        )
-                        // .div(Math.pow(10, strategy.baseTokenDetails.decimals))
+                        .toString()} - ${strategy.priceRange.upper
                         .toSD(4)
                         .toString()} ${strategy.quoteTokenDetails.symbol} per ${
                         strategy.baseTokenDetails.symbol
