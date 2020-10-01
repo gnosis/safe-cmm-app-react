@@ -1,18 +1,16 @@
 import { useState, useContext, useEffect } from "react";
-import { TokenDetails } from "types";
+import { TokenBalance } from "types";
 
 import { Web3Context } from "components/Web3Provider";
 
 interface Return {
-  tokenDetails: TokenDetails | null;
+  tokenDetails: TokenBalance | null;
   isLoading: boolean;
   error: string;
 }
 
-export function useTokenDetails(token?: string | TokenDetails): Return {
-  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(
-    typeof token === "string" || typeof token === undefined ? null : token
-  );
+export function useTokenDetails(token?: string): Return {
+  const [tokenDetails, setTokenDetails] = useState<TokenBalance | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -20,7 +18,7 @@ export function useTokenDetails(token?: string | TokenDetails): Return {
 
   useEffect(() => {
     async function fetchTokenDetails(): Promise<void> {
-      if (typeof token === "string" && token) {
+      if (token) {
         setIsLoading(true);
         setError("");
         try {

@@ -6,12 +6,10 @@ import {
   ThemeColors,
 } from "@gnosis.pm/safe-react-components/dist/theme";
 
-import { TokenDetails } from "types";
-
 import { useTokenDetails } from "hooks/useTokenDetails";
 
 export interface Props {
-  token: string | TokenDetails;
+  token: string;
   size: ThemeTextSize;
   color?: ThemeColors;
 }
