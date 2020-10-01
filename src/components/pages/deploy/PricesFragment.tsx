@@ -1,7 +1,13 @@
-import React, { memo } from "react";
+import React, { memo, useCallback } from "react";
 import { useRecoilValue } from "recoil";
-import { Field, useField } from "react-final-form";
+import { Field, useField, useForm } from "react-final-form";
 import styled from "styled-components";
+
+import { formatAmount } from "@gnosis.pm/dex-js";
+
+import { useTokenDetails } from "hooks/useTokenDetails";
+
+import { TokenBalance } from "types";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
 import { FundingInput } from "components/basic/inputs/FundingInput";
@@ -17,6 +23,7 @@ import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
 import { totalInvestmentAtom } from "./atoms";
 
 import { getBracketValue } from "./DeployForm";
+import { FormFields } from "./types";
 
 const Wrapper = styled.div`
   display: flex;
@@ -48,15 +55,49 @@ const InvisibleField = styled(Field)`
   display: none;
 `;
 
+const onMaxClickFactory = (
+  field: FormFields,
+  tokenBalance: TokenBalance | null,
+  setFieldValue: (field: FormFields, data: { value: string }) => void
+) => () => {
+  if (tokenBalance) {
+    const value = formatAmount({
+      amount: tokenBalance.balance,
+      precision: tokenBalance.decimals,
+      thousandSeparator: false,
+      isLocaleAware: false,
+    });
+    setFieldValue(field, { value });
+  }
+};
+
 function component(): JSX.Element {
   const totalInvestment = useRecoilValue(totalInvestmentAtom);
 
   const {
     input: { value: baseTokenAddress },
-  } = useField("baseTokenAddress");
+  } = useField<string>("baseTokenAddress");
   const {
     input: { value: quoteTokenAddress },
-  } = useField("quoteTokenAddress");
+  } = useField<string>("quoteTokenAddress");
+
+  const {
+    mutators: { setFieldValue },
+  } = useForm();
+
+  const { tokenDetails: baseTokenDetails } = useTokenDetails(baseTokenAddress);
+  const { tokenDetails: quoteTokenDetails } = useTokenDetails(
+    quoteTokenAddress
+  );
+
+  const onBaseTokenMaxClick = useCallback(
+    onMaxClickFactory("baseTokenAmount", baseTokenDetails, setFieldValue),
+    [baseTokenDetails, setFieldValue]
+  );
+  const onQuoteTokenMaxClick = useCallback(
+    onMaxClickFactory("quoteTokenAmount", quoteTokenDetails, setFieldValue),
+    [quoteTokenDetails, setFieldValue]
+  );
 
   return (
     <Wrapper>
@@ -93,6 +134,7 @@ function component(): JSX.Element {
                   error={meta.touched && meta.error}
                   brackets={getBracketValue(value, "base")}
                   tokenAddress={baseTokenAddress}
+                  onMaxClick={onBaseTokenMaxClick}
                 />
               )}
             />
@@ -170,6 +212,7 @@ function component(): JSX.Element {
                   error={meta.touched && meta.error}
                   brackets={getBracketValue(value, "quote")}
                   tokenAddress={quoteTokenAddress}
+                  onMaxClick={onQuoteTokenMaxClick}
                 />
               )}
             />
