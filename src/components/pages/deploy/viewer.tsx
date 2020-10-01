@@ -1,9 +1,5 @@
 import React, { memo } from "react";
-import { useRecoilValue } from "recoil";
-import { Backdrop, withStyles } from "@material-ui/core";
 import styled from "styled-components";
-
-import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { SideBar } from "./SideBar";
 import { TokenSelectorsFragment } from "./TokenSelectorsFragment";
@@ -11,8 +7,8 @@ import { PricesFragment } from "./PricesFragment";
 import { MarketPriceFragment } from "./MarketPriceFragment";
 import { ErrorMessagesFragment } from "./ErrorMessagesFragment";
 import { DeployStrategyButtonFragment } from "./DeployStrategyButtonFragment";
-import { isSubmittingAtom } from "./atoms";
 import { DeployForm } from "./DeployForm";
+import { FormBackdrop } from "./FormBackdrop";
 
 const PageLayout = styled.div`
   display: flex;
@@ -44,16 +40,7 @@ const DeployWidget = styled.div`
   align-items: stretch;
 `;
 
-const StyledBackdrop = withStyles(() => ({ root: { zIndex: 999 } }))(Backdrop);
-
-export interface Props {
-  onSubmit?: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
-}
-
-function component(props: Props): JSX.Element {
-  const { onSubmit } = props;
-  const isSubmitting = useRecoilValue(isSubmittingAtom);
-
+function component(): JSX.Element {
   return (
     <PageLayout>
       <DeployForm>
@@ -64,13 +51,11 @@ function component(props: Props): JSX.Element {
           <ErrorMessagesFragment />
           <DeployStrategyButtonFragment />
         </DeployWidget>
+        <FormBackdrop />
       </DeployForm>
       <SideBar />
-      <StyledBackdrop open={isSubmitting}>
-        <Loader size="lg" color="primaryLight" />
-      </StyledBackdrop>
     </PageLayout>
   );
 }
 
-export const DeployPageViewer: typeof component = memo(component);
+export const DeployPageViewer = memo(component);
