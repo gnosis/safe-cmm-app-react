@@ -49,6 +49,14 @@ export function useGetPrice(params: Params): Result {
   > => {
     const { source, baseToken, quoteToken } = params;
 
+    // Race condition.
+    // Might be that one token is updated before the other, resulting on both
+    // base and quote being the same.
+    // We don't want to query the price of a token against itself.
+    if (baseToken.address === quoteToken.address) {
+      return;
+    }
+
     setIsLoading(true);
     setError("");
 
