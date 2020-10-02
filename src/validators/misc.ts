@@ -1,13 +1,5 @@
 import { FieldState } from "final-form";
-import { ValidationError } from "./types";
-
-export type Validator = (
-  displayFieldName: string
-) => (
-  value: string,
-  allValues?: object,
-  meta?: FieldState<string>
-) => Promise<undefined | ValidationError>;
+import { ValidationError, Validator } from "./types";
 
 export const composeValidators = (
   displayFieldName: string,

@@ -2,7 +2,7 @@ import { parseAmount } from "@gnosis.pm/dex-js";
 
 import { TokenBalance } from "types";
 
-import { Validator } from "./misc";
+import { Validator } from "./types";
 
 /**
  * Validator factory that takes in `getErc20Details` function from Web3Context

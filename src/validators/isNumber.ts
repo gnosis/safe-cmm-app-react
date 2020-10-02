@@ -1,4 +1,4 @@
-import { Validator } from "./misc";
+import { Validator } from "./types";
 
 export const isNumber = (checkInteger?: boolean): Validator => (
   fieldName: string

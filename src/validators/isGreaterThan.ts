@@ -1,4 +1,4 @@
-import { Validator } from "./misc";
+import { Validator } from "./types";
 
 export const isGreaterThan = (minValue: number): Validator => (
   fieldName
