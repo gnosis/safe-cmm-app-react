@@ -112,7 +112,8 @@ export function useGetPrice(params: Params): Result {
           }
         }
 
-        cache.set(cacheKey, price);
+        // only store on cache if not `null`
+        price && cache.set(cacheKey, price);
       } catch (e) {
         const msg = `Failed to fetch price from '${source}' for '${baseToken.symbol}'/'${quoteToken.symbol}' pair`;
         console.error(msg, e);
