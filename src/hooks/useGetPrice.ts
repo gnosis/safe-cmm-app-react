@@ -1,11 +1,48 @@
 import { useState, useCallback, useEffect } from "react";
 import Decimal from "decimal.js";
+import NodeCache from "node-cache";
 
 import { getOneinchPrice } from "@gnosis.pm/dex-liquidity-provision/scripts/utils/price_utils";
 
 import { TokenDetails } from "types";
+import { ONE_DECIMAL, PRICE_CACHE_TIME } from "utils/constants";
 
 export type PriceSources = "1inch";
+
+const cache = new NodeCache({ stdTTL: PRICE_CACHE_TIME });
+
+/**
+ * Builds 2 cache keys:
+ * 1. Regular for the current token pair
+ * 2. Inverted in case regular is not found.
+ *  We can then invert the price without another query
+ *
+ * @param baseToken
+ * @param quoteToken
+ */
+function buildCacheKeys(
+  baseToken: TokenDetails,
+  quoteToken: TokenDetails
+): [string, string] {
+  return [
+    baseToken.address + quoteToken.address,
+    quoteToken.address + baseToken.address,
+  ];
+}
+
+function fetchPriceFromCache(key: string, invertedKey: string): Decimal | null {
+  const price = cache.get<Decimal>(key);
+  if (price) {
+    return price;
+  }
+
+  const invertedPrice = cache.get<Decimal>(invertedKey);
+  if (invertedPrice) {
+    return ONE_DECIMAL.div(invertedPrice);
+  }
+
+  return null;
+}
 
 export interface Params {
   source?: PriceSources;
@@ -60,21 +97,28 @@ export function useGetPrice(params: Params): Result {
     setIsLoading(true);
     setError("");
 
-    let price: Decimal | null = null;
-    try {
-      // Switch might seen overkill since there's only 1 type ATM, but there might be more.
-      // Paving the way for new sources
-      switch (source) {
-        case "1inch": {
-          price = await get1InchPrice(baseToken, quoteToken);
-          break;
-        }
-      }
-    } catch (e) {
-      const msg = `Failed to fetch price from '${source}' for '${baseToken.symbol}'/'${quoteToken.symbol}' pair`;
-      console.error(msg, e);
+    const [cacheKey, invertedCacheKey] = buildCacheKeys(baseToken, quoteToken);
 
-      setError(msg);
+    let price: Decimal | null = fetchPriceFromCache(cacheKey, invertedCacheKey);
+
+    if (!price) {
+      try {
+        // Switch might seen overkill since there's only 1 type ATM, but there might be more.
+        // Paving the way for new sources
+        switch (source) {
+          case "1inch": {
+            price = await get1InchPrice(baseToken, quoteToken);
+            break;
+          }
+        }
+
+        cache.set(cacheKey, price);
+      } catch (e) {
+        const msg = `Failed to fetch price from '${source}' for '${baseToken.symbol}'/'${quoteToken.symbol}' pair`;
+        console.error(msg, e);
+
+        setError(msg);
+      }
     }
 
     setIsLoading(false);
