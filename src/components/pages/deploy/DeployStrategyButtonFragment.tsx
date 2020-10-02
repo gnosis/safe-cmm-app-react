@@ -1,11 +1,9 @@
 import React, { memo } from "react";
-import { useRecoilValue } from "recoil";
 import styled from "styled-components";
 
 import { Button } from "@gnosis.pm/safe-react-components";
 
-import { isSubmittingAtom } from "./atoms";
-import { isValidSelector } from "./selectors";
+import { useFormState } from "react-final-form";
 
 const StyledButton = styled(Button)`
   border-radius: 16px;
@@ -13,8 +11,9 @@ const StyledButton = styled(Button)`
 `;
 
 function component(): JSX.Element {
-  const isValid = useRecoilValue(isValidSelector);
-  const isSubmitting = useRecoilValue(isSubmittingAtom);
+  const { invalid, pristine, submitting } = useFormState({
+    subscription: { invalid: true, pristine: true, submitting: true },
+  });
 
   return (
     <StyledButton
@@ -22,7 +21,7 @@ function component(): JSX.Element {
       size="lg"
       color="primary"
       variant="contained"
-      disabled={!isValid || isSubmitting}
+      disabled={invalid || pristine || submitting}
     >
       <span>Deploy Strategy</span>
     </StyledButton>

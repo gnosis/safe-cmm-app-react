@@ -61,4 +61,4 @@ function component(props: Props): JSX.Element {
   );
 }
 
-export const TokenSelector = memo(component);
+export const TokenSelector: typeof component = memo(component);
