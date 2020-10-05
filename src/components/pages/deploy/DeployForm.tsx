@@ -50,64 +50,6 @@ function Warnings({
   return <FormSpy subscription={{ values: true }} onChange={handleWarnings} />;
 }
 
-const validateFactory = (
-  hasBalance: ReturnType<typeof hasBalanceFactory>
-) => async (values: DeployFormValues): Promise<ValidationErrors> => {
-  const errors: ValidationErrors = {};
-
-  // prices values
-  const lowestPrice = Number(values.lowestPrice);
-  const startPrice = Number(values.startPrice);
-  const highestPrice = Number(values.highestPrice);
-  // const totalBrackets = Number(values.totalBrackets);
-
-  // this is a calculated field where we store two integers in a single string
-  const baseTokenBrackets = getBracketValue(values.calculatedBrackets, "base");
-  const quoteTokenBrackets = getBracketValue(
-    values.calculatedBrackets,
-    "quote"
-  );
-
-  if (lowestPrice > startPrice) {
-    errors["lowestPrice"] = {
-      label: "Lowest price can't be greater than Start price",
-    };
-    errors["startPrice"] = true;
-  }
-  if (highestPrice < startPrice) {
-    errors["highestPrice"] = {
-      label: "Highest price can't be smaller than Start price",
-    };
-    errors["startPrice"] = true;
-  }
-  if (lowestPrice === startPrice && startPrice === highestPrice) {
-    errors["startPrice"] = { label: "All prices cannot be equal" };
-    errors["lowestPrice"] = true;
-    errors["highestPrice"] = true;
-  }
-
-  // Validate only if/when set
-  if (baseTokenBrackets > 0) {
-    errors["baseTokenAmount"] = await composeValidators("Token A Funding", [
-      isRequired(),
-      isNumber(),
-      isGreaterThan(0),
-      hasBalance(values.baseTokenAddress),
-    ])(values.baseTokenAmount);
-  }
-
-  if (quoteTokenBrackets > 0) {
-    errors["quoteTokenAmount"] = await composeValidators("Token B Funding", [
-      isRequired(),
-      isNumber(),
-      isGreaterThan(0),
-      hasBalance(values.quoteTokenAddress),
-    ])(values.quoteTokenAmount);
-  }
-
-  return errors;
-};
-
 // Syntactic sugar to extract bracket value from stored input field value
 export function getBracketValue(
   value: string | undefined,
@@ -191,14 +133,90 @@ function priceToBn(price: string): BN {
   return new BN(new Decimal(price).mul(1e18).toString());
 }
 
-const UDeployForm: React.FC = ({ children }) => {
+interface Props {
+  children: React.ReactNode;
+}
+
+export const DeployForm = memo(function DeployForm({
+  children,
+}: Props): React.ReactElement {
   const context = useContext(Web3Context) as Web3ContextType;
   const { getErc20Details } = context;
 
-  const validate = useCallback(
-    validateFactory(hasBalanceFactory(getErc20Details)),
+  const hasBalance = useCallback(
+    (tokenAddress: string) => hasBalanceFactory(getErc20Details)(tokenAddress),
     [getErc20Details]
   );
+
+  const validate = useCallback(
+    async (values: DeployFormValues): Promise<ValidationErrors> => {
+      const errors: ValidationErrors = {};
+
+      // prices values
+      const lowestPrice = Number(values.lowestPrice);
+      const startPrice = Number(values.startPrice);
+      const highestPrice = Number(values.highestPrice);
+      // const totalBrackets = Number(values.totalBrackets);
+
+      // this is a calculated field where we store two integers in a single string
+      const baseTokenBrackets = getBracketValue(
+        values.calculatedBrackets,
+        "base"
+      );
+      const quoteTokenBrackets = getBracketValue(
+        values.calculatedBrackets,
+        "quote"
+      );
+
+      if (lowestPrice > startPrice) {
+        errors["lowestPrice"] = {
+          label: "Lowest price can't be greater than Start price",
+        };
+        errors["startPrice"] = true;
+      }
+      if (highestPrice < startPrice) {
+        errors["highestPrice"] = {
+          label: "Highest price can't be smaller than Start price",
+        };
+        errors["startPrice"] = true;
+      }
+      if (lowestPrice === startPrice && startPrice === highestPrice) {
+        errors["startPrice"] = { label: "All prices cannot be equal" };
+        errors["lowestPrice"] = true;
+        errors["highestPrice"] = true;
+      }
+
+      // Validate only if/when set
+      if (baseTokenBrackets > 0) {
+        errors["baseTokenAmount"] = await composeValidators("Token A Funding", [
+          isRequired(),
+          isNumber(),
+          isGreaterThan(0),
+          hasBalance(values.baseTokenAddress),
+        ])(values.baseTokenAmount);
+      }
+
+      if (quoteTokenBrackets > 0) {
+        errors["quoteTokenAmount"] = await composeValidators(
+          "Token B Funding",
+          [
+            isRequired(),
+            isNumber(),
+            isGreaterThan(0),
+            hasBalance(values.quoteTokenAddress),
+          ]
+        )(values.quoteTokenAmount);
+      }
+
+      return errors;
+    },
+    [hasBalance]
+  );
+
+  // const validate = useCallback(
+  //   validateFactory(hasBalanceFactory(getErc20Details)),
+  //   [getErc20Details]
+  // );
 
   // The initial idea was to keep all the logic only on the container (index) component
   // But with the validations and final-form I didn't manage to.
@@ -220,12 +238,6 @@ const UDeployForm: React.FC = ({ children }) => {
       const baseTokenDetails = await getErc20Details(baseTokenAddress);
       const quoteTokenDetails = await getErc20Details(quoteTokenAddress);
 
-      console.log(
-        "trying to submit",
-        values,
-        baseTokenDetails,
-        quoteTokenDetails
-      );
       if (!baseTokenDetails || !quoteTokenDetails) {
         return {
           [FORM_ERROR]: {
@@ -282,10 +294,4 @@ const UDeployForm: React.FC = ({ children }) => {
       )}
     />
   );
-};
-
-UDeployForm.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-export const DeployForm: typeof UDeployForm = memo(UDeployForm);
+});
