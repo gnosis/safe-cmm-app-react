@@ -102,7 +102,7 @@ const StyledAccordionDetails = withStyles({
   },
 })(AccordionDetails);
 
-function component(): JSX.Element {
+function USideBar(): JSX.Element {
   return (
     <Wrapper>
       <div>
@@ -144,4 +144,4 @@ function component(): JSX.Element {
   );
 }
 
-export const SideBar = memo(component);
+export const SideBar: typeof USideBar = memo(USideBar);

@@ -10,7 +10,7 @@ const StyledButton = styled(Button)`
   font-weight: bold;
 `;
 
-function component(): JSX.Element {
+function UDeployStrategyButtonFragment(): JSX.Element {
   const { invalid, pristine, submitting } = useFormState({
     subscription: { invalid: true, pristine: true, submitting: true },
   });
@@ -28,4 +28,6 @@ function component(): JSX.Element {
   );
 }
 
-export const DeployStrategyButtonFragment = memo(component);
+export const DeployStrategyButtonFragment: typeof UDeployStrategyButtonFragment = memo(
+  UDeployStrategyButtonFragment
+);

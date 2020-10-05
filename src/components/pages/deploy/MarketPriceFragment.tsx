@@ -8,7 +8,7 @@ const Wrapper = styled.div`
   align-self: center;
 `;
 
-function component(): JSX.Element {
+function UMarketPriceFragment(): JSX.Element {
   const {
     input: { value: baseTokenAddress },
   } = useField<string>("baseTokenAddress");
@@ -38,4 +38,6 @@ function component(): JSX.Element {
   );
 }
 
-export const MarketPriceFragment = memo(component);
+export const MarketPriceFragment: typeof UMarketPriceFragment = memo(
+  UMarketPriceFragment
+);

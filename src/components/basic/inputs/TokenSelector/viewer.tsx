@@ -41,7 +41,7 @@ export interface TokenSelectorViewerProps
   tokenDetails?: TokenDetails;
 }
 
-function component(props: TokenSelectorViewerProps): JSX.Element {
+function UTokenSelectorViewer(props: TokenSelectorViewerProps): JSX.Element {
   const {
     label,
     tooltip,
@@ -83,4 +83,6 @@ function component(props: TokenSelectorViewerProps): JSX.Element {
   );
 }
 
-export const TokenSelectorViewer = memo(component);
+export const TokenSelectorViewer: typeof UTokenSelectorViewer = memo(
+  UTokenSelectorViewer
+);

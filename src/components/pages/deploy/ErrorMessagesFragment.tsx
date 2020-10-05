@@ -11,7 +11,7 @@ const Wrapper = styled.div`
   }
 `;
 
-function component(): JSX.Element {
+function UErrorMessageFragment(): JSX.Element {
   const { errors = {}, touched = {}, submitErrors = {} } = useFormState({
     subscription: { errors: true, touched: true, submitErrors: true },
   });
@@ -43,4 +43,6 @@ function component(): JSX.Element {
   );
 }
 
-export const ErrorMessagesFragment = memo(component);
+export const ErrorMessagesFragment: typeof UErrorMessageFragment = memo(
+  UErrorMessageFragment
+);

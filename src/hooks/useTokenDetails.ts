@@ -32,7 +32,7 @@ export function useTokenDetails(token?: string): Return {
       }
     }
     fetchTokenDetails();
-  }, [token]);
+  }, [token, getErc20Details]);
 
   return { tokenDetails, isLoading, error };
 }

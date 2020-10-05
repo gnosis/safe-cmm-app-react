@@ -1,4 +1,5 @@
 import React, { memo, useCallback, useContext } from "react";
+import PropTypes from "prop-types";
 import {
   FormApi,
   FormState,
@@ -43,7 +44,7 @@ function Warnings({
         warn: +values.lowestPrice < 1 ? "More than 1, please" : undefined,
       });
     },
-    []
+    [setFieldData]
   );
 
   return <FormSpy subscription={{ values: true }} onChange={handleWarnings} />;
@@ -58,7 +59,7 @@ const validateFactory = (
   const lowestPrice = Number(values.lowestPrice);
   const startPrice = Number(values.startPrice);
   const highestPrice = Number(values.highestPrice);
-  const totalBrackets = Number(values.totalBrackets);
+  // const totalBrackets = Number(values.totalBrackets);
 
   // this is a calculated field where we store two integers in a single string
   const baseTokenBrackets = getBracketValue(values.calculatedBrackets, "base");
@@ -190,7 +191,7 @@ function priceToBn(price: string): BN {
   return new BN(new Decimal(price).mul(1e18).toString());
 }
 
-const component: React.FC = ({ children }) => {
+const UDeployForm: React.FC = ({ children }) => {
   const context = useContext(Web3Context) as Web3ContextType;
   const { getErc20Details } = context;
 
@@ -262,7 +263,7 @@ const component: React.FC = ({ children }) => {
         };
       }
     },
-    [getErc20Details]
+    [getErc20Details, context]
   );
 
   return (
@@ -283,4 +284,8 @@ const component: React.FC = ({ children }) => {
   );
 };
 
-export const DeployForm: typeof component = memo(component);
+UDeployForm.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+export const DeployForm: typeof UDeployForm = memo(UDeployForm);

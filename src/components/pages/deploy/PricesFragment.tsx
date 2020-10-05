@@ -71,7 +71,7 @@ const onMaxClickFactory = (
   }
 };
 
-function component(): JSX.Element {
+function UPricesFragment(): JSX.Element {
   const totalInvestment = useRecoilValue(totalInvestmentAtom);
 
   const {
@@ -225,4 +225,4 @@ function component(): JSX.Element {
   );
 }
 
-export const PricesFragment = memo(component);
+export const PricesFragment: typeof UPricesFragment = memo(UPricesFragment);

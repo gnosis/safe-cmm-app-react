@@ -4,7 +4,7 @@ export type Validator = (
   displayFieldName: string
 ) => (
   value: string,
-  allValues?: object,
+  allValues?: Record<string, any>,
   meta?: FieldState<string>
 ) => Promise<undefined | ValidationError>;
 

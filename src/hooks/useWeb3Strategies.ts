@@ -1,52 +1,52 @@
-import { useCallback, useState, useEffect, useContext } from "react"
-import useInterval from "@use-it/interval"
+import { useCallback, useState, useEffect, useContext } from "react";
+import useInterval from "@use-it/interval";
 
-import getLogger from 'utils/logger';
+import getLogger from "utils/logger";
 
-import findStrategiesForOwner from 'api/web3/findStrategiesForOwner';
-import { Web3Context } from 'components/Web3Provider';
+import findStrategiesForOwner from "api/web3/findStrategiesForOwner";
+import { Web3Context } from "components/Web3Provider";
 
 import { Web3Context as Web3ContextType } from "types";
 
-const logger = getLogger('web3-strategy-hook');
+const logger = getLogger("web3-strategy-hook");
 
-const useWeb3Strategies = () : any => {
-  const [status, setStatus] = useState('LOADING');
+const useWeb3Strategies = (): any => {
+  const [status, setStatus] = useState("LOADING");
   const [isFetching, setIsFetching] = useState(false);
   const [strategies, setStrategies] = useState([]);
 
-  const context : Web3ContextType = useContext(Web3Context);
+  const context: Web3ContextType = useContext(Web3Context);
 
   const handleFindStrategies = useCallback(async () => {
     setIsFetching(true);
     try {
-      const strategies = await findStrategiesForOwner(context)
-      logger.log('Active strategies loaded via web3:', strategies)
-      setStatus('SUCCESS')
+      const strategies = await findStrategiesForOwner(context);
+      logger.log("Active strategies loaded via web3:", strategies);
+      setStatus("SUCCESS");
       setStrategies(strategies);
     } catch (err) {
-      setStatus('ERROR')
+      setStatus("ERROR");
       console.error(err);
     } finally {
       setIsFetching(false);
     }
-  }, [context])
+  }, [context]);
 
   useEffect(() => {
-    setStatus('LOADING');
-    handleFindStrategies()
-  }, [])
+    setStatus("LOADING");
+    handleFindStrategies();
+  }, [handleFindStrategies]);
 
   useInterval(() => {
     if (!isFetching) {
       handleFindStrategies();
     }
-  }, 10000)
+  }, 10000);
 
   return {
     status,
-    strategies
-  }
-}
+    strategies,
+  };
+};
 
 export default useWeb3Strategies;

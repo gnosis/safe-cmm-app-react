@@ -6,7 +6,7 @@ export const composeValidators = (
   validators: Validator[]
 ) => async (
   value: string,
-  allValues?: object,
+  allValues?: Record<string, any>,
   meta?: FieldState<string>
 ): Promise<undefined | ValidationError> => {
   for (const validator of validators) {

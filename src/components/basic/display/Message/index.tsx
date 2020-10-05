@@ -1,4 +1,5 @@
 import React, { memo, useMemo } from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Icon, Text } from "@gnosis.pm/safe-react-components";
 
@@ -36,9 +37,7 @@ const Wrapper = styled.div<Props>`
   }
 `;
 
-const component: React.FC<Props> = (props) => {
-  const { type, label, children } = props;
-
+const UMessage: React.FC<Props> = ({ type, label, children }) => {
   const msgBody = useMemo((): React.ReactNode => {
     if (!children) {
       return children;
@@ -70,4 +69,10 @@ const component: React.FC<Props> = (props) => {
   );
 };
 
-export const Message = memo(component);
+UMessage.propTypes = {
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  children: PropTypes.node.isRequired,
+};
+
+export const Message: typeof UMessage = memo(UMessage);

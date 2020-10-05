@@ -4,7 +4,7 @@ import Decimal from "decimal.js";
 import { Meta } from "@storybook/react";
 
 import {
-  Params as UseDeployStrategyParams,
+  // Params as UseDeployStrategyParams,
   Return as UseDeployStrategyReturn,
 } from "hooks/useDeployStrategy";
 
@@ -48,7 +48,7 @@ export default {
           ? new BN("9310293132123908088")
           : address === "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
           ? new BN("579127394283794127491")
-          : !!address
+          : address
           ? new BN("0")
           : null,
     }),
@@ -87,10 +87,11 @@ const TemplateContainer = (): JSX.Element => <DeployPage />;
 
 export const DefaultContainer = TemplateContainer.bind({});
 DefaultContainer.parameters = {
-  useDeployStrategy: (
-    params: UseDeployStrategyParams
-  ): UseDeployStrategyReturn => {
-    return async (): Promise<void> => {};
+  useDeployStrategy: (): // params: UseDeployStrategyParams
+  UseDeployStrategyReturn => {
+    return async (): Promise<void> => {
+      return;
+    };
   },
 };
 

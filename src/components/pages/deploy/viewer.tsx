@@ -40,7 +40,7 @@ const DeployWidget = styled.div`
   align-items: stretch;
 `;
 
-function component(): JSX.Element {
+function UDeployPageViewer(): JSX.Element {
   return (
     <PageLayout>
       <DeployForm>
@@ -58,4 +58,6 @@ function component(): JSX.Element {
   );
 }
 
-export const DeployPageViewer = memo(component);
+export const DeployPageViewer: typeof UDeployPageViewer = memo(
+  UDeployPageViewer
+);
