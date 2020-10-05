@@ -12,36 +12,22 @@ export type PriceSources = "1inch";
 const cache = new NodeCache({ stdTTL: PRICE_CACHE_TIME });
 
 /**
- * Builds 2 cache keys:
- * 1. Regular for the current token pair
- * 2. Inverted in case regular is not found.
- *  We can then invert the price without another query
+ * Builds cache key for current token pair
  *
  * @param baseToken
  * @param quoteToken
  */
-function buildCacheKeys(
+function buildCacheKey(
   baseToken: TokenDetails,
   quoteToken: TokenDetails
-): [string, string] {
-  return [
-    baseToken.address + quoteToken.address,
-    quoteToken.address + baseToken.address,
-  ];
+): string {
+  return baseToken.address + quoteToken.address;
 }
 
-function fetchPriceFromCache(key: string, invertedKey: string): Decimal | null {
+function fetchPriceFromCache(key: string): Decimal | null {
   const price = cache.get<Decimal>(key);
-  if (price) {
-    return price;
-  }
 
-  const invertedPrice = cache.get<Decimal>(invertedKey);
-  if (invertedPrice) {
-    return ONE_DECIMAL.div(invertedPrice);
-  }
-
-  return null;
+  return price ? price : null;
 }
 
 export interface Params {
@@ -97,9 +83,9 @@ export function useGetPrice(params: Params): Result {
     setIsLoading(true);
     setError("");
 
-    const [cacheKey, invertedCacheKey] = buildCacheKeys(baseToken, quoteToken);
+    const cacheKey = buildCacheKey(baseToken, quoteToken);
 
-    let price: Decimal | null = fetchPriceFromCache(cacheKey, invertedCacheKey);
+    let price: Decimal | null = fetchPriceFromCache(cacheKey);
 
     if (!price) {
       try {
