@@ -153,9 +153,7 @@ export const DeployForm = memo(function DeployForm({
 
       // prices values
       const lowestPrice = Number(values.lowestPrice);
-      const startPrice = Number(values.startPrice);
       const highestPrice = Number(values.highestPrice);
-      // const totalBrackets = Number(values.totalBrackets);
 
       // this is a calculated field where we store two integers in a single string
       const baseTokenBrackets = getBracketValue(
@@ -167,21 +165,10 @@ export const DeployForm = memo(function DeployForm({
         "quote"
       );
 
-      if (lowestPrice > startPrice) {
+      if (lowestPrice >= highestPrice) {
         errors["lowestPrice"] = {
-          label: "Lowest price can't be greater than Start price",
+          label: "Lowest Price must be smaller than Highest Price",
         };
-        errors["startPrice"] = true;
-      }
-      if (highestPrice < startPrice) {
-        errors["highestPrice"] = {
-          label: "Highest price can't be smaller than Start price",
-        };
-        errors["startPrice"] = true;
-      }
-      if (lowestPrice === startPrice && startPrice === highestPrice) {
-        errors["startPrice"] = { label: "All prices cannot be equal" };
-        errors["lowestPrice"] = true;
         errors["highestPrice"] = true;
       }
 
