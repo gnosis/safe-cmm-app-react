@@ -24,7 +24,9 @@ export interface Props {
  * Deals with hooks and state.
  * To be used externally in other components
  */
-function UTokenSelector(props: Props): JSX.Element {
+export const TokenSelector = memo(function TokenSelector(
+  props: Props
+): JSX.Element {
   const { selectedTokenAddress, setError, ...rest } = props;
 
   const tokenList = useTokenList();
@@ -59,6 +61,4 @@ function UTokenSelector(props: Props): JSX.Element {
       isBalanceLoading={isLoading}
     />
   );
-}
-
-export const TokenSelector: typeof UTokenSelector = memo(UTokenSelector);
+});

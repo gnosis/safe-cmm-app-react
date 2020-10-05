@@ -22,7 +22,9 @@ export interface Props {
  * - display shortened address with link to Etherscan when symbol/name not available
  * - add support for displaying token images
  */
-function UTokenDisplay(props: Props): JSX.Element {
+export const TokenDisplay = memo(function TokenDisplay(
+  props: Props
+): JSX.Element {
   const { token, size, color } = props;
 
   // TODO: handle error
@@ -39,6 +41,4 @@ function UTokenDisplay(props: Props): JSX.Element {
       -
     </Text>
   );
-}
-
-export const TokenDisplay: typeof UTokenDisplay = memo(UTokenDisplay);
+});
