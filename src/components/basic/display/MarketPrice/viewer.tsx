@@ -23,7 +23,7 @@ export interface MarketPriceViewerProps {
   onClick?: () => void;
 }
 
-function component(props: MarketPriceViewerProps): JSX.Element {
+function UMarketPriceViewer(props: MarketPriceViewerProps): JSX.Element {
   const {
     price,
     isPriceLoading,
@@ -59,4 +59,6 @@ function component(props: MarketPriceViewerProps): JSX.Element {
   return <SubtextAmount subtext="Market price:" amount={amount} inline />;
 }
 
-export const MarketPriceViewer = memo(component);
+export const MarketPriceViewer: typeof UMarketPriceViewer = memo(
+  UMarketPriceViewer
+);

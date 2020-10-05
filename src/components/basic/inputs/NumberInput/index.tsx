@@ -32,7 +32,7 @@ export const NumberInput = (props: Props): JSX.Element => {
         event.preventDefault();
       }
     },
-    []
+    [onChange]
   );
 
   return (

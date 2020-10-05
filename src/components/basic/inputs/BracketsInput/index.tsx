@@ -26,7 +26,7 @@ const Wrapper = styled(NumberInput)`
   }
 `;
 
-export interface Props extends Omit<NumberInputProps, "type"> {}
+export type Props = Omit<NumberInputProps, "type">;
 
 export const BracketsInput = (props: Props): JSX.Element => {
   const { value } = props;

@@ -5,7 +5,7 @@ import { useFormState } from "react-final-form";
 
 const StyledBackdrop = withStyles(() => ({ root: { zIndex: 999 } }))(Backdrop);
 
-function component(): JSX.Element {
+function UFormBackdrop(): JSX.Element {
   const { submitting } = useFormState({ subscription: { submitting: true } });
 
   return (
@@ -15,4 +15,4 @@ function component(): JSX.Element {
   );
 }
 
-export const FormBackdrop = memo(component);
+export const FormBackdrop = memo(UFormBackdrop);

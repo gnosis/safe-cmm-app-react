@@ -12,7 +12,9 @@ import { Validator } from "./types";
  */
 export const hasBalanceFactory = (
   getErc20Details: (address: string) => Promise<TokenBalance>
-) => (tokenAddress: string): Validator => (fieldName) => async (value) => {
+) => (tokenAddress: string): Validator => (/* fieldName */) => async (
+  value
+) => {
   // Don't validate unless we have all the required input
   if (!tokenAddress || !value) {
     return undefined;

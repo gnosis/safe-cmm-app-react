@@ -26,7 +26,7 @@ const Pending = () => {
 
   useEffect(() => {
     handleLoadPending();
-  }, []);
+  }, [handleLoadPending]);
 
   if (!strategies) {
     return (

@@ -12,7 +12,7 @@ export interface Props {
   setError?: (msg?: string) => void;
 }
 
-function component(props: Props): JSX.Element {
+function UMarketPrice(props: Props): JSX.Element {
   const { baseTokenAddress, quoteTokenAddress, setError, onPriceClick } = props;
 
   // TODO: handle error
@@ -30,11 +30,11 @@ function component(props: Props): JSX.Element {
     if (onPriceClick && price && !isLoading) {
       onPriceClick(price.toString());
     }
-  }, [price, isLoading]);
+  }, [price, isLoading, onPriceClick]);
 
   useEffect(() => {
     setError && setError(error);
-  }, [error]);
+  }, [error, setError]);
 
   return (
     <MarketPriceViewer
@@ -47,4 +47,4 @@ function component(props: Props): JSX.Element {
   );
 }
 
-export const MarketPrice: typeof component = memo(component);
+export const MarketPrice: typeof UMarketPrice = memo(UMarketPrice);

@@ -24,7 +24,7 @@ export interface Props {
  * Deals with hooks and state.
  * To be used externally in other components
  */
-function component(props: Props): JSX.Element {
+function UTokenSelector(props: Props): JSX.Element {
   const { selectedTokenAddress, setError, ...rest } = props;
 
   const tokenList = useTokenList();
@@ -36,7 +36,7 @@ function component(props: Props): JSX.Element {
   // probably better when adding validation
   useEffect((): void => {
     setError && setError(error);
-  }, [error]);
+  }, [error, setError]);
 
   const tokenDetails = useMemo(
     (): TokenDetails | undefined =>
@@ -61,4 +61,4 @@ function component(props: Props): JSX.Element {
   );
 }
 
-export const TokenSelector: typeof component = memo(component);
+export const TokenSelector: typeof UTokenSelector = memo(UTokenSelector);

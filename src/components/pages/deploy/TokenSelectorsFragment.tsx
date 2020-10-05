@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   }
 `;
 
-function component(): JSX.Element {
+function UTokenSelectorsFragment(): JSX.Element {
   const {
     mutators: { swapTokens },
   } = useForm();
@@ -57,4 +57,4 @@ function component(): JSX.Element {
   );
 }
 
-export const TokenSelectorsFragment = memo(component);
+export const TokenSelectorsFragment = memo(UTokenSelectorsFragment);

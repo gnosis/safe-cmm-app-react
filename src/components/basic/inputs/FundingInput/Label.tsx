@@ -17,7 +17,7 @@ interface Props {
   disabled?: boolean;
 }
 
-function component(props: Props): JSX.Element {
+function ULabel(props: Props): JSX.Element {
   const { onClick, error, disabled } = props;
   return (
     <Wrapper {...props}>
@@ -42,4 +42,4 @@ function component(props: Props): JSX.Element {
   );
 }
 
-export const Label: typeof component = memo(component);
+export const Label: typeof ULabel = memo(ULabel);

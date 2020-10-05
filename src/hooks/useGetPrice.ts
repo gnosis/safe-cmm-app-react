@@ -75,7 +75,7 @@ export function useGetPrice(params: Params): Result {
 
   useEffect((): void => {
     baseToken && quoteToken && getPrice({ source, baseToken, quoteToken });
-  }, [source, baseToken, quoteToken]);
+  }, [source, baseToken, quoteToken, getPrice]);
 
   return { price, isLoading, error };
 }
