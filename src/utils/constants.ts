@@ -27,3 +27,5 @@ export const ONE_DECIMAL = new Decimal("1");
 
 export const MINIMUM_BRACKETS = 1;
 export const MAXIMUM_BRACKETS = 10;
+
+export const PRICE_CACHE_TIME = 30; // in seconds
