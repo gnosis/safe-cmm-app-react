@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useContext } from "react";
-import PropTypes from "prop-types";
 import {
   FormApi,
   FormState,
@@ -212,11 +211,6 @@ export const DeployForm = memo(function DeployForm({
     },
     [hasBalance]
   );
-
-  // const validate = useCallback(
-  //   validateFactory(hasBalanceFactory(getErc20Details)),
-  //   [getErc20Details]
-  // );
 
   // The initial idea was to keep all the logic only on the container (index) component
   // But with the validations and final-form I didn't manage to.
