@@ -15,4 +15,4 @@ function UFormBackdrop(): JSX.Element {
   );
 }
 
-export const FormBackdrop: typeof UFormBackdrop = memo(UFormBackdrop);
+export const FormBackdrop = memo(UFormBackdrop);

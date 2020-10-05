@@ -57,6 +57,4 @@ function UTokenSelectorsFragment(): JSX.Element {
   );
 }
 
-export const TokenSelectorsFragment: typeof UTokenSelectorsFragment = memo(
-  UTokenSelectorsFragment
-);
+export const TokenSelectorsFragment = memo(UTokenSelectorsFragment);

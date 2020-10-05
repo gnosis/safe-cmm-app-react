@@ -38,6 +38,4 @@ function UMarketPriceFragment(): JSX.Element {
   );
 }
 
-export const MarketPriceFragment: typeof UMarketPriceFragment = memo(
-  UMarketPriceFragment
-);
+export const MarketPriceFragment = memo(UMarketPriceFragment);

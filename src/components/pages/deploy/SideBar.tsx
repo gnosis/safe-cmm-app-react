@@ -144,4 +144,4 @@ function USideBar(): JSX.Element {
   );
 }
 
-export const SideBar: typeof USideBar = memo(USideBar);
+export const SideBar = memo(USideBar);

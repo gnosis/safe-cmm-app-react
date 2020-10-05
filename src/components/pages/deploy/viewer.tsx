@@ -58,6 +58,4 @@ function UDeployPageViewer(): JSX.Element {
   );
 }
 
-export const DeployPageViewer: typeof UDeployPageViewer = memo(
-  UDeployPageViewer
-);
+export const DeployPageViewer = memo(UDeployPageViewer);

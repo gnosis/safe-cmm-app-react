@@ -5,8 +5,10 @@ import { Icon, Text } from "@gnosis.pm/safe-react-components";
 
 import { theme } from "theme";
 
+type TypeStrings = "error" | "warning";
+
 export interface Props {
-  type: "error" | "warning";
+  type: TypeStrings;
   label: string;
   children: React.ReactNode;
 }
@@ -37,7 +39,9 @@ const Wrapper = styled.div<Props>`
   }
 `;
 
-const UMessage: React.FC<Props> = ({ type, label, children }) => {
+const UMessage: React.FC<Props> = (props: Props) => {
+  const { type, label, children } = props;
+
   const msgBody = useMemo((): React.ReactNode => {
     if (!children) {
       return children;
@@ -67,12 +71,6 @@ const UMessage: React.FC<Props> = ({ type, label, children }) => {
       {msgBody}
     </Wrapper>
   );
-};
-
-UMessage.propTypes = {
-  label: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired,
-  children: PropTypes.node.isRequired,
 };
 
 export const Message: typeof UMessage = memo(UMessage);

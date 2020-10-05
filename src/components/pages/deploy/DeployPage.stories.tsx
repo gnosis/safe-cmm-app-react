@@ -8,7 +8,7 @@ import {
   Return as UseDeployStrategyReturn,
 } from "hooks/useDeployStrategy";
 
-import { DeployPageViewer, Props } from "./viewer";
+import { DeployPageViewer } from "./viewer";
 import { DeployPage } from ".";
 import {
   baseTokenAddressAtom,
@@ -58,7 +58,7 @@ export default {
 
 // Viewer
 
-const Template = (args: Props): JSX.Element => {
+const Template = (args: any): JSX.Element => {
   const onSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> => event.preventDefault();

@@ -28,6 +28,4 @@ function UDeployStrategyButtonFragment(): JSX.Element {
   );
 }
 
-export const DeployStrategyButtonFragment: typeof UDeployStrategyButtonFragment = memo(
-  UDeployStrategyButtonFragment
-);
+export const DeployStrategyButtonFragment = memo(UDeployStrategyButtonFragment);

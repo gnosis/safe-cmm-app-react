@@ -43,6 +43,4 @@ function UErrorMessageFragment(): JSX.Element {
   );
 }
 
-export const ErrorMessagesFragment: typeof UErrorMessageFragment = memo(
-  UErrorMessageFragment
-);
+export const ErrorMessagesFragment = memo(UErrorMessageFragment);

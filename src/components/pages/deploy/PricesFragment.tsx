@@ -225,4 +225,4 @@ function UPricesFragment(): JSX.Element {
   );
 }
 
-export const PricesFragment: typeof UPricesFragment = memo(UPricesFragment);
+export const PricesFragment = memo(UPricesFragment);
