@@ -3,16 +3,8 @@ dist: xenial
 language: node_js
 node_js:
   - '12.4.0'
-matrix:
-  include:
-    - env:
-        - NETWORK='mainnet'
-        - INFURA_API_KEY=${INFURA_API_KEY}
-      if: (branch = master AND NOT type = pull_request) OR tag IS present
-    - env:
-        - NETWORK='rinkeby'
-        - INFURA_API_KEY=${INFURA_API_KEY}
-      if: (branch != master) OR tag IS NOT present
+env:
+  - INFURA_API_KEY=${INFURA_API_KEY}
 cache:
   yarn: true
 before_install:

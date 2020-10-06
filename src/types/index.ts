@@ -14,12 +14,13 @@ export interface TokenBalance extends TokenDetails {
 
 export interface SafeInfo {
   safeAddress: string;
+  network: string;
   ethBalance: string;
 }
 
 export interface Web3Context {
   instance: any; // Web3
-  safeInfo: SafeInfo;
+  safeInfo: SafeInfo; // from SafeSDK
   sdk: any; // SafeSDK
   getContract: (contractName: string, contractAddress: string) => Promise<any>;
   getDeployed: (contractName: string) => Promise<any>;

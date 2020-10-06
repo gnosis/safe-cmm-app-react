@@ -123,7 +123,6 @@ class PendingStrategy {
 
     const baseFundingWei = Object.keys(bracketsWithBaseToken).reduce(
       (acc: BN, bracketAddress: string) => {
-        console.log(bracketsWithBaseToken[bracketAddress].toString());
         return acc.iadd(bracketsWithBaseToken[bracketAddress]);
       },
       toBN(0)

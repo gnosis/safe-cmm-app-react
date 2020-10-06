@@ -7,10 +7,10 @@ const findPendingStrategiesForOwner = async (
   context: Web3Context
 ): Promise<PendingStrategy[]> => {
   const {
-    safeInfo: { safeAddress: owner },
+    safeInfo: { safeAddress: owner, network },
   } = context;
 
-  const pendingSafeTransactions = await getPendingTransactions(owner);
+  const pendingSafeTransactions = await getPendingTransactions(network, owner);
 
   const strategies: PendingStrategy[] = await Promise.all(
     pendingSafeTransactions
