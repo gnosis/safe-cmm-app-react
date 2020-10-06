@@ -23,6 +23,7 @@ export const SAFE_ENDPOINT_URL =
 
 export const DEFAULT_INPUT_WIDTH = "130px";
 
+export const ZERO_DECIMAL = new Decimal("0");
 export const ONE_DECIMAL = new Decimal("1");
 
 export const MINIMUM_BRACKETS = 1;
