@@ -44,7 +44,7 @@ export function useAmountInUsd(params: Params): Result {
 
   return {
     isLoading: isLoadingTokenDetails || isLoadingPrice,
-    amountInUsd: price?.mul(new Decimal(amount)),
+    amountInUsd: address && price ? price.mul(amount) : null,
     error: tokenDetailsError || priceError || "",
   };
 }
