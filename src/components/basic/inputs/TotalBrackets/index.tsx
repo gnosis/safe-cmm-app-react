@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled from "styled-components";
 
-import { DEFAULT_INPUT_WIDTH } from "utils/constants";
+import { Loader } from "@gnosis.pm/safe-react-components";
+
+import { DEFAULT_INPUT_WIDTH, ZERO_DECIMAL } from "utils/constants";
+
+import { useAmountInUsd } from "hooks/useAmountInUsd";
 
 import {
   BracketsInput,
@@ -9,6 +13,7 @@ import {
 } from "components/basic/inputs/BracketsInput";
 import { TextWithTooltip } from "components/basic/display/TextWithTooltip";
 import { SubtextAmount } from "components/basic/display/SubtextAmount";
+import { formatSmart, parseAmount } from "@gnosis.pm/dex-js";
 
 const Wrapper = styled.div`
   display: flex;
@@ -17,11 +22,57 @@ const Wrapper = styled.div`
 `;
 
 export interface Props extends Omit<BracketsInputProps, "customLabel"> {
-  amount: string;
+  baseTokenAddress: string;
+  baseTokenAmount: string;
+  quoteTokenAddress: string;
+  quoteTokenAmount: string;
 }
 
 export const TotalBrackets = (props: Props): JSX.Element => {
-  const { amount, ...rest } = props;
+  const {
+    baseTokenAddress,
+    baseTokenAmount,
+    quoteTokenAddress,
+    quoteTokenAmount,
+    ...rest
+  } = props;
+
+  // TODO: propagate error
+  const {
+    amountInUsd: baseAmountInUsd,
+    isLoading: isBaseAmountLoading,
+  } = useAmountInUsd({
+    tokenAddress: baseTokenAddress,
+    amount: baseTokenAmount,
+  });
+  const {
+    amountInUsd: quoteAmountInUsd,
+    isLoading: isQuoteAmountLoading,
+  } = useAmountInUsd({
+    tokenAddress: quoteTokenAddress,
+    amount: quoteTokenAmount,
+  });
+
+  const amount = useMemo((): React.ReactNode => {
+    if (isBaseAmountLoading || isQuoteAmountLoading) {
+      return <Loader size="xs" />;
+    }
+
+    const totalAmount = (baseAmountInUsd || ZERO_DECIMAL).plus(
+      quoteAmountInUsd || ZERO_DECIMAL
+    );
+
+    if (baseAmountInUsd || quoteAmountInUsd) {
+      return `~ $${formatSmart(parseAmount(totalAmount.toString(), 18), 18)}`;
+    } else {
+      return "-";
+    }
+  }, [
+    baseAmountInUsd,
+    isBaseAmountLoading,
+    isQuoteAmountLoading,
+    quoteAmountInUsd,
+  ]);
 
   return (
     <Wrapper>
