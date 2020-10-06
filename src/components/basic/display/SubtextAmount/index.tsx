@@ -31,7 +31,9 @@ export interface Props extends WrapperProps {
   amount: string | React.ReactElement;
 }
 
-function USubtextAmount(props: Props): JSX.Element {
+export const SubtextAmount = memo(function SubtextAmount(
+  props: Props
+): JSX.Element {
   const { subtext, amount, inline } = props;
 
   return (
@@ -44,6 +46,4 @@ function USubtextAmount(props: Props): JSX.Element {
       </Text>
     </Wrapper>
   );
-}
-
-export const SubtextAmount: typeof USubtextAmount = memo(USubtextAmount);
+});

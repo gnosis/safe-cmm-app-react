@@ -55,23 +55,7 @@ const InvisibleField = styled(Field)`
   display: none;
 `;
 
-const onMaxClickFactory = (
-  field: FormFields,
-  tokenBalance: TokenBalance | null,
-  setFieldValue: (field: FormFields, data: { value: string }) => void
-) => () => {
-  if (tokenBalance) {
-    const value = formatAmountFull({
-      amount: tokenBalance.balance,
-      precision: tokenBalance.decimals,
-      thousandSeparator: false,
-      isLocaleAware: false,
-    });
-    setFieldValue(field, { value });
-  }
-};
-
-function UPricesFragment(): JSX.Element {
+export const PricesFragment = memo(function PricesFragment(): JSX.Element {
   const totalInvestment = useRecoilValue(totalInvestmentAtom);
 
   const {
@@ -90,13 +74,28 @@ function UPricesFragment(): JSX.Element {
     quoteTokenAddress
   );
 
+  const onMaxClickFactory = useCallback(
+    (field: FormFields, tokenBalance: TokenBalance | null): void => {
+      if (tokenBalance) {
+        const value = formatAmountFull({
+          amount: tokenBalance.balance,
+          precision: tokenBalance.decimals,
+          thousandSeparator: false,
+          isLocaleAware: false,
+        });
+        setFieldValue(field, { value });
+      }
+    },
+    [setFieldValue]
+  );
+
   const onBaseTokenMaxClick = useCallback(
-    onMaxClickFactory("baseTokenAmount", baseTokenDetails, setFieldValue),
-    [baseTokenDetails, setFieldValue]
+    () => onMaxClickFactory("baseTokenAmount", baseTokenDetails),
+    [baseTokenDetails, onMaxClickFactory]
   );
   const onQuoteTokenMaxClick = useCallback(
-    onMaxClickFactory("quoteTokenAmount", quoteTokenDetails, setFieldValue),
-    [quoteTokenDetails, setFieldValue]
+    () => onMaxClickFactory("quoteTokenAmount", quoteTokenDetails),
+    [onMaxClickFactory, quoteTokenDetails]
   );
 
   return (
@@ -223,6 +222,4 @@ function UPricesFragment(): JSX.Element {
       <InvisibleField name="calculatedBrackets" component="input" />
     </Wrapper>
   );
-}
-
-export const PricesFragment = memo(UPricesFragment);
+});
