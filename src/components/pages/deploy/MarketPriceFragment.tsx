@@ -8,34 +8,34 @@ const Wrapper = styled.div`
   align-self: center;
 `;
 
-function UMarketPriceFragment(): JSX.Element {
-  const {
-    input: { value: baseTokenAddress },
-  } = useField<string>("baseTokenAddress");
-  const {
-    input: { value: quoteTokenAddress },
-  } = useField<string>("quoteTokenAddress");
+export const MarketPriceFragment = memo(
+  function MarketPriceFragment(): JSX.Element {
+    const {
+      input: { value: baseTokenAddress },
+    } = useField<string>("baseTokenAddress");
+    const {
+      input: { value: quoteTokenAddress },
+    } = useField<string>("quoteTokenAddress");
 
-  const {
-    mutators: { setFieldValue },
-  } = useForm();
+    const {
+      mutators: { setFieldValue },
+    } = useForm();
 
-  const onPriceClick = useCallback(
-    (price: string) => {
-      setFieldValue("startPrice", { value: price });
-    },
-    [setFieldValue]
-  );
+    const onPriceClick = useCallback(
+      (price: string) => {
+        setFieldValue("startPrice", { value: price });
+      },
+      [setFieldValue]
+    );
 
-  return (
-    <Wrapper>
-      <MarketPrice
-        baseTokenAddress={baseTokenAddress}
-        quoteTokenAddress={quoteTokenAddress}
-        onPriceClick={onPriceClick}
-      />
-    </Wrapper>
-  );
-}
-
-export const MarketPriceFragment = memo(UMarketPriceFragment);
+    return (
+      <Wrapper>
+        <MarketPrice
+          baseTokenAddress={baseTokenAddress}
+          quoteTokenAddress={quoteTokenAddress}
+          onPriceClick={onPriceClick}
+        />
+      </Wrapper>
+    );
+  }
+);
