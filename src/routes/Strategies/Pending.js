@@ -21,7 +21,6 @@ const Pending = () => {
   const handleLoadPending = useCallback(async () => {
     const pendingStrategies = await findPendingStrategiesForOwner(context);
     setStrategies(pendingStrategies);
-    console.log(pendingStrategies);
   }, [context]);
 
   useEffect(() => {

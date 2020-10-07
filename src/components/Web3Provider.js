@@ -34,47 +34,72 @@ const Web3Provider = ({ children }) => {
   const [status, setStatus] = useState("UNKNOWN");
   const [instance, setInstance] = useState(null);
   const [sdk, setSdk] = useState(null);
-  const [safeInfo, setSafeInfo] = useState({});
+  const [safeInfo, setSafeInfo] = useState(null);
   const [erc20Cache, setErc20Cache] = useState({});
 
-  const handleSafeInfo = useCallback(
-    (safeInfo) => {
-      setSafeInfo(safeInfo);
-      logger.log(`Safe connection established`, safeInfo);
-      setStatus("SUCCESS");
+  const handleInitSdk = useCallback(async () => {
+    const newInstance = await initSdk();
+    setSdk(newInstance);
+
+    const newSafeInfo = await new Promise((resolve, reject) => {
+      if (safeInfo) {
+        // this only occours on dev hot-reload
+        // addListeners only fires once. if it has fired before,
+        // the callback below will never complete :(
+        return resolve(safeInfo);
+      }
+
+      const timeoutForConnect = setTimeout(() => {
+        logger.error("Safe SDK never fired - timeout");
+        reject();
+      }, 5000);
+      newInstance.addListeners({
+        onSafeInfo: (safeInfo) => {
+          clearTimeout(timeoutForConnect);
+          setSafeInfo(safeInfo);
+          logger.log(`Safe connection established`, safeInfo);
+          resolve(safeInfo);
+        },
+      });
+    });
+
+    return newSafeInfo;
+  }, [setSdk, safeInfo]);
+
+  const handleInitWeb3 = useCallback(
+    async (newSafeInfo) => {
+      const newInstance = await initWeb3(newSafeInfo.network);
+      setInstance(newInstance);
     },
-    [setSafeInfo, setStatus]
+    [setInstance]
   );
 
   const handleInit = useCallback(async () => {
     setStatus("LOADING");
 
+    if (window.self === window.top) {
+      setStatus("NOT_IN_IFRAME");
+      return;
+    }
+
     try {
-      const newInstance = await initWeb3();
-      setInstance(newInstance);
-      setSdk(initSdk());
+      const safeInfo = await handleInitSdk();
+      await handleInitWeb3(safeInfo);
     } catch (err) {
       console.error(err);
       setInstance(null);
+      setSdk(null);
       setStatus("ERROR");
+      return;
     }
-  }, []);
+    setStatus("SUCCESS");
+  }, [handleInitSdk, handleInitWeb3]);
 
   useEffect(() => {
-    if (sdk) {
-      sdk.addListeners({
-        onSafeInfo: handleSafeInfo,
-      });
-
-      if (safeInfo?.safeAddress) {
-        setStatus("SUCCESS");
-      }
-
-      return () => {
-        sdk.removeListeners();
-      };
-    }
-  }, [sdk, safeInfo, handleSafeInfo]);
+    return () => {
+      if (sdk) sdk.removeListeners();
+    };
+  }, [sdk]);
 
   const handleAsyncInit = useCallback(() => {
     handleInit();
@@ -247,7 +272,7 @@ const Web3Provider = ({ children }) => {
       let safeTokens = {};
       // get all tokens from safe
       try {
-        safeTokens = (await getBalances(safeInfo.safeAddress))
+        safeTokens = (await getBalances(safeInfo.network, safeInfo.safeAddress))
           .filter(
             // exclude entry without tokenAddress, which corresponds to ETH
             (token) => !!token.tokenAddress
@@ -389,6 +414,22 @@ const Web3Provider = ({ children }) => {
       handleGetErc20FromCache,
     ]
   );
+
+  if (status === "NOT_IN_IFRAME") {
+    return (
+      <p>
+        App not loaded in Safe. Add this app to your Gnosis Safe on{" "}
+        <a href="https://rinkeby.gnosis-safe.io/" rel="noopener noref">
+          Rinkeby
+        </a>
+        ,{" "}
+        <a href="https://gnosis-safe.io/" rel="noopener noref">
+          Mainnet
+        </a>{" "}
+        or others
+      </p>
+    );
+  }
 
   return (
     <Web3Context.Provider value={contextState}>

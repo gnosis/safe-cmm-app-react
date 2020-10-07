@@ -1,6 +1,7 @@
 import React from "react";
 import { hot } from "react-hot-loader/root";
 import { RecoilRoot } from "recoil";
+import { Version } from "./Version";
 
 import { theme } from "theme";
 
@@ -17,6 +18,7 @@ const App = () => {
     // This is not the Material-UI Theme provider. Theming with makeStyle,
     // useStyles and other styling methods from Material-UI will not work!
     <StyledComponentThemeProvider theme={theme}>
+      <Version />
       <GlobalStyle />
       <RecoilRoot>
         <Web3Provider>

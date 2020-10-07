@@ -8,18 +8,12 @@ export enum Network {
   kovan = 42,
 }
 
-export const NETWORK = process.env.NETWORK.toLowerCase();
-export const API_KEY = process.env.INFURA_API_KEY;
+export const INFURA_API_KEY = process.env.INFURA_API_KEY;
 
-export const NETWORK_URL = `https://${NETWORK}.infura.io/v3/${API_KEY}`;
-
-const SAFE_ENDPOINT_URLS = {
+export const SAFE_ENDPOINT_URLS = {
   [Network.rinkeby]: `https://safe-transaction.rinkeby.gnosis.io`,
   [Network.mainnet]: `https://safe-transaction.gnosis.io`,
 };
-
-export const SAFE_ENDPOINT_URL =
-  SAFE_ENDPOINT_URLS[Network[NETWORK]] || SAFE_ENDPOINT_URLS[Network.rinkeby];
 
 export const DEFAULT_INPUT_WIDTH = "130px";
 
