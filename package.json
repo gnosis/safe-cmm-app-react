@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "./node_modules/.bin/webpack-dev-server --hot --https",
-    "build": "NODE_ENV=production ./node_modules/.bin/webpack -p",
+    "build": "./node_modules/.bin/webpack",
+    "build-prod": "NODE_ENV=production ./node_modules/.bin/webpack -p",
     "lint": "./node_modules/.bin/eslint ./src",
     "lint-fix": "./node_modules/.bin/eslint --fix ./src",
     "storybook": "start-storybook -p 6006",
