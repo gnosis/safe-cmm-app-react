@@ -161,6 +161,10 @@ module.exports = {
       NODE_ENV: "development",
       NETWORK: "local",
       INFURA_API_KEY: null,
+      CONTINUOUS_INTEGRATION: null,
+      TRAVIS_BRANCH: "unknown branch",
+      TRAVIS_BUILD_ID: "unknown build",
+      TRAVIS_COMMIT: "unknown commit",
     }),
     // Add assets and build artifacts to the dist/ folder on build
     new CopyWebpackPlugin({
