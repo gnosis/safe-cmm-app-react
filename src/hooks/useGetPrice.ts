@@ -5,7 +5,7 @@ import NodeCache from "node-cache";
 import { getOneinchPrice } from "@gnosis.pm/dex-liquidity-provision/scripts/utils/price_utils";
 
 import { TokenDetails } from "types";
-import { ONE_DECIMAL, PRICE_CACHE_TIME } from "utils/constants";
+import { PRICE_CACHE_TIME } from "utils/constants";
 
 export type PriceSources = "1inch";
 
