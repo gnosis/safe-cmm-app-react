@@ -1,5 +1,4 @@
 import React, { memo, useCallback } from "react";
-import { useRecoilValue } from "recoil";
 import { Field, useField, useForm } from "react-final-form";
 import styled from "styled-components";
 
@@ -8,6 +7,8 @@ import { formatAmountFull } from "@gnosis.pm/dex-js";
 import { useTokenDetails } from "hooks/useTokenDetails";
 
 import { TokenBalance } from "types";
+
+import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
 import { FundingInput } from "components/basic/inputs/FundingInput";
@@ -18,9 +19,6 @@ import { isRequired } from "validators/isRequired";
 import { isNumber } from "validators/isNumber";
 import { isGreaterThan } from "validators/isGreaterThan";
 import { isSmallerThan } from "validators/isSmallerThan";
-import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
-
-import { totalInvestmentAtom } from "./atoms";
 
 import { getBracketValue } from "./DeployForm";
 import { FormFields } from "./types";
@@ -56,14 +54,18 @@ const InvisibleField = styled(Field)`
 `;
 
 export const PricesFragment = memo(function PricesFragment(): JSX.Element {
-  const totalInvestment = useRecoilValue(totalInvestmentAtom);
-
   const {
     input: { value: baseTokenAddress },
   } = useField<string>("baseTokenAddress");
   const {
     input: { value: quoteTokenAddress },
   } = useField<string>("quoteTokenAddress");
+  const {
+    input: { value: baseTokenAmount },
+  } = useField<string>("baseTokenAmount");
+  const {
+    input: { value: quoteTokenAmount },
+  } = useField<string>("quoteTokenAmount");
 
   const {
     mutators: { setFieldValue },
@@ -173,7 +175,10 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
               {...input}
               warn={meta.touched && !!meta.data?.warn}
               error={meta.touched && meta.error}
-              amount={totalInvestment}
+              baseTokenAddress={baseTokenAddress}
+              baseTokenAmount={baseTokenAmount}
+              quoteTokenAddress={quoteTokenAddress}
+              quoteTokenAmount={quoteTokenAmount}
             />
           )}
         />

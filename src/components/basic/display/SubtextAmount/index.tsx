@@ -28,7 +28,7 @@ const Wrapper = styled.div<WrapperProps>`
 
 export interface Props extends WrapperProps {
   subtext: string;
-  amount: string | React.ReactElement;
+  amount: React.ReactNode;
 }
 
 export const SubtextAmount = memo(function SubtextAmount(

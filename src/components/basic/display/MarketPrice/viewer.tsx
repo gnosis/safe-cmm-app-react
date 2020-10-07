@@ -48,7 +48,7 @@ function UMarketPriceViewer(props: MarketPriceViewerProps): JSX.Element {
             per
           </Text>
           <TokenDisplay token={baseTokenAddress} size="md" />
-          <Tooltip title="TODO: add tooltip!!">
+          <Tooltip title="Reflects the current market price of Token B, denominated in Token A.">
             <Icon type="question" size="sm" />
           </Tooltip>
         </Amount>
