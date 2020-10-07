@@ -31,7 +31,10 @@ export const TotalBrackets = (props: Props): JSX.Element => {
         inputWidth="75px"
         center
         customLabel={
-          <TextWithTooltip tooltip="TODO: add tooltips :)" size="lg">
+          <TextWithTooltip
+            tooltip="Each bracket consists of a single Ethereum address that places a buy-low and a sell-high order. Every time the price goes through a bracket and activates both orders, the CMM provider earns the spread."
+            size="lg"
+          >
             Total Brackets
           </TextWithTooltip>
         }
