@@ -8,7 +8,7 @@ const HiddenBox = styled.div`
   right: 0;
 `;
 
-function UVersion(): JSX.Element {
+export const Version = memo(function Version(): JSX.Element {
   const isDeployed = process.env.CONTINUOUS_INTEGRATION === "true";
   const deployBranch = process.env.TRAVIS_BRANCH || "unknown branch";
   const buildId = process.env.BUILD_ID || "unknown build";
@@ -26,6 +26,4 @@ function UVersion(): JSX.Element {
       {commit}
     </HiddenBox>
   );
-}
-
-export const Version = memo(UVersion);
+});
