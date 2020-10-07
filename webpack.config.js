@@ -38,12 +38,13 @@ if (isDevelopment) {
     const verString = [
       process.env.TRAVIS_BRANCH
         ? truncate(process.env.TRAVIS_BRANCH, {
-            length: 10,
+            length: 15,
+            omission: "",
           })
         : "unknown branch",
-      process.env.BUILD_ID || "unknown build",
-      process.env.COMMIT
-        ? truncate(process.env.COMMIT, {
+      process.env.TRAVIS_BUILD_ID || "unknown build",
+      process.env.TRAVIS_COMMIT
+        ? truncate(process.env.TRAVIS_COMMIT, {
             length: 6,
             omission: "",
           })
