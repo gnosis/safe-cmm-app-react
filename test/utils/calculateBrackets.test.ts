@@ -7,6 +7,7 @@ const baseParams: Params = {
   highestPrice: "1.2",
   totalBrackets: "3",
 };
+
 test("totalBrackets == 0", () => {
   const params = clone(baseParams);
   params.totalBrackets = "0";
@@ -16,6 +17,7 @@ test("totalBrackets == 0", () => {
     quoteTokenBrackets: 0,
   });
 });
+
 test("totalBrackets == 1", () => {
   const params = clone(baseParams);
   params.totalBrackets = "1";
@@ -25,6 +27,7 @@ test("totalBrackets == 1", () => {
     quoteTokenBrackets: 1,
   });
 });
+
 test("even brackets", () => {
   const params = clone(baseParams);
   params.totalBrackets = "2";
@@ -34,6 +37,7 @@ test("even brackets", () => {
     quoteTokenBrackets: 1,
   });
 });
+
 test("odd brackets", () => {
   const params = clone(baseParams);
 
@@ -42,6 +46,17 @@ test("odd brackets", () => {
     quoteTokenBrackets: 2,
   });
 });
+
+test("lowestPrice > startPrice", () => {
+  const params = clone(baseParams);
+  params.startPrice = (Number(params.lowestPrice) * 0.9).toString();
+
+  expect(calculateBrackets(params)).toEqual({
+    baseTokenBrackets: 3,
+    quoteTokenBrackets: 0,
+  });
+});
+
 test("lowestPrice == startPrice", () => {
   const params = clone(baseParams);
   params.startPrice = params.lowestPrice;
@@ -51,6 +66,7 @@ test("lowestPrice == startPrice", () => {
     quoteTokenBrackets: 0,
   });
 });
+
 test("startPrice == highestPrice", () => {
   const params = clone(baseParams);
   params.startPrice = params.highestPrice;
@@ -60,6 +76,17 @@ test("startPrice == highestPrice", () => {
     quoteTokenBrackets: 3,
   });
 });
+
+test("startPrice > highestPrice", () => {
+  const params = clone(baseParams);
+  params.startPrice = (Number(params.highestPrice) * 1.1).toString();
+
+  expect(calculateBrackets(params)).toEqual({
+    baseTokenBrackets: 0,
+    quoteTokenBrackets: 3,
+  });
+});
+
 test("startPrice == bracket boundary", () => {
   const params = clone(baseParams);
   // value manually calculated:
@@ -108,15 +135,15 @@ describe("invalid params", () => {
     expect(calculateBrackets(params)).toEqual(invalidResponse);
   });
 
-  test("lowestPrice > startPrice", () => {
+  test("startPrice < 0", () => {
     const params = clone(baseParams);
-    params.lowestPrice = "1" + params.startPrice;
+    params.startPrice = "-1";
     expect(calculateBrackets(params)).toEqual(invalidResponse);
   });
 
-  test("startPrice > highestPrice", () => {
+  test("lowestPrice > highestPrice", () => {
     const params = clone(baseParams);
-    params.startPrice = "1" + params.highestPrice;
+    params.lowestPrice = params.highestPrice;
     expect(calculateBrackets(params)).toEqual(invalidResponse);
   });
 

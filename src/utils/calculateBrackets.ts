@@ -40,8 +40,8 @@ export function calculateBrackets(params: Params): Result {
     isNaN(highestPriceNum) ||
     isNaN(totalBrackets) ||
     lowestPriceNum <= 0 ||
-    lowestPriceNum > startPriceNum ||
-    startPriceNum > highestPriceNum ||
+    startPriceNum <= 0 ||
+    lowestPriceNum >= highestPriceNum ||
     totalBrackets <= 0
   ) {
     return { baseTokenBrackets: 0, quoteTokenBrackets: 0 };
