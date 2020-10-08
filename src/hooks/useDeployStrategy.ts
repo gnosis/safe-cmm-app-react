@@ -1,74 +1,101 @@
 import { useContext } from "react";
-import BN from "bn.js";
-import Decimal from "decimal.js";
+import { FORM_ERROR } from "final-form";
 
-import { parseAmount } from "@gnosis.pm/dex-js";
+import { parseAmount, ZERO } from "@gnosis.pm/dex-js";
 
 import { Web3Context } from "components/Web3Provider";
 import deployStrategy from "api/deployStrategy";
 import getLogger from "utils/logger";
 
-import { useTokenDetails } from "hooks/useTokenDetails";
+import { priceToBn } from "utils/misc";
+
+import { Web3Context as Web3ContextType } from "types";
+import { ValidationErrors } from "validators/types";
 
 const logger = getLogger("useDeployStrategy");
 
 export interface Params {
-  lowestPrice: string;
-  highestPrice: string;
-  baseTokenAmount: string;
-  quoteTokenAmount: string;
-  totalBrackets: string;
   baseTokenAddress: string;
   quoteTokenAddress: string;
+
+  lowestPrice: string;
   startPrice: string;
+  highestPrice: string;
+
+  baseTokenAmount: string;
+  quoteTokenAmount: string;
+
+  totalBrackets: string;
 }
 
-export type Return = (
-  params: Omit<Params, "baseTokenAddress" | "quoteTokenAddress">
-) => Promise<void>;
+export type Result = (params: Params) => Promise<undefined | ValidationErrors>;
 
-function priceToBnWhyNotDecimalInstead(price: string): BN {
-  return new BN(new Decimal(price).mul(1e18).toString());
-}
+export function useDeployStrategy(): Result {
+  const context = useContext(Web3Context) as Web3ContextType;
 
-export function useDeployStrategy(
-  params: Pick<Params, "baseTokenAddress" | "quoteTokenAddress">
-): Return {
-  const { baseTokenAddress, quoteTokenAddress } = params;
+  const { getErc20Details } = context;
 
-  const web3Context = useContext(Web3Context);
-  const { tokenDetails: baseTokenDetails } = useTokenDetails(baseTokenAddress);
-  const { tokenDetails: quoteTokenDetails } = useTokenDetails(
-    quoteTokenAddress
-  );
-
-  return async (params): Promise<void> => {
+  return async (fnParams: Params) => {
     const {
+      baseTokenAddress,
+      quoteTokenAddress,
       lowestPrice,
+      startPrice,
       highestPrice,
       baseTokenAmount,
       quoteTokenAmount,
       totalBrackets,
-      startPrice,
-    } = params;
-    logger.log(`==> Base token '${baseTokenAddress}'`, baseTokenDetails);
-    logger.log(`==> Quote token '${quoteTokenAddress}'`, quoteTokenDetails);
-    logger.log(`==> Params`, params);
+    } = fnParams;
 
-    await deployStrategy(
-      web3Context,
-      +totalBrackets,
-      // addresses
-      baseTokenAddress,
-      quoteTokenAddress,
-      // prices
-      priceToBnWhyNotDecimalInstead(lowestPrice),
-      priceToBnWhyNotDecimalInstead(highestPrice),
-      // amounts
-      parseAmount(baseTokenAmount, baseTokenDetails.decimals),
-      parseAmount(quoteTokenAmount, quoteTokenDetails.decimals),
-      // start price
-      priceToBnWhyNotDecimalInstead(startPrice)
+    const [baseToken, quoteToken] = await Promise.all([
+      getErc20Details(baseTokenAddress),
+      getErc20Details(quoteTokenAddress),
+    ]);
+
+    if (!baseToken || !quoteToken) {
+      return {
+        [FORM_ERROR]: {
+          label: "Failed to submit",
+          children: "Couldn't load required token data",
+        },
+      };
+    }
+
+    logger.log(
+      `==> Will deploy strategy with values:`,
+      Object.keys(fnParams).map((k) => `${k}:${fnParams[k]}`),
+      baseToken,
+      quoteToken
     );
+
+    try {
+      await deployStrategy(
+        context,
+        Number(totalBrackets),
+        // addresses
+        baseTokenAddress,
+        quoteTokenAddress,
+        // prices
+        priceToBn(lowestPrice),
+        priceToBn(highestPrice),
+        // amounts
+        parseAmount(baseTokenAmount, baseToken.decimals) || ZERO,
+        parseAmount(quoteTokenAmount, quoteToken.decimals) || ZERO,
+        // start price
+        priceToBn(startPrice)
+      );
+
+      logger.log(`==> Successfully deployed strategy`);
+
+      // success
+      return undefined;
+    } catch (e) {
+      return {
+        [FORM_ERROR]: {
+          label: "Failed to deploy strategy",
+          children: e.message,
+        },
+      };
+    }
   };
 }

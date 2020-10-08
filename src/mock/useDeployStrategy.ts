@@ -3,5 +3,5 @@ import { createMockHook } from "./mockHookContext";
 
 export const useDeployStrategy = createMockHook<typeof hook>(
   "useDeployStrategy",
-  null
+  async () => undefined
 );
