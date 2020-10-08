@@ -1,26 +1,15 @@
 import React, { memo, useCallback, useContext } from "react";
-import {
-  FormApi,
-  FormState,
-  MutableState,
-  Mutator,
-  Tools,
-  FORM_ERROR,
-} from "final-form";
-import BN from "bn.js";
-import Decimal from "decimal.js";
+import { FormApi, FormState, MutableState, Mutator, Tools } from "final-form";
 
 import { Form, FormSpy } from "react-final-form";
 import createCalculatedFieldsDecorator, {
   Calculation,
 } from "final-form-calculate";
 
-import { parseAmount, ZERO } from "@gnosis.pm/dex-js";
-
-import deployStrategy from "api/deployStrategy";
-
 import { Web3Context } from "components/Web3Provider";
 import { Web3Context as Web3ContextType } from "types";
+
+import { useDeployStrategy } from "hooks/useDeployStrategy";
 
 import { setFieldData, setFieldValue } from "utils/finalForm";
 import { calculateBrackets } from "utils/calculateBrackets";
@@ -127,11 +116,6 @@ const calculateFieldsDecorator = createCalculatedFieldsDecorator(
   swapTokensCalculationFactory("quoteTokenAddress", "baseTokenAddress")
 );
 
-// TODO: move this somewhere else
-function priceToBn(price: string): BN {
-  return new BN(new Decimal(price).mul(1e18).toString());
-}
-
 interface Props {
   children: React.ReactNode;
 }
@@ -199,64 +183,17 @@ export const DeployForm = memo(function DeployForm({
     [hasBalance]
   );
 
-  // The initial idea was to keep all the logic only on the container (index) component
-  // But with the validations and final-form I didn't manage to.
-  // Get back here later on and try to abide by that rule
+  const deployStrategy = useDeployStrategy();
 
   const onSubmit = useCallback(
     async (values: DeployFormValues): Promise<undefined | ValidationErrors> => {
-      const {
-        lowestPrice,
-        highestPrice,
-        baseTokenAmount,
-        quoteTokenAmount,
-        totalBrackets,
-        startPrice,
-        baseTokenAddress,
-        quoteTokenAddress,
-      } = values;
+      const result = await deployStrategy(values);
 
-      const baseTokenDetails = await getErc20Details(baseTokenAddress);
-      const quoteTokenDetails = await getErc20Details(quoteTokenAddress);
-
-      if (!baseTokenDetails || !quoteTokenDetails) {
-        return {
-          [FORM_ERROR]: {
-            label: "Failed to submit",
-            children: "Couldn't to load required token data",
-          },
-        };
-      }
-
-      try {
-        await deployStrategy(
-          context,
-          Number(totalBrackets),
-          // addresses
-          baseTokenAddress,
-          quoteTokenAddress,
-          // prices
-          priceToBn(lowestPrice),
-          priceToBn(highestPrice),
-          // amounts
-          parseAmount(baseTokenAmount, baseTokenDetails.decimals) || ZERO,
-          parseAmount(quoteTokenAmount, quoteTokenDetails.decimals) || ZERO,
-          // start price
-          priceToBn(startPrice)
-        );
-        // success
-        // TODO: go to tx screen maybe?
-        return undefined;
-      } catch (e) {
-        return {
-          [FORM_ERROR]: {
-            label: "Failed to deploy strategy",
-            children: e.message,
-          },
-        };
-      }
+      // TODO: when result === `undefined`, deploy succeeded.
+      // TODO: do something like reset form, redirect to pending strategies, etc
+      return result;
     },
-    [getErc20Details, context]
+    [deployStrategy]
   );
 
   return (
