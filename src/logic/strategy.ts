@@ -71,6 +71,7 @@ class Strategy {
     let orderBatchIds = [];
     let withdrawRequestBlocks = {};
     let allWithdrawClaims = [];
+    let allWithdrawRequests = [];
 
     let allBracketOrderEvents = []
     const brackets = await Promise.all(this.safeAddresses.map(async (bracketAddress) : Promise<Bracket> => {
@@ -101,7 +102,11 @@ class Strategy {
           fromBlock: this.startBlockNumber-1,
           filter: { batchId: bracketDepositEvents[0].batchId, user: bracketAddress }
         });
-  
+ 
+        // collect all withdrawRequest events, to determine if a strategy was withdraw requested yet
+        
+        // find blocks for all withdraw requests in order to determine time until claim is available
+        // todo: implement batchexchange time modulo to determine times more precisely
         withdrawRequestsWithBlock = await Promise.all(
           withdrawRequests.map(async (withdrawRequest) : Promise<WithdrawEvent> => {
             if (!withdrawRequestBlocks[withdrawRequest.blockNumber]) {
@@ -114,7 +119,9 @@ class Strategy {
               created: new Date(withdrawRequestBlocks[withdrawRequest.blockNumber].timestamp * 1000),
             }
           })
-        )  
+        )
+        
+        allWithdrawRequests = [...allWithdrawRequests, ...withdrawRequestsWithBlock]; 
       }
 
       const deposits = bracketDepositEvents
@@ -151,6 +158,7 @@ class Strategy {
     this.baseFunding = null;
     this.quoteFunding = null;
 
+    // get token details
     if (this.baseTokenId != null) {
       if (!globalResolvedTokenPromises[this.baseTokenId]) {
         globalResolvedTokenPromises[this.baseTokenId] = batchExchangeContract.methods.tokenIdToAddressMap(this.baseTokenId).call()
@@ -165,6 +173,8 @@ class Strategy {
       this.quoteTokenAddress = await globalResolvedTokenPromises[this.quoteTokenId]
       this.quoteTokenDetails = await context.getErc20Details(this.quoteTokenAddress)
     }
+
+    // tally up 
     let baseFundingBn = toBN(0);
     let quoteFundingBn = toBN(0);
     if (brackets) {
@@ -179,17 +189,22 @@ class Strategy {
         })
       })  
     }
+
+    // sum of fundings
     this.baseFunding = baseFundingBn.toString();
     this.quoteFunding = quoteFundingBn.toString();
 
-    this.lastWithdrawRequestEvent = brackets[0]?.withdrawRequests[0];
+    // last withdraw request and claim events to determine UI state
+    this.lastWithdrawRequestEvent = allWithdrawRequests[0];
     this.lastWithdrawClaimEvent = allWithdrawClaims[0];
 
+    // order price range
     this.prices.sort((a, b) => {
       if (a.eq(b)) return 0;
       return (a.gt(b) ? 1 : -1);
     })
     this.priceRange = pricesToRange(this.prices, this.baseTokenDetails, this.quoteTokenDetails);
+
     this.brackets = brackets;
   }
 }
