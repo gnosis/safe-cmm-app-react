@@ -1,3 +1,6 @@
+import BN from "bn.js";
+import Decimal from "decimal.js";
+
 import { TokenDetails } from "types";
 import { SelectItem } from "@gnosis.pm/safe-react-components/dist/inputs/Select";
 
@@ -23,4 +26,8 @@ export function tokenDetailsToSelectItem(
     label: tokenDetails.symbol,
     iconUrl: tokenDetails.imageUrl,
   };
+}
+
+export function priceToBn(price: string): BN {
+  return new BN(new Decimal(price).mul(1e18).toString());
 }
