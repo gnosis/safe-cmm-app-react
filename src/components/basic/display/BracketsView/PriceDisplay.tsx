@@ -44,7 +44,7 @@ export const PriceDisplay = memo(function PriceDisplay(
       <Text size="sm" as="span" color={color}>
         {price}
       </Text>
-      <TokenDisplay token={token} size="sm" color={color} />
+      {token && <TokenDisplay token={token} size="sm" color={color} />}
       {isOutOfRange && (
         <Text size="sm" color="rinkeby">
           (out of range)
