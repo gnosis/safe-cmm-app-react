@@ -1,12 +1,13 @@
 import React, { memo } from "react";
 
-import { Text, Loader } from "@gnosis.pm/safe-react-components";
-import {
-  ThemeTextSize,
-  ThemeColors,
-} from "@gnosis.pm/safe-react-components/dist/theme";
+import { Loader } from "@gnosis.pm/safe-react-components";
+import { ThemeColors } from "@gnosis.pm/safe-react-components/dist/theme";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
+
+import { ThemeTextSize } from "theme";
+
+import { Text } from "components/basic/display/Text";
 
 export interface Props {
   token: string;

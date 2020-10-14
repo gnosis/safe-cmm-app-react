@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import styled from "styled-components";
 
-import { Text } from "@gnosis.pm/safe-react-components";
+import { Text } from "components/basic/display/Text";
 
 import { TokenDisplay } from "../TokenDisplay";
 
