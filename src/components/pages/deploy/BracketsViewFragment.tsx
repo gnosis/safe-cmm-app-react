@@ -4,6 +4,8 @@ import { useFormState } from "react-final-form";
 
 import { BracketsViewer } from "components/basic/display/BracketsView";
 
+import { theme } from "theme";
+
 import { getBracketValue } from "./DeployForm";
 import { DeployFormValues } from "./types";
 
@@ -11,7 +13,7 @@ const Wrapper = styled.div`
   width: 450px;
   heigh: 115px;
 
-  background-color: #f7f5f5;
+  background-color: ${theme.colors.backgroundSideBar};
   border-radius: 16px;
 
   & > * {
