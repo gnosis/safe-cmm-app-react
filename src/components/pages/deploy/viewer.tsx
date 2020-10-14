@@ -9,10 +9,20 @@ import { ErrorMessagesFragment } from "./ErrorMessagesFragment";
 import { DeployStrategyButtonFragment } from "./DeployStrategyButtonFragment";
 import { DeployForm } from "./DeployForm";
 import { FormBackdrop } from "./FormBackdrop";
+import { BracketsViewFragment } from "./BracketsViewFragment";
 
 const PageLayout = styled.div`
   display: flex;
   min-width: 860px;
+`;
+
+const DeployColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* Some space for sidebar */
+  margin-right: 48px;
 `;
 
 const DeployWidget = styled.div`
@@ -21,9 +31,6 @@ const DeployWidget = styled.div`
   min-height: 482px;
 
   padding: 16px 13px;
-
-  // Some space for sidebar
-  margin-right: 48px;
 
   // Spacing between elements
   & > *:not(:last-child) {
@@ -44,14 +51,17 @@ export const DeployPageViewer = memo(function DeployPageViewer(): JSX.Element {
   return (
     <PageLayout>
       <DeployForm>
-        <DeployWidget>
-          <TokenSelectorsFragment />
-          <MarketPriceFragment />
-          <PricesFragment />
-          <ErrorMessagesFragment />
-          <DeployStrategyButtonFragment />
-        </DeployWidget>
-        <FormBackdrop />
+        <DeployColumn>
+          <DeployWidget>
+            <TokenSelectorsFragment />
+            <MarketPriceFragment />
+            <PricesFragment />
+            <ErrorMessagesFragment />
+            <DeployStrategyButtonFragment />
+          </DeployWidget>
+          <BracketsViewFragment />
+          <FormBackdrop />
+        </DeployColumn>
       </DeployForm>
       <SideBar />
     </PageLayout>
