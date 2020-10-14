@@ -1,4 +1,4 @@
-import React, { createContext, memo } from "react";
+import React, { createContext, memo, useMemo } from "react";
 import styled from "styled-components";
 
 import { Header } from "./Header";
@@ -81,23 +81,32 @@ export const BracketsViewView = memo(function BracketsViewView(
     upperThreshold = UPPER_THRESHOLD,
   } = props;
 
-  const needlePosition = calculateNeedlePosition(
-    startPrice,
-    lowestPrice,
-    highestPrice
+  const needlePosition = useMemo(
+    (): number | undefined =>
+      calculateNeedlePosition(startPrice, lowestPrice, highestPrice),
+    [highestPrice, lowestPrice, startPrice]
   );
 
-  console.log(`Needle position`, needlePosition);
-
-  const context = {
-    ...props,
-    totalBrackets,
-    leftBrackets,
-    rightBrackets,
-    needlePosition,
-    lowerThreshold,
-    upperThreshold,
-  };
+  const context = useMemo(
+    () => ({
+      ...props,
+      totalBrackets,
+      leftBrackets,
+      rightBrackets,
+      needlePosition,
+      lowerThreshold,
+      upperThreshold,
+    }),
+    [
+      leftBrackets,
+      lowerThreshold,
+      needlePosition,
+      props,
+      rightBrackets,
+      totalBrackets,
+      upperThreshold,
+    ]
+  );
 
   return (
     <BracketsViewContext.Provider value={context}>
