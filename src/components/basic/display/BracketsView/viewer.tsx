@@ -90,7 +90,7 @@ export const BracketsViewView = memo(function BracketsViewView(
   const context = useMemo(
     () => ({
       ...props,
-      totalBrackets,
+      totalBrackets: totalBrackets >= 1 ? totalBrackets : 1,
       leftBrackets,
       rightBrackets,
       needlePosition,
