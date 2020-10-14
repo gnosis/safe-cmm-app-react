@@ -13,6 +13,10 @@ before_install:
   - pip install awscli --upgrade --user
 script:
   - npm run build
+after_success:
+  # Pull Request - Deploy it to a review environment
+  # Travis doesn't do deploy step with pull requests builds
+  - ./travis/deploy_pull_request.sh
 deploy:
   # Development environment
   - provider: s3
