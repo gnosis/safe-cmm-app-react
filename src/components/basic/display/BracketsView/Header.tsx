@@ -18,6 +18,7 @@ const Wrapper = styled.div`
 
   .justifyRight {
     text-align: right;
+    justify-content: end;
   }
 `;
 
