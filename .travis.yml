@@ -16,7 +16,7 @@ script:
 after_success:
   # add storybook to build
   - if [[ $TRAVIS_TAG != "" || $TRAVIS_PULL_REQUEST != "false" ]]; then
-      npm run build-storybook -o dist/storybook;
+      npm run release-storybook;
     fi
   # Pull Request - Deploy it to a review environment
   # Travis doesn't do deploy step with pull requests builds
