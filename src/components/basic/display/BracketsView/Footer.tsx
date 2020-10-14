@@ -51,6 +51,7 @@ export const Footer = memo(function Footer(): JSX.Element {
             token={baseTokenAddress}
             adornment={adornment}
             color="primary"
+            size="xs"
             isOutOfRange={isOutOfRange}
             className={className}
           />
@@ -63,7 +64,7 @@ export const Footer = memo(function Footer(): JSX.Element {
   const lowestPriceDisplay = useMemo(() => {
     return (
       lowestPrice && (
-        <PriceDisplay price={lowestPrice} token={baseTokenAddress} />
+        <PriceDisplay price={lowestPrice} token={baseTokenAddress} size="xs" />
       )
     );
   }, [baseTokenAddress, lowestPrice]);
@@ -74,6 +75,7 @@ export const Footer = memo(function Footer(): JSX.Element {
         <PriceDisplay
           price={highestPrice}
           token={baseTokenAddress}
+          size="xs"
           className="justifyRight"
         />
       )

@@ -9,6 +9,7 @@ export type Props = {
   price?: string;
   token?: string;
   color?: "primary" | "text";
+  size?: "sm" | "xs";
   className?: string;
   adornment?: "left" | "right";
   isOutOfRange?: boolean;
@@ -30,6 +31,7 @@ export const PriceDisplay = memo(function PriceDisplay(
     token,
     className,
     color = "text",
+    size = "sm",
     adornment,
     isOutOfRange,
   } = props;
@@ -37,21 +39,21 @@ export const PriceDisplay = memo(function PriceDisplay(
   return (
     <Wrapper className={className}>
       {adornment === "left" && (
-        <Text size="sm" as="span" color={color}>
+        <Text size={size} as="span" color={color}>
           &lt;
         </Text>
       )}
-      <Text size="sm" as="span" color={color}>
+      <Text size={size} as="span" color={color}>
         {price}
       </Text>
-      {token && <TokenDisplay token={token} size="sm" color={color} />}
+      {token && <TokenDisplay token={token} size={size} color={color} />}
       {isOutOfRange && (
-        <Text size="sm" color="rinkeby">
+        <Text size={size} color="rinkeby">
           (out of range)
         </Text>
       )}
       {adornment === "right" && (
-        <Text size="sm" as="span" color={color}>
+        <Text size={size} as="span" color={color}>
           &gt;
         </Text>
       )}
