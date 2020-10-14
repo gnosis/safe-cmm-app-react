@@ -89,6 +89,26 @@ DeployStartPriceSmallerThanLowestPrice.args = {
   rightBrackets: 5,
 };
 
+export const DeployStartPriceEqualToLowestPrice = Template.bind({});
+DeployStartPriceEqualToLowestPrice.args = {
+  ...DeployDefault.args,
+  lowestPrice: "1",
+  highestPrice: "5",
+  startPrice: "1",
+  leftBrackets: 0,
+  rightBrackets: 5,
+};
+
+export const DeployStartPriceEqualToHighestPrice = Template.bind({});
+DeployStartPriceEqualToHighestPrice.args = {
+  ...DeployDefault.args,
+  lowestPrice: "1",
+  highestPrice: "5",
+  startPrice: "5",
+  leftBrackets: 5,
+  rightBrackets: 0,
+};
+
 export const DeployStartPriceGreaterThanHighestPrice = Template.bind({});
 DeployStartPriceGreaterThanHighestPrice.args = {
   ...DeployDefault.args,
