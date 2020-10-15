@@ -31,9 +31,13 @@ const Wrapper = styled.div<{ needlePosition: number }>`
 `;
 
 export const Needle = memo(function Needle(): JSX.Element {
-  const { needlePosition = 50, startPrice, baseTokenAddress } = useContext(
-    BracketsViewContext
-  );
+  const {
+    needlePosition = 50,
+    startPrice,
+    baseTokenAddress,
+    lowerThreshold,
+    upperThreshold,
+  } = useContext(BracketsViewContext);
 
   if (needlePosition < 0 || needlePosition >= 100) {
     return null;
@@ -41,7 +45,7 @@ export const Needle = memo(function Needle(): JSX.Element {
 
   return (
     <Wrapper needlePosition={needlePosition}>
-      {needlePosition >= 20 && needlePosition <= 80 && (
+      {needlePosition >= lowerThreshold && needlePosition <= upperThreshold && (
         <>
           <NeedleLabel onNeedle />
           {startPrice && (
