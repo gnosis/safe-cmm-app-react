@@ -24,3 +24,9 @@ export const MINIMUM_BRACKETS = 1;
 export const MAXIMUM_BRACKETS = 10;
 
 export const PRICE_CACHE_TIME = 30; // in seconds
+
+// Brackets visualization thresholds, per page type
+export const DEPLOY_LOWER_THRESHOLD = 20;
+export const DEPLOY_UPPER_THRESHOLD = 80;
+export const STRATEGY_LOWER_THRESHOLD = 10;
+export const STRATEGY_UPPER_THRESHOLD = 90;

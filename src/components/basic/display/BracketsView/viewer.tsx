@@ -1,6 +1,13 @@
 import React, { createContext, memo, useMemo } from "react";
 import styled from "styled-components";
 
+import {
+  DEPLOY_LOWER_THRESHOLD,
+  DEPLOY_UPPER_THRESHOLD,
+  STRATEGY_LOWER_THRESHOLD,
+  STRATEGY_UPPER_THRESHOLD,
+} from "utils/constants";
+
 import { Header } from "./Header";
 import { Bar } from "./Bar";
 import { Footer } from "./Footer";
@@ -24,13 +31,13 @@ export type Props = {
   lowestPrice?: string;
   startPrice?: string;
   highestPrice?: string;
-
-  lowerThreshold?: number;
-  upperThreshold?: number;
 };
 
 type ExtraContextProps = {
   needlePosition?: number;
+
+  lowerThreshold?: number;
+  upperThreshold?: number;
 };
 
 export const BracketsViewContext = createContext<Props & ExtraContextProps>({
@@ -62,9 +69,6 @@ function calculateNeedlePosition(
   return (100 * (sp - lp)) / (hp - lp);
 }
 
-const LOWER_THRESHOLD = 20;
-const UPPER_THRESHOLD = 80;
-
 export const BracketsViewView = memo(function BracketsViewView(
   props: Props
 ): JSX.Element {
@@ -77,8 +81,7 @@ export const BracketsViewView = memo(function BracketsViewView(
     lowestPrice,
     highestPrice,
 
-    lowerThreshold = LOWER_THRESHOLD,
-    upperThreshold = UPPER_THRESHOLD,
+    type,
   } = props;
 
   const needlePosition = useMemo(
@@ -94,18 +97,12 @@ export const BracketsViewView = memo(function BracketsViewView(
       leftBrackets,
       rightBrackets,
       needlePosition,
-      lowerThreshold,
-      upperThreshold,
+      lowerThreshold:
+        type === "deploy" ? DEPLOY_LOWER_THRESHOLD : STRATEGY_LOWER_THRESHOLD,
+      upperThreshold:
+        type === "deploy" ? DEPLOY_UPPER_THRESHOLD : STRATEGY_UPPER_THRESHOLD,
     }),
-    [
-      leftBrackets,
-      lowerThreshold,
-      needlePosition,
-      props,
-      rightBrackets,
-      totalBrackets,
-      upperThreshold,
-    ]
+    [leftBrackets, needlePosition, props, rightBrackets, totalBrackets, type]
   );
 
   return (
