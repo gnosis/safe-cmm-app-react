@@ -40,7 +40,11 @@ function publish_pull_request_urls_in_github {
   else
     echo "PR-review not detected, commenting URL to repo"
 
-    curl -H "Authorization: token ${GITHUB_API_TOKEN}" --request POST ${GITHUB_PR_COMMENTS} --data '{"body":"Travis automatic deployment:\r\n '${REVIEW_FEATURE_URL}' \r\n"}'
+    REVIEW_FEATURE_MESSAGE="{\"body\": \"Travis automatic deployment:\\n \
+* **🔐 [Safe app link]($REVIEW_FEATURE_URL)**: To be added as a custom app on [Safe Multisig Rinkeby](https://rinkeby.gnosis-safe.io/) or [Mainnet](https://gnosis-safe.io/)\\n \
+* **📖 [Storybook](${REVIEW_FEATURE_URL}/storybook/)**: Component stories\"}"
+
+    curl -H "Authorization: token ${GITHUB_API_TOKEN}" --request POST ${GITHUB_PR_COMMENTS} --data "$REVIEW_FEATURE_MESSAGE"
   fi
 }
 

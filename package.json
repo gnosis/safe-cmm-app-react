@@ -11,6 +11,7 @@
     "lint-fix": "./node_modules/.bin/eslint --fix ./src",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
+    "release-storybook": "build-storybook -o dist/storybook",
     "test": "jest"
   },
   "keywords": [],
