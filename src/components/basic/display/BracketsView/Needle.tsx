@@ -49,6 +49,7 @@ export const Needle = memo(function Needle(): JSX.Element {
               price={startPrice}
               token={baseTokenAddress}
               color="primary"
+              size="xs"
               className="price"
             />
           )}
