@@ -10,7 +10,7 @@ function buildBorder(color: string): string {
   return `2px solid ${color}`;
 }
 
-const Wrapper = styled.div<{ hasLeftBrackets?: boolean }>`
+const Wrapper = styled.div<{ hasLeftBrackets?: boolean; isDeploy?: boolean }>`
   height: inherit;
   display: flex;
 
@@ -26,7 +26,18 @@ const Wrapper = styled.div<{ hasLeftBrackets?: boolean }>`
   }
 
   .left {
-    border-right: ${buildBorder(theme.colors.borderLightGreen)};
+    border-right: ${({ isDeploy }) =>
+      buildBorder(
+        theme.colors[isDeploy ? "borderLightGreen" : "borderDarkGreen"]
+      )};
+
+    ${({ isDeploy }) =>
+      isDeploy
+        ? ""
+        : `
+          &:hover {
+            background-color: ${theme.colors.borderLightGreen};
+          }`}
   }
 
   .left:last-of-type {
@@ -44,7 +55,18 @@ const Wrapper = styled.div<{ hasLeftBrackets?: boolean }>`
   .right {
     background-color: ${theme.colors.backgroundLightPurple};
 
-    border-right: ${buildBorder(theme.colors.borderLightPurple)};
+    border-right: ${({ isDeploy }) =>
+      buildBorder(
+        theme.colors[isDeploy ? "borderLightPurple" : "borderDarkPurple"]
+      )};
+
+    ${({ isDeploy }) =>
+      isDeploy
+        ? ""
+        : `
+          &:hover {
+            background-color: ${theme.colors.borderLightPurple};
+          }`}
   }
 
   .right:last-of-type {
@@ -53,12 +75,12 @@ const Wrapper = styled.div<{ hasLeftBrackets?: boolean }>`
 `;
 
 export const Brackets = memo(function Brackets(): JSX.Element {
-  const { totalBrackets, leftBrackets, rightBrackets } = useContext(
+  const { totalBrackets, leftBrackets, rightBrackets, type } = useContext(
     BracketsViewContext
   );
 
   return (
-    <Wrapper hasLeftBrackets={!!leftBrackets}>
+    <Wrapper hasLeftBrackets={!!leftBrackets} isDeploy={type === "deploy"}>
       {range(
         !leftBrackets && !rightBrackets ? totalBrackets : leftBrackets
       ).map((id) => (
