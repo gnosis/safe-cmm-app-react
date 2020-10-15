@@ -36,7 +36,10 @@ export const Footer = memo(function Footer(): JSX.Element {
     needlePosition,
     lowerThreshold,
     upperThreshold,
+    type,
   } = useContext(BracketsViewContext);
+
+  const isDeploy = type === "deploy";
 
   const startPriceDisplayFactory = useCallback(
     (
@@ -88,16 +91,23 @@ export const Footer = memo(function Footer(): JSX.Element {
     } else if (needlePosition === 0) {
       return startPriceDisplayFactory();
     } else if (needlePosition < lowerThreshold) {
-      return (
-        <TwoPrices>
-          {lowestPriceDisplay}
-          {startPriceDisplayFactory()}
-        </TwoPrices>
-      );
-    } else {
+      if (isDeploy) {
+        return (
+          <TwoPrices>
+            {lowestPriceDisplay}
+            {startPriceDisplayFactory()}
+          </TwoPrices>
+        );
+      } else {
+        return startPriceDisplayFactory();
+      }
+    } else if (isDeploy) {
       return lowestPriceDisplay;
+    } else {
+      return "";
     }
   }, [
+    isDeploy,
     lowerThreshold,
     lowestPriceDisplay,
     needlePosition,
@@ -110,17 +120,24 @@ export const Footer = memo(function Footer(): JSX.Element {
     } else if (needlePosition === 100) {
       return startPriceDisplayFactory(undefined, false, "justifyRight");
     } else if (needlePosition >= upperThreshold) {
-      return (
-        <TwoPrices className="justifyRight">
-          {startPriceDisplayFactory(undefined, false, "justifyRight")}
-          {highestPriceDisplay}
-        </TwoPrices>
-      );
-    } else {
+      if (isDeploy) {
+        return (
+          <TwoPrices className="justifyRight">
+            {startPriceDisplayFactory(undefined, false, "justifyRight")}
+            {highestPriceDisplay}
+          </TwoPrices>
+        );
+      } else {
+        return startPriceDisplayFactory(undefined, false, "justifyRight");
+      }
+    } else if (isDeploy) {
       return highestPriceDisplay;
+    } else {
+      return "";
     }
   }, [
     highestPriceDisplay,
+    isDeploy,
     needlePosition,
     startPriceDisplayFactory,
     upperThreshold,
