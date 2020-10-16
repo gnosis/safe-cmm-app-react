@@ -261,8 +261,8 @@ class Strategy {
                 .balanceOf(bracket.address)
                 .call();
 
-              baseBalances[bracket.address] = baseBalance;
-              quoteBalances[bracket.address] = quoteBalance;
+              baseBalances[bracket.address] = new BN(baseBalance);
+              quoteBalances[bracket.address] = new BN(quoteBalance);
             }
           )
         );
