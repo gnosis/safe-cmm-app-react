@@ -3,6 +3,8 @@ import web3GLib from "web3";
 import Decimal from "decimal.js";
 import BN from "bn.js";
 
+import { ZERO } from "@gnosis.pm/dex-js";
+
 import {
   calculateFundsFromEvents,
   pricesToRange,
@@ -288,6 +290,22 @@ class Strategy {
       this.quoteTokenDetails
     );
     this.brackets = brackets;
+  }
+
+  public totalBalance(type: "base" | "quote"): BN | null {
+    const [details, balances] =
+      type === "base"
+        ? [this.baseTokenDetails, this.tokenBaseBalances]
+        : [this.quoteTokenDetails, this.tokenQuoteBalances];
+
+    if (!details || !balances) {
+      return null;
+    }
+
+    return Object.values(balances).reduce(
+      (acc, balance) => acc.add(balance),
+      ZERO
+    );
   }
 }
 
