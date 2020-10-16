@@ -1,7 +1,12 @@
-import { useContext } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { TokenDetails } from "types";
 
-import { Web3Context } from "components/Web3Provider";
+import { useRecoilState } from "recoil";
+import { tokenBalancesState } from "state/atoms";
+import {
+  ContractInteractionContext,
+  ContractInteractionContextProps,
+} from "components/context/ContractInteractionProvider";
 
 /**
  * useTokenList hook
@@ -10,7 +15,29 @@ import { Web3Context } from "components/Web3Provider";
  * Maybe unnecessary?
  */
 export function useTokenList(): TokenDetails[] {
-  const { tokenList } = useContext(Web3Context);
+  const tokenBalances = useRecoilState(tokenBalancesState);
+  const tokenAddresses = Object.keys(tokenBalances);
+  const [tokenList, setTokenList] = useState([]);
+
+  const { getErc20Details } = useContext(
+    ContractInteractionContext
+  ) as ContractInteractionContextProps;
+
+  const handleUpdateTokenList = useCallback(async (): Promise<void> => {
+    const tokenDetailList = await Promise.all(
+      tokenAddresses.map(
+        async (tokenAddress): Promise<TokenDetails> => {
+          return getErc20Details(tokenAddress);
+        }
+      )
+    );
+    setTokenList(tokenDetailList);
+  }, [getErc20Details, tokenAddresses]);
+
+  useEffect(() => {
+    // this will re-run whenever a new token was added to the balances
+    handleUpdateTokenList();
+  }, [handleUpdateTokenList]);
 
   return tokenList;
 }

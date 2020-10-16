@@ -1,8 +1,8 @@
-import { Web3Context } from "types";
 import Strategy from "logic/strategy";
+import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 
 const findStrategiesForOwner = async (
-  context: Web3Context
+  context: ContractInteractionContextProps
 ): Promise<Strategy[]> => {
   const {
     safeInfo: { safeAddress: owner },

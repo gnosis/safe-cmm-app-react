@@ -1,8 +1,8 @@
 import { parseAmount } from "@gnosis.pm/dex-js";
-
-import { TokenBalance } from "types";
-
 import { Validator } from "./types";
+
+import BN from "bn.js";
+import { TokenDetails } from "types";
 
 /**
  * Validator factory that takes in `getErc20Details` function from Web3Context
@@ -11,10 +11,11 @@ import { Validator } from "./types";
  * @param getErc20Details Async function that takes in a tokenAddress and returns TokenBalance
  */
 export const hasBalanceFactory = (
-  getErc20Details: (address: string) => Promise<TokenBalance>
-) => (tokenAddress: string): Validator => (/* fieldName */) => async (
-  value
-) => {
+  getErc20Details: (address: string) => Promise<TokenDetails>
+) => (
+  tokenAddress: string,
+  tokenBalances: Record<string, BN>
+): Validator => (/* fieldName */) => async (value) => {
   // Don't validate unless we have all the required input
   if (!tokenAddress || !value) {
     return undefined;
@@ -22,7 +23,8 @@ export const hasBalanceFactory = (
   const details = await getErc20Details(tokenAddress);
   const bnAmount = parseAmount(value, details.decimals);
 
-  if (bnAmount.gt(details.balance)) {
+  const balance = tokenBalances[tokenAddress];
+  if (bnAmount.gt(balance)) {
     return { label: `Insufficient balance for ${details.symbol} token` };
   }
   return undefined;

@@ -6,9 +6,6 @@ import createCalculatedFieldsDecorator, {
   Calculation,
 } from "final-form-calculate";
 
-import { Web3Context } from "components/Web3Provider";
-import { Web3Context as Web3ContextType } from "types";
-
 import { useDeployStrategy } from "hooks/useDeployStrategy";
 
 import { setFieldData, setFieldValue } from "utils/finalForm";
@@ -22,6 +19,12 @@ import { hasBalanceFactory } from "validators/hasBalance";
 import { composeValidators } from "validators/misc";
 
 import { DeployFormValues, FormFields } from "./types";
+import {
+  ContractInteractionContext,
+  ContractInteractionContextProps,
+} from "components/context/ContractInteractionProvider";
+import { useRecoilState } from "recoil";
+import { tokenBalancesState } from "state/atoms";
 
 function Warnings({
   mutators: { setFieldData },
@@ -123,12 +126,16 @@ interface Props {
 export const DeployForm = memo(function DeployForm({
   children,
 }: Props): React.ReactElement {
-  const context = useContext(Web3Context) as Web3ContextType;
+  const context = useContext(
+    ContractInteractionContext
+  ) as ContractInteractionContextProps;
   const { getErc20Details } = context;
+  const [tokenBalances] = useRecoilState(tokenBalancesState);
 
   const hasBalance = useCallback(
-    (tokenAddress: string) => hasBalanceFactory(getErc20Details)(tokenAddress),
-    [getErc20Details]
+    (tokenAddress: string) =>
+      hasBalanceFactory(getErc20Details)(tokenAddress, tokenBalances),
+    [tokenBalances, getErc20Details]
   );
 
   const validate = useCallback(

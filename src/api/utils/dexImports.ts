@@ -3,13 +3,15 @@ import calcFleetAddressInit from "@gnosis.pm/dex-liquidity-provision/scripts/uti
 import withdrawWrapperInit from "@gnosis.pm/dex-liquidity-provision/scripts/wrapper/withdraw";
 
 import makeFakeArtifacts from "utils/makeFakeArtifacts";
-import { Web3Context } from "types";
+import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 
 let tradingHelperInstance;
-export const importTradingStrategyHelpers = (context: Web3Context): any => {
+export const importTradingStrategyHelpers = (
+  context: ContractInteractionContextProps
+): any => {
   if (!tradingHelperInstance) {
     tradingHelperInstance = tradingHelperInit(
-      context.instance,
+      context.web3Instance,
       makeFakeArtifacts(context)
     );
   }
@@ -18,10 +20,12 @@ export const importTradingStrategyHelpers = (context: Web3Context): any => {
 };
 
 let calcFleetAddrInstance;
-export const importCalculateFleetAddresses = (context: Web3Context): any => {
+export const importCalculateFleetAddresses = (
+  context: ContractInteractionContextProps
+): any => {
   if (!calcFleetAddrInstance) {
     calcFleetAddrInstance = calcFleetAddressInit(
-      context.instance,
+      context.web3Instance,
       makeFakeArtifacts(context)
     );
   }
@@ -30,10 +34,12 @@ export const importCalculateFleetAddresses = (context: Web3Context): any => {
 };
 
 let withdrawWrapperInstance;
-export const importWithdrawWrapper = (context: Web3Context): any => {
+export const importWithdrawWrapper = (
+  context: ContractInteractionContextProps
+): any => {
   if (!withdrawWrapperInstance) {
     withdrawWrapperInstance = withdrawWrapperInit(
-      context.instance,
+      context.web3Instance,
       makeFakeArtifacts(context)
     );
   }

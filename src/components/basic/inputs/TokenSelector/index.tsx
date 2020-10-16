@@ -30,15 +30,13 @@ export const TokenSelector = memo(function TokenSelector(
   const { selectedTokenAddress, setError, ...rest } = props;
 
   const tokenList = useTokenList();
-  const { balance: tokenBalance, isLoading, error } = useTokenBalance(
-    selectedTokenAddress
-  );
+  const tokenBalance = useTokenBalance(selectedTokenAddress);
 
   // TODO: propagate error to parent component, since the design does not expect errors at the component level
   // probably better when adding validation
-  useEffect((): void => {
-    setError && setError(error);
-  }, [error, setError]);
+  // useEffect((): void => {
+  //   setError && setError(error);
+  // }, [error, setError]);
 
   const tokenDetails = useMemo(
     (): TokenDetails | undefined =>
@@ -58,7 +56,7 @@ export const TokenSelector = memo(function TokenSelector(
       items={items}
       tokenBalance={tokenBalance}
       tokenDetails={tokenDetails}
-      isBalanceLoading={isLoading}
+      isBalanceLoading={tokenBalance == null}
     />
   );
 });

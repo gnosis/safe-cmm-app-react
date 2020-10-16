@@ -1,12 +1,14 @@
-import { Web3Context, TokenDetails } from "types";
+import { TokenDetails } from "types";
 import web3GLib from "web3";
 import Decimal from "decimal.js";
+import BN from "bn.js";
 
 import {
   calculateFundsFromEvents,
   pricesToRange,
   PriceRange,
 } from "./utils/calculateFunds";
+import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 
 const { toBN } = web3GLib.utils;
 
@@ -44,6 +46,8 @@ class Strategy {
   quoteTokenAddress: string;
   baseTokenDetails: TokenDetails;
   quoteTokenDetails: TokenDetails;
+  tokenQuoteBalances: Record<string, BN>;
+  tokenBaseBalances: Record<string, BN>;
   baseFunding: string;
   quoteFunding: string;
   owner: string;
@@ -62,9 +66,11 @@ class Strategy {
     this.lastWithdrawClaimEvent = null;
   }
 
-  async fetchAllPossibleInfo(context: Web3Context): Promise<void> {
+  async fetchAllPossibleInfo(
+    context: ContractInteractionContextProps
+  ): Promise<void> {
     // Find creation date by block number
-    this.block = await context.instance.eth.getBlock(this.startBlockNumber);
+    this.block = await context.web3Instance.eth.getBlock(this.startBlockNumber);
     this.created = new Date(this.block.timestamp * 1000);
 
     this.prices = [];
@@ -129,7 +135,7 @@ class Strategy {
                   if (!withdrawRequestBlocks[withdrawRequest.blockNumber]) {
                     withdrawRequestBlocks[
                       withdrawRequest.blockNumber
-                    ] = await context.instance.eth.getBlock(
+                    ] = await context.web3Instance.eth.getBlock(
                       withdrawRequest.blockNumber
                     );
                   }
@@ -219,6 +225,10 @@ class Strategy {
     }
     const baseFundingBn = toBN(0);
     const quoteFundingBn = toBN(0);
+
+    const baseBalances: Record<string, BN> = {};
+    const quoteBalances: Record<string, BN> = {};
+
     if (brackets) {
       brackets.forEach((bracket): void => {
         bracket.deposits.forEach((deposit): void => {
@@ -230,9 +240,40 @@ class Strategy {
           }
         });
       });
+
+      if (this.quoteTokenAddress && this.baseTokenAddress) {
+        const quoteTokenContract = await context.getContract(
+          "ERC20Detailed",
+          this.quoteTokenAddress
+        );
+        const baseTokenContract = await context.getContract(
+          "ERC20Detailed",
+          this.baseTokenAddress
+        );
+
+        await Promise.all(
+          brackets.map(
+            async (bracket: Bracket): Promise<void> => {
+              const quoteBalance = await quoteTokenContract.methods
+                .balanceOf(bracket.address)
+                .call();
+              const baseBalance = await baseTokenContract.methods
+                .balanceOf(bracket.address)
+                .call();
+
+              baseBalances[bracket.address] = baseBalance;
+              quoteBalances[bracket.address] = quoteBalance;
+            }
+          )
+        );
+      }
     }
+
     this.baseFunding = baseFundingBn.toString();
     this.quoteFunding = quoteFundingBn.toString();
+
+    this.tokenBaseBalances = baseBalances;
+    this.tokenQuoteBalances = quoteBalances;
 
     this.lastWithdrawRequestEvent = brackets[0]?.withdrawRequests[0];
     this.lastWithdrawClaimEvent = allWithdrawClaims[0];

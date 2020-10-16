@@ -1,10 +1,10 @@
-import { Web3Context } from "types";
 import PendingStrategy from "logic/pendingStrategy";
 
 import { getPendingTransactions } from "api/safe";
+import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 
 const findPendingStrategiesForOwner = async (
-  context: Web3Context
+  context: ContractInteractionContextProps
 ): Promise<PendingStrategy[]> => {
   const {
     safeInfo: { safeAddress: owner, network },

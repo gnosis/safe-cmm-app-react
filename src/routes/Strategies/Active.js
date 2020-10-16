@@ -16,7 +16,7 @@ import {
 import { Button, Loader, Text } from "@gnosis.pm/safe-react-components";
 import useWeb3Strategies from "hooks/useWeb3Strategies";
 
-import { Web3Context } from "components/Web3Provider";
+import { TokenInteractionContext } from "components/context/TokenInteractionProvider";
 
 import { withdrawRequest, withdrawClaim } from "api/withdrawFunds";
 import moment from "moment";
@@ -132,7 +132,7 @@ const WithdrawButton = ({
 };
 
 const Active = () => {
-  const context = useContext(Web3Context);
+  const context = useContext(TokenInteractionContext);
   const { strategies, status } = useWeb3Strategies();
 
   const [withdrawStatusForRow, setWithdrawStatusForRow] = useState({});
