@@ -1,6 +1,8 @@
 import React, { memo, useState, useCallback } from "react";
 import styled from "styled-components";
 
+import { formatSmart } from "@gnosis.pm/dex-js";
+
 import {
   TableContainer,
   Table,
@@ -11,7 +13,6 @@ import {
   IconButton,
 } from "@material-ui/core";
 import Strategy from "logic/strategy";
-import Decimal from "decimal.js";
 
 import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
@@ -45,7 +46,7 @@ export const ActiveTable = memo(function ActiveTable({
 
   const makeStrategyFoldoutHandler = useCallback((strategy: Strategy) => {
     return () => {
-      setFoldOutStrategy((currFoldoutTxHash) => {
+      setFoldOutStrategy((currFoldoutTxHash: string) => {
         if (currFoldoutTxHash === strategy.transactionHash) {
           return null;
         }
@@ -84,31 +85,17 @@ export const ActiveTable = memo(function ActiveTable({
                 </TableCell>
                 <TableCell>{strategy.brackets.length}</TableCell>
                 <TableCell>
-                  {strategy.baseTokenDetails
-                    ? Object.values(strategy.tokenBaseBalances)
-                        .reduce(
-                          (acc, amount) =>
-                            acc.add(new Decimal(amount.toString())),
-                          new Decimal(0)
-                        )
-                        .div(Math.pow(10, strategy.baseTokenDetails.decimals))
-                        .toSD(4)
-                        .toString()
-                    : "-"}{" "}
+                  {formatSmart(
+                    strategy.totalBalance("base"),
+                    strategy.baseTokenDetails?.decimals
+                  ) || "-"}{" "}
                   {strategy.baseTokenDetails?.symbol}
                 </TableCell>
                 <TableCell>
-                  {strategy.quoteTokenDetails
-                    ? Object.values(strategy.tokenQuoteBalances)
-                        .reduce(
-                          (acc, amount) =>
-                            acc.add(new Decimal(amount.toString())),
-                          new Decimal(0)
-                        )
-                        .div(Math.pow(10, strategy.quoteTokenDetails.decimals))
-                        .toSD(4)
-                        .toString()
-                    : "-"}{" "}
+                  {formatSmart(
+                    strategy.totalBalance("quote"),
+                    strategy.baseTokenDetails?.decimals
+                  ) || "-"}{" "}
                   {strategy.quoteTokenDetails?.symbol}
                 </TableCell>
                 <TableCell>TODO</TableCell>
