@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   }
 
   .justifyRight {
-    justify-content: right;
+    justify-content: flex-end;
   }
 `;
 
