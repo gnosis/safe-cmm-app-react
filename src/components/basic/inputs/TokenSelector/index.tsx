@@ -34,9 +34,6 @@ export const TokenSelector = memo(function TokenSelector(
 
   // TODO: propagate error to parent component, since the design does not expect errors at the component level
   // probably better when adding validation
-  // useEffect((): void => {
-  //   setError && setError(error);
-  // }, [error, setError]);
 
   const tokenDetails = useMemo(
     (): TokenDetails | undefined =>
