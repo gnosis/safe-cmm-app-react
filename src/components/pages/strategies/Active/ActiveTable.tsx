@@ -11,6 +11,7 @@ import {
   IconButton,
 } from "@material-ui/core";
 import Strategy from "logic/strategy";
+import Decimal from "decimal.js";
 
 import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
@@ -82,8 +83,34 @@ export const ActiveTable = memo(function ActiveTable({
                     : "Unknown"}
                 </TableCell>
                 <TableCell>{strategy.brackets.length}</TableCell>
-                <TableCell>TODO</TableCell>
-                <TableCell>TODO</TableCell>
+                <TableCell>
+                  {strategy.baseTokenDetails
+                    ? Object.values(strategy.tokenBaseBalances)
+                        .reduce(
+                          (acc, amount) =>
+                            acc.add(new Decimal(amount.toString())),
+                          new Decimal(0)
+                        )
+                        .div(Math.pow(10, strategy.baseTokenDetails.decimals))
+                        .toSD(4)
+                        .toString()
+                    : "-"}{" "}
+                  {strategy.baseTokenDetails?.symbol}
+                </TableCell>
+                <TableCell>
+                  {strategy.quoteTokenDetails
+                    ? Object.values(strategy.tokenQuoteBalances)
+                        .reduce(
+                          (acc, amount) =>
+                            acc.add(new Decimal(amount.toString())),
+                          new Decimal(0)
+                        )
+                        .div(Math.pow(10, strategy.quoteTokenDetails.decimals))
+                        .toSD(4)
+                        .toString()
+                    : "-"}{" "}
+                  {strategy.quoteTokenDetails?.symbol}
+                </TableCell>
                 <TableCell>TODO</TableCell>
                 <TableCell>TODO</TableCell>
                 <TableCell>{/* status message */}</TableCell>

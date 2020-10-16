@@ -323,7 +323,7 @@ export const ContractInteractionProvider = ({
         // update balance on recoil
         setTokenBalances((oldBalances) => ({
           ...oldBalances,
-          balances,
+          ...balances,
         }));
       } catch (e) {
         logger.error(

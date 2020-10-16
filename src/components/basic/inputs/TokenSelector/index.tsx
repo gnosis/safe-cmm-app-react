@@ -56,7 +56,7 @@ export const TokenSelector = memo(function TokenSelector(
       items={items}
       tokenBalance={tokenBalance}
       tokenDetails={tokenDetails}
-      isBalanceLoading={tokenBalance == null}
+      isBalanceLoading={selectedTokenAddress && tokenBalance == null}
     />
   );
 });

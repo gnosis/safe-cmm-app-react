@@ -15,7 +15,7 @@ import {
  * Maybe unnecessary?
  */
 export function useTokenList(): TokenDetails[] {
-  const tokenBalances = useRecoilState(tokenBalancesState);
+  const [tokenBalances] = useRecoilState(tokenBalancesState);
   const tokenAddresses = Object.keys(tokenBalances);
   const [tokenList, setTokenList] = useState([]);
 
@@ -37,7 +37,7 @@ export function useTokenList(): TokenDetails[] {
   useEffect(() => {
     // this will re-run whenever a new token was added to the balances
     handleUpdateTokenList();
-  }, [handleUpdateTokenList]);
+  }, [tokenBalances]); // FIXME: with the correct dependencies, this will re-render indefinitely
 
   return tokenList;
 }

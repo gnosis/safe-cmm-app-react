@@ -11,8 +11,7 @@ import { tokenBalancesState } from "state/atoms";
  * @param tokenAddress Address of token to query the balance for current Safe
  */
 export function useTokenBalance(tokenAddress?: string): BN {
-  const tokenBalances = useRecoilState(tokenBalancesState);
+  const [tokenBalances] = useRecoilState(tokenBalancesState);
   const balance = tokenBalances[tokenAddress];
-
-  return balance;
+  return balance == null ? null : new BN(balance);
 }
