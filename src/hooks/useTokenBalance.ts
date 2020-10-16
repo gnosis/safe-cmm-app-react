@@ -1,5 +1,5 @@
 import BN from "bn.js";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { tokenBalancesState } from "state/atoms";
 
 /**
@@ -10,8 +10,8 @@ import { tokenBalancesState } from "state/atoms";
  *
  * @param tokenAddress Address of token to query the balance for current Safe
  */
-export function useTokenBalance(tokenAddress?: string): BN {
-  const [tokenBalances] = useRecoilState(tokenBalancesState);
+export function useTokenBalance(tokenAddress?: string): BN | null {
+  const tokenBalances = useRecoilValue(tokenBalancesState);
   const balance = tokenBalances[tokenAddress];
-  return balance == null ? null : new BN(balance);
+  return !balance ? null : new BN(balance);
 }

@@ -2,7 +2,7 @@ import React, { memo, useCallback } from "react";
 import { Field, useField, useForm } from "react-final-form";
 import styled from "styled-components";
 
-import { formatAmountFull } from "@gnosis.pm/dex-js";
+import { formatAmountFull, ZERO } from "@gnosis.pm/dex-js";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
 
@@ -79,12 +79,16 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
     quoteTokenAddress
   );
 
-  const baseTokenBalance: BN = useTokenBalance(baseTokenAddress);
-  const quoteTokenBalance: BN = useTokenBalance(quoteTokenAddress);
+  const baseTokenBalance = useTokenBalance(baseTokenAddress);
+  const quoteTokenBalance = useTokenBalance(quoteTokenAddress);
 
   const onMaxClickFactory = useCallback(
-    (field: FormFields, tokenDetails: TokenDetails, maxBalance: BN): void => {
-      if (tokenDetails && maxBalance.gt(new BN(0))) {
+    (
+      field: FormFields,
+      tokenDetails: TokenDetails,
+      maxBalance: BN | null
+    ): void => {
+      if (tokenDetails && maxBalance?.gt(ZERO)) {
         const value = formatAmountFull({
           amount: maxBalance,
           precision: tokenDetails.decimals,
