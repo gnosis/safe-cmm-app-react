@@ -257,7 +257,6 @@ export const ContractInteractionProvider = ({
         name,
         onGP,
         imageUrl: getImageUrl(address),
-        //balance: new BN(balance),
       };
     },
     [handleGetContract, handleGetDeployed]
