@@ -10,7 +10,7 @@ interface Return {
 }
 
 export function useTokenDetails(token?: string): Return {
-  const [tokenDetails, setTokenDetails] = useState<TokenDetails>(null);
+  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
