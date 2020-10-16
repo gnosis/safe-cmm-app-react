@@ -13,5 +13,5 @@ import { tokenBalancesState } from "state/atoms";
 export function useTokenBalance(tokenAddress?: string): BN | null {
   const tokenBalances = useRecoilValue(tokenBalancesState);
   const balance = tokenBalances[tokenAddress];
-  return !balance ? null : new BN(balance);
+  return !balance ? null : balance;
 }
