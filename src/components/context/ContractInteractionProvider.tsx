@@ -247,7 +247,6 @@ export const ContractInteractionProvider = ({
         })(),
         erc20Contract.methods.symbol().call(),
         erc20Contract.methods.name().call(),
-        //erc20Contract.methods.balanceOf(safeInfo.safeAddress).call(),
         batchExchangeContract.methods.hasToken(address).call(),
       ]);
 
