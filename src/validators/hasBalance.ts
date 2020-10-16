@@ -14,17 +14,16 @@ export const hasBalanceFactory = (
   getErc20Details: (address: string) => Promise<TokenDetails>
 ) => (
   tokenAddress: string,
-  tokenBalances: Record<string, BN>
+  tokenBalance: BN | undefined
 ): Validator => (/* fieldName */) => async (value) => {
   // Don't validate unless we have all the required input
-  if (!tokenAddress || !value) {
+  if (!tokenAddress || !value || !tokenBalance) {
     return undefined;
   }
   const details = await getErc20Details(tokenAddress);
   const bnAmount = parseAmount(value, details.decimals);
 
-  const balance = tokenBalances[tokenAddress];
-  if (bnAmount.gt(balance)) {
+  if (bnAmount.gt(tokenBalance)) {
     return { label: `Insufficient balance for ${details.symbol} token` };
   }
   return undefined;

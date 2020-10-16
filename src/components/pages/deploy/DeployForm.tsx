@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useContext } from "react";
+import { useRecoilValue } from "recoil";
 import { FormApi, FormState, MutableState, Mutator, Tools } from "final-form";
-
 import { Form, FormSpy } from "react-final-form";
 import createCalculatedFieldsDecorator, {
   Calculation,
@@ -10,6 +10,8 @@ import { useDeployStrategy } from "hooks/useDeployStrategy";
 
 import { setFieldData, setFieldValue } from "utils/finalForm";
 import { calculateBrackets } from "utils/calculateBrackets";
+
+import { tokenBalancesState } from "state/atoms";
 
 import { ValidationErrors } from "validators/types";
 import { isGreaterThan } from "validators/isGreaterThan";
@@ -23,8 +25,6 @@ import {
   ContractInteractionContext,
   ContractInteractionContextProps,
 } from "components/context/ContractInteractionProvider";
-import { useRecoilState } from "recoil";
-import { tokenBalancesState } from "state/atoms";
 
 function Warnings({
   mutators: { setFieldData },
@@ -130,11 +130,14 @@ export const DeployForm = memo(function DeployForm({
     ContractInteractionContext
   ) as ContractInteractionContextProps;
   const { getErc20Details } = context;
-  const [tokenBalances] = useRecoilState(tokenBalancesState);
+  const tokenBalances = useRecoilValue(tokenBalancesState);
 
   const hasBalance = useCallback(
     (tokenAddress: string) =>
-      hasBalanceFactory(getErc20Details)(tokenAddress, tokenBalances),
+      hasBalanceFactory(getErc20Details)(
+        tokenAddress,
+        tokenBalances[tokenAddress] // TODO: show a warning when not able to fetch token balance?
+      ),
     [tokenBalances, getErc20Details]
   );
 
