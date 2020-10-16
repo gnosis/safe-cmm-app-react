@@ -19,7 +19,12 @@ export const getSafeEndpoint = (networkName: string): string => {
   return SAFE_ENDPOINT_URLS[Network[networkName]];
 };
 
-export const getInfuraEndpoint = (networkName: string): string => {
+export function getRpcEndpoint(networkName: string): string {
   checkNetwork(networkName);
+  
+  // xDai not available on Infura, going with the default xDai endpoint instead
+  if (networkName === "xdai") {
+    return "wss://rpc.xdaichain.com/wss";
+  }
   return `wss://${networkName}.infura.io/ws/v3/${INFURA_API_KEY}`;
-};
+}
