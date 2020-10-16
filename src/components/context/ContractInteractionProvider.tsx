@@ -311,7 +311,6 @@ export const ContractInteractionProvider = ({
                   ...safeTokenDetails.token,
                   imageUrl: safeTokenDetails.token.logoUri,
                   address: safeTokenDetails.tokenAddress,
-                  //balance: new BN(safeTokenDetails.balance),
                 },
               };
             },
