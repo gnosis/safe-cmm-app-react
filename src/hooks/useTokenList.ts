@@ -3,10 +3,7 @@ import { TokenDetails } from "types";
 
 import { useRecoilState } from "recoil";
 import { tokenBalancesState } from "state/atoms";
-import {
-  ContractInteractionContext,
-  ContractInteractionContextProps,
-} from "components/context/ContractInteractionProvider";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 /**
  * useTokenList hook
@@ -19,9 +16,7 @@ export function useTokenList(): TokenDetails[] {
   const tokenAddresses = Object.keys(tokenBalances);
   const [tokenList, setTokenList] = useState([]);
 
-  const { getErc20Details } = useContext(
-    ContractInteractionContext
-  ) as ContractInteractionContextProps;
+  const { getErc20Details } = useContext(ContractInteractionContext);
 
   const handleUpdateTokenList = useCallback(async (): Promise<void> => {
     const tokenDetailList = await Promise.all(

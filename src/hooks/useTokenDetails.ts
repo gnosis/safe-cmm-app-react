@@ -1,10 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { TokenDetails } from "types";
 
-import {
-  ContractInteractionContext,
-  ContractInteractionContextProps,
-} from "components/context/ContractInteractionProvider";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 interface Return {
   tokenDetails?: TokenDetails;
@@ -17,9 +14,7 @@ export function useTokenDetails(token?: string): Return {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { getErc20Details } = useContext(
-    ContractInteractionContext
-  ) as ContractInteractionContextProps;
+  const { getErc20Details } = useContext(ContractInteractionContext);
 
   useEffect(() => {
     async function fetchTokenDetails(): Promise<void> {

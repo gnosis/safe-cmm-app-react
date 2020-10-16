@@ -6,10 +6,8 @@ import getLogger from "utils/logger";
 import findStrategiesForOwner from "api/web3/findStrategiesForOwner";
 
 import Strategy from "logic/strategy";
-import {
-  ContractInteractionContext,
-  ContractInteractionContextProps,
-} from "components/context/ContractInteractionProvider";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
+
 const logger = getLogger("web3-strategy-hook");
 
 interface Web3StrategyHook {
@@ -22,9 +20,7 @@ const useWeb3Strategies = (): Web3StrategyHook => {
   const [isFetching, setIsFetching] = useState(false);
   const [strategies, setStrategies] = useState([]);
 
-  const context = useContext(
-    ContractInteractionContext
-  ) as ContractInteractionContextProps;
+  const context = useContext(ContractInteractionContext);
 
   const handleFindStrategies = useCallback(async () => {
     setIsFetching(true);

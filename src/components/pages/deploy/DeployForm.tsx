@@ -21,10 +21,7 @@ import { hasBalanceFactory } from "validators/hasBalance";
 import { composeValidators } from "validators/misc";
 
 import { DeployFormValues, FormFields } from "./types";
-import {
-  ContractInteractionContext,
-  ContractInteractionContextProps,
-} from "components/context/ContractInteractionProvider";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 function Warnings({
   mutators: { setFieldData },
@@ -126,9 +123,7 @@ interface Props {
 export const DeployForm = memo(function DeployForm({
   children,
 }: Props): React.ReactElement {
-  const context = useContext(
-    ContractInteractionContext
-  ) as ContractInteractionContextProps;
+  const context = useContext(ContractInteractionContext);
   const { getErc20Details } = context;
   const tokenBalances = useRecoilValue(tokenBalancesState);
 

@@ -9,10 +9,7 @@ import getLogger from "utils/logger";
 import { priceToBn } from "utils/misc";
 
 import { ValidationErrors } from "validators/types";
-import {
-  ContractInteractionContext,
-  ContractInteractionContextProps,
-} from "components/context/ContractInteractionProvider";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 const logger = getLogger("useDeployStrategy");
 
@@ -33,9 +30,7 @@ export interface Params {
 export type Result = (params: Params) => Promise<undefined | ValidationErrors>;
 
 export function useDeployStrategy(): Result {
-  const context = useContext(
-    ContractInteractionContext
-  ) as ContractInteractionContextProps;
+  const context = useContext(ContractInteractionContext);
   const { getErc20Details } = context;
 
   return async (fnParams: Params) => {
