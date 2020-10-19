@@ -1,14 +1,13 @@
-import React, { useMemo, useEffect, memo } from "react";
+import React, { useMemo, memo } from "react";
 
 import { SelectItem } from "@gnosis.pm/safe-react-components/dist/inputs/Select";
-
-import { TokenDetails } from "types";
 
 import { useTokenList } from "hooks/useTokenList";
 import { useTokenBalance } from "hooks/useTokenBalance";
 
 import { TokenSelectorViewer } from "./viewer";
 import { tokenDetailsToSelectItem } from "utils/misc";
+import { useTokenDetails } from "hooks/useTokenDetails";
 
 export interface Props {
   selectedTokenAddress?: string;
@@ -31,16 +30,10 @@ export const TokenSelector = memo(function TokenSelector(
 
   const tokenList = useTokenList();
   const tokenBalance = useTokenBalance(selectedTokenAddress);
+  const { tokenDetails } = useTokenDetails(selectedTokenAddress);
 
   // TODO: propagate error to parent component, since the design does not expect errors at the component level
   // probably better when adding validation
-
-  const tokenDetails = useMemo(
-    (): TokenDetails | undefined =>
-      selectedTokenAddress &&
-      tokenList.find((token) => token.address === selectedTokenAddress),
-    [tokenList, selectedTokenAddress]
-  );
 
   const items = useMemo(
     (): SelectItem[] => tokenList.map(tokenDetailsToSelectItem),
@@ -53,7 +46,6 @@ export const TokenSelector = memo(function TokenSelector(
       items={items}
       tokenBalance={tokenBalance}
       tokenDetails={tokenDetails}
-      isBalanceLoading={selectedTokenAddress && tokenBalance == null}
     />
   );
 });
