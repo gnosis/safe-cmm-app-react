@@ -34,7 +34,7 @@ export const useWeb3Strategies = (): Web3StrategyHook => {
 
   useEffect(() => {
     if (strategies.length === 0) {
-      console.log("fetching strategies");
+      logger.log("fetching strategies");
       handleFindStrategies();
     }
   }, [strategies, handleFindStrategies]);
