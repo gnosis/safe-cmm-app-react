@@ -57,7 +57,8 @@ export const TokenSelectorViewer = memo(function TokenSelectorViewer(
   const amount = useMemo((): string | React.ReactElement => {
     if (isBalanceLoading) {
       return <Loader size="xs" />;
-    } else if (!tokenDetails || !tokenBalance) {
+    }
+    if (!tokenDetails || !tokenBalance) {
       return "-";
     }
 
