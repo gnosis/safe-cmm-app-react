@@ -89,7 +89,7 @@ class Strategy {
       this.safeAddresses.map(
         async (bracketAddress): Promise<Bracket> => {
           // Bracket orders find the tokens used for the strategy
-          const bracketOrderEvents = await batchExchangeContract.getPastEvents(
+          const bracketOrderEventsPromise = batchExchangeContract.getPastEvents(
             "OrderPlacement",
             {
               fromBlock: this.startBlockNumber - 1,
@@ -97,10 +97,8 @@ class Strategy {
             }
           );
 
-          allBracketOrderEvents.push(...bracketOrderEvents);
-
           // Bracket Deposits find the funding used for the strategy
-          const bracketDepositEvents = await batchExchangeContract.getPastEvents(
+          const bracketDepositEventsPromise = batchExchangeContract.getPastEvents(
             "Deposit",
             {
               fromBlock: this.startBlockNumber - 1,
@@ -108,7 +106,7 @@ class Strategy {
             }
           );
 
-          const withdrawClaims = await batchExchangeContract.getPastEvents(
+          const withdrawClaimsPromise = batchExchangeContract.getPastEvents(
             "Withdraw",
             {
               fromBlock: this.startBlockNumber - 1,
@@ -116,6 +114,17 @@ class Strategy {
             }
           );
 
+          const [
+            bracketOrderEvents,
+            bracketDepositEvents,
+            withdrawClaims,
+          ] = await Promise.all([
+            bracketOrderEventsPromise,
+            bracketDepositEventsPromise,
+            withdrawClaimsPromise,
+          ]);
+
+          allBracketOrderEvents.push(...bracketOrderEvents);
           allWithdrawClaims.push(...withdrawClaims);
 
           let withdrawRequestsWithBlock: WithdrawEvent[] = [];
@@ -244,24 +253,18 @@ class Strategy {
       });
 
       if (this.quoteTokenAddress && this.baseTokenAddress) {
-        const quoteTokenContract = await context.getContract(
-          "ERC20Detailed",
-          this.quoteTokenAddress
-        );
-        const baseTokenContract = await context.getContract(
-          "ERC20Detailed",
-          this.baseTokenAddress
-        );
+        const [quoteTokenContract, baseTokenContract] = await Promise.all([
+          context.getContract("ERC20Detailed", this.quoteTokenAddress),
+          context.getContract("ERC20Detailed", this.baseTokenAddress),
+        ]);
 
         await Promise.all(
           brackets.map(
             async (bracket: Bracket): Promise<void> => {
-              const quoteBalance = await quoteTokenContract.methods
-                .balanceOf(bracket.address)
-                .call();
-              const baseBalance = await baseTokenContract.methods
-                .balanceOf(bracket.address)
-                .call();
+              const [quoteBalance, baseBalance] = await Promise.all([
+                quoteTokenContract.methods.balanceOf(bracket.address).call(),
+                baseTokenContract.methods.balanceOf(bracket.address).call(),
+              ]);
 
               baseBalances[bracket.address] = new BN(baseBalance);
               quoteBalances[bracket.address] = new BN(quoteBalance);
