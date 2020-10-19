@@ -94,7 +94,7 @@ export const ActiveTable = memo(function ActiveTable({
                 <TableCell>
                   {formatSmart(
                     strategy.totalBalance("quote"),
-                    strategy.baseTokenDetails?.decimals
+                    strategy.quoteTokenDetails?.decimals || 18
                   ) || "-"}{" "}
                   {strategy.quoteTokenDetails?.symbol}
                 </TableCell>
