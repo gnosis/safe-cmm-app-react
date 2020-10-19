@@ -396,13 +396,15 @@ export const ContractInteractionProvider = ({
     logger.log("---> Updating balances");
 
     const updatedBalances = await Promise.all(
-      Object.keys(erc20Cache).map(async (address) => {
+      Object.keys(erc20Cache).map(async (address: string): Promise<
+        [string, BN]
+      > => {
         const contract = await handleGetContract("ERC20Detailed", address);
         const balance = await contract.methods
           .balanceOf(safeInfo.safeAddress)
           .call();
 
-        return [address, balance];
+        return [address, new BN(balance)];
       }, {})
     );
 
