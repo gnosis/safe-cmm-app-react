@@ -253,17 +253,16 @@ class Strategy {
       });
 
       if (this.quoteTokenAddress && this.baseTokenAddress) {
-        const [quoteTokenContract, baseTokenContract] = await Promise.all([
-          context.getContract("ERC20Detailed", this.quoteTokenAddress),
-          context.getContract("ERC20Detailed", this.baseTokenAddress),
-        ]);
-
         await Promise.all(
           brackets.map(
             async (bracket: Bracket): Promise<void> => {
               const [quoteBalance, baseBalance] = await Promise.all([
-                quoteTokenContract.methods.balanceOf(bracket.address).call(),
-                baseTokenContract.methods.balanceOf(bracket.address).call(),
+                batchExchangeContract.methods
+                  .getBalance(bracket.address, this.quoteTokenAddress)
+                  .call(),
+                batchExchangeContract.methods
+                  .getBalance(bracket.address, this.baseTokenAddress)
+                  .call(),
               ]);
 
               baseBalances[bracket.address] = new BN(baseBalance);
