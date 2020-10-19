@@ -294,12 +294,18 @@ class Strategy {
     this.brackets = brackets;
   }
 
-  public totalBalance(type: "base" | "quote"): BN | null {
-    const [details, balances] =
-      type === "base"
-        ? [this.baseTokenDetails, this.tokenBaseBalances]
-        : [this.quoteTokenDetails, this.tokenQuoteBalances];
+  public totalBaseBalance(): BN | null {
+    return this.totalBalance(this.baseTokenDetails, this.tokenBaseBalances);
+  }
 
+  public totalQuoteBalance(): BN | null {
+    return this.totalBalance(this.quoteTokenDetails, this.tokenQuoteBalances);
+  }
+
+  private totalBalance(
+    details?: TokenDetails,
+    balances?: Record<string, BN>
+  ): BN | null {
     if (!details || !balances) {
       return null;
     }

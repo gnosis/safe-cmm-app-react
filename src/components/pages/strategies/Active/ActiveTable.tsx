@@ -86,14 +86,14 @@ export const ActiveTable = memo(function ActiveTable({
                 <TableCell>{strategy.brackets.length}</TableCell>
                 <TableCell>
                   {formatSmart(
-                    strategy.totalBalance("base"),
-                    strategy.baseTokenDetails?.decimals
+                    strategy.totalBaseBalance(),
+                    strategy.baseTokenDetails?.decimals || 18
                   ) || "-"}{" "}
                   {strategy.baseTokenDetails?.symbol}
                 </TableCell>
                 <TableCell>
                   {formatSmart(
-                    strategy.totalBalance("quote"),
+                    strategy.totalQuoteBalance(),
                     strategy.quoteTokenDetails?.decimals || 18
                   ) || "-"}{" "}
                   {strategy.quoteTokenDetails?.symbol}
