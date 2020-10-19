@@ -13,7 +13,7 @@ export interface Theme extends themeType {
   colors: colorsType & typeof backgroundColors;
 }
 
-export const theme = {
+export const theme: Theme = {
   ...srcTheme,
   colors: { ...srcTheme.colors, ...backgroundColors },
 };
