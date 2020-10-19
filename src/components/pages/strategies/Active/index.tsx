@@ -1,7 +1,9 @@
-import { Loader } from "@gnosis.pm/safe-react-components";
-import { Box } from "@material-ui/core";
-import useWeb3Strategies from "hooks/useWeb3Strategies";
 import React, { memo } from "react";
+import { Box } from "@material-ui/core";
+
+import { Loader } from "@gnosis.pm/safe-react-components";
+
+import { useWeb3Strategies } from "hooks/useWeb3Strategies";
 
 import { ActiveTable } from "./ActiveTable";
 
