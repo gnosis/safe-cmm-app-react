@@ -41,7 +41,9 @@ export interface TokenSelectorViewerProps
   tokenDetails?: TokenDetails;
 }
 
-function UTokenSelectorViewer(props: TokenSelectorViewerProps): JSX.Element {
+export const TokenSelectorViewer = memo(function TokenSelectorViewer(
+  props: TokenSelectorViewerProps
+): JSX.Element {
   const {
     label,
     tooltip,
@@ -81,8 +83,4 @@ function UTokenSelectorViewer(props: TokenSelectorViewerProps): JSX.Element {
       <SubtextAmount subtext="Safe balance:" amount={amount} inline />
     </Wrapper>
   );
-}
-
-export const TokenSelectorViewer: typeof UTokenSelectorViewer = memo(
-  UTokenSelectorViewer
-);
+});
