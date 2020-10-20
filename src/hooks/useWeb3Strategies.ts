@@ -1,24 +1,26 @@
 import { useCallback, useState, useEffect, useContext } from "react";
-import useInterval from "@use-it/interval";
 
 import getLogger from "utils/logger";
 
 import findStrategiesForOwner from "api/web3/findStrategiesForOwner";
-import { Web3Context } from "components/Web3Provider";
 
-import { Web3Context as Web3ContextType } from "types";
+import Strategy from "logic/strategy";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 const logger = getLogger("web3-strategy-hook");
 
-const useWeb3Strategies = (): any => {
+interface Web3StrategyHook {
+  status: string;
+  strategies: Strategy[];
+}
+
+export const useWeb3Strategies = (): Web3StrategyHook => {
   const [status, setStatus] = useState("LOADING");
-  const [isFetching, setIsFetching] = useState(false);
   const [strategies, setStrategies] = useState([]);
 
-  const context: Web3ContextType = useContext(Web3Context);
+  const context = useContext(ContractInteractionContext);
 
   const handleFindStrategies = useCallback(async () => {
-    setIsFetching(true);
     try {
       const strategies = await findStrategiesForOwner(context);
       logger.log("Active strategies loaded via web3:", strategies);
@@ -27,26 +29,18 @@ const useWeb3Strategies = (): any => {
     } catch (err) {
       setStatus("ERROR");
       console.error(err);
-    } finally {
-      setIsFetching(false);
     }
   }, [context]);
 
   useEffect(() => {
-    setStatus("LOADING");
-    handleFindStrategies();
-  }, [handleFindStrategies]);
-
-  useInterval(() => {
-    if (!isFetching) {
+    if (strategies.length === 0) {
+      logger.log("fetching strategies");
       handleFindStrategies();
     }
-  }, 10000);
+  }, [strategies, handleFindStrategies]);
 
   return {
     status,
     strategies,
   };
 };
-
-export default useWeb3Strategies;

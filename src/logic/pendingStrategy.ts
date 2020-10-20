@@ -1,4 +1,4 @@
-import { Web3Context, TokenDetails } from "types";
+import { TokenDetails } from "types";
 import web3 from "web3";
 
 import BN from "bn.js";
@@ -13,6 +13,7 @@ import {
   pricesToRange,
   PriceRange,
 } from "./utils/calculateFunds";
+import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 
 // const logger = getLogger('pending-strategy');
 
@@ -67,7 +68,9 @@ class PendingStrategy {
     );
   }
 
-  async findFromPendingTransactions(context: Web3Context): Promise<void> {
+  async findFromPendingTransactions(
+    context: ContractInteractionContextProps
+  ): Promise<void> {
     const fundingDetails: FundingDetails = calculateFundsFromTxData(
       this.transactionData
     );

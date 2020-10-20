@@ -2,11 +2,11 @@ import React, { memo, useCallback } from "react";
 import { Field, useField, useForm } from "react-final-form";
 import styled from "styled-components";
 
-import { formatAmountFull } from "@gnosis.pm/dex-js";
+import { formatAmountFull, ZERO } from "@gnosis.pm/dex-js";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
 
-import { TokenBalance } from "types";
+import { TokenDetails } from "types";
 
 import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
 
@@ -22,6 +22,9 @@ import { isSmallerThan } from "validators/isSmallerThan";
 
 import { getBracketValue } from "./DeployForm";
 import { FormFields } from "./types";
+import { useTokenBalance } from "hooks/useTokenBalance";
+
+import BN from "bn.js";
 
 const Wrapper = styled.div`
   display: flex;
@@ -76,12 +79,19 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
     quoteTokenAddress
   );
 
+  const baseTokenBalance = useTokenBalance(baseTokenAddress);
+  const quoteTokenBalance = useTokenBalance(quoteTokenAddress);
+
   const onMaxClickFactory = useCallback(
-    (field: FormFields, tokenBalance: TokenBalance | null): void => {
-      if (tokenBalance) {
+    (
+      field: FormFields,
+      tokenDetails: TokenDetails,
+      maxBalance: BN | null
+    ): void => {
+      if (tokenDetails && maxBalance?.gt(ZERO)) {
         const value = formatAmountFull({
-          amount: tokenBalance.balance,
-          precision: tokenBalance.decimals,
+          amount: maxBalance,
+          precision: tokenDetails.decimals,
           thousandSeparator: false,
           isLocaleAware: false,
         });
@@ -92,12 +102,18 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
   );
 
   const onBaseTokenMaxClick = useCallback(
-    () => onMaxClickFactory("baseTokenAmount", baseTokenDetails),
-    [baseTokenDetails, onMaxClickFactory]
+    () =>
+      onMaxClickFactory("baseTokenAmount", baseTokenDetails, baseTokenBalance),
+    [baseTokenDetails, onMaxClickFactory, baseTokenBalance]
   );
   const onQuoteTokenMaxClick = useCallback(
-    () => onMaxClickFactory("quoteTokenAmount", quoteTokenDetails),
-    [onMaxClickFactory, quoteTokenDetails]
+    () =>
+      onMaxClickFactory(
+        "quoteTokenAmount",
+        quoteTokenDetails,
+        quoteTokenBalance
+      ),
+    [onMaxClickFactory, quoteTokenDetails, quoteTokenBalance]
   );
 
   return (

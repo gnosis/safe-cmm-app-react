@@ -3,14 +3,13 @@ import { FORM_ERROR } from "final-form";
 
 import { parseAmount, ZERO } from "@gnosis.pm/dex-js";
 
-import { Web3Context } from "components/Web3Provider";
 import deployStrategy from "api/deployStrategy";
 import getLogger from "utils/logger";
 
 import { priceToBn } from "utils/misc";
 
-import { Web3Context as Web3ContextType } from "types";
 import { ValidationErrors } from "validators/types";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 const logger = getLogger("useDeployStrategy");
 
@@ -31,8 +30,7 @@ export interface Params {
 export type Result = (params: Params) => Promise<undefined | ValidationErrors>;
 
 export function useDeployStrategy(): Result {
-  const context = useContext(Web3Context) as Web3ContextType;
-
+  const context = useContext(ContractInteractionContext);
   const { getErc20Details } = context;
 
   return async (fnParams: Params) => {

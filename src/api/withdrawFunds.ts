@@ -11,15 +11,15 @@ import { getWithdrawableAmount } from "@gnosis.pm/dex-contracts";
 
 import getLogger from "utils/logger";
 
-import { Web3Context } from "types";
 import Strategy from "logic/strategy";
 
 import BN from "bn.js";
+import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 
 const logger = getLogger("withdraw");
 
 export const withdrawRequest = async (
-  context: Web3Context,
+  context: ContractInteractionContextProps,
   strategy: Strategy
 ): Promise<void> => {
   await Promise.all([
@@ -77,7 +77,7 @@ export const withdrawRequest = async (
 };
 
 export const withdrawClaim = async (
-  context: Web3Context,
+  context: ContractInteractionContextProps,
   strategy: Strategy
 ): Promise<void> => {
   await Promise.all([
@@ -98,7 +98,7 @@ export const withdrawClaim = async (
       bracketAddress,
       tokenData.address,
       exchange,
-      context.instance
+      context.web3Instance
     );
     logger.log(
       `(claim) requesting to claim ${amount.toString()} of ${

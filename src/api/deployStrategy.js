@@ -33,7 +33,7 @@ const deployStrategy = async (
   );
 
   const {
-    sdk,
+    sdkInstance,
     getContract,
     getDeployed,
     getErc20Details,
@@ -107,7 +107,7 @@ const deployStrategy = async (
     investmentQuoteWei,
   });
 
-  sdk.sendTransactions([deployFleetTx, ...orderAndFundTxs]);
+  sdkInstance.sendTransactions([deployFleetTx, ...orderAndFundTxs]);
 };
 
 export default deployStrategy;

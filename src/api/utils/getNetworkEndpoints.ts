@@ -21,5 +21,5 @@ export const getSafeEndpoint = (networkName: string): string => {
 
 export const getInfuraEndpoint = (networkName: string): string => {
   checkNetwork(networkName);
-  return `https://${networkName}.infura.io/v3/${INFURA_API_KEY}`;
+  return `wss://${networkName}.infura.io/ws/v3/${INFURA_API_KEY}`;
 };

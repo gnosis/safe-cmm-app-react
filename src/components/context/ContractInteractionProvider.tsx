@@ -1,47 +1,85 @@
-import React, { useEffect, useCallback, useState, useMemo } from "react";
-import BN from "bn.js";
+import React, {
+  createContext,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
+import { useSetRecoilState } from "recoil";
 
-import initWeb3 from "utils/initWeb3";
-import getLogger from "utils/logger";
-
-import PropTypes from "prop-types";
+import { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
+import fromPairs from "lodash/fromPairs";
 
 import initSdk from "@gnosis.pm/safe-apps-sdk";
-
-import { getTokenAddressesForNetwork } from "../api/tokenAddresses";
-import { getBalances } from "../api/safe";
+import getLogger from "utils/logger";
+import initWeb3 from "utils/initWeb3";
+import { Loader } from "@gnosis.pm/safe-react-components";
+import { TokenDetails } from "types";
+import BN from "bn.js";
 
 import { getImageUrl } from "utils/misc";
 
-const logger = getLogger("web3-provider");
+import { getTokenAddressesForNetwork } from "api/tokenAddresses";
+import { getBalances } from "api/safe";
+import { tokenBalancesState } from "state/atoms";
 
-export const Web3Context = React.createContext({
-  instance: null,
-  status: "UNKNOWN",
+const logger = getLogger("contract-interaction-provider");
+
+type StatusEnum = "LOADING" | "SUCCESS" | "ERROR" | "NOT_IN_IFRAME";
+
+export interface ContractInteractionContextProps {
+  status: StatusEnum;
+  sdkInstance?: SdkInstance;
+  web3Instance?: any;
+  safeInfo?: SafeInfo;
+  getArtifact?: (contractName: string) => Promise<any>; // TODO: Typing for Webpack Module
+  getCachedArtifact?: (contractName: string) => any; // TODO: Typing for Webpack Module
+  getContract?: (contractName: string, address: string) => Promise<any>; // TODO: Typing for web3.eth.Contract
+  getDeployed?: (contractName: string) => Promise<any>; // TODO: Typing for web3.eth.Contract
+  getErc20Details?: (tokenAddress: string) => Promise<TokenDetails>;
+}
+
+export interface Props {
+  children?: React.ReactNode;
+}
+
+export const ContractInteractionContext = createContext<
+  ContractInteractionContextProps
+>({
+  status: "LOADING",
+  sdkInstance: null,
+  web3Instance: null,
 });
-
-let globalArtifacts = {}; // Cache of artifacts for getCachedArtifact
-let globalArtifactPromises = {}; // Cache of promises for getArtifact
-let globalDeployedContracts = {}; // Cache of Contracts by NetworkID for getDeployed
-let globalContractsByAddress = {}; // Cache of Contracts by Address for getContract
 
 const readContractJSON = async (contractName) => {
   const contractArtifact = await import(`contracts/${contractName}.json`);
   return contractArtifact;
 };
 
-const Web3Provider = ({ children }) => {
-  const [status, setStatus] = useState("UNKNOWN");
-  const [instance, setInstance] = useState(null);
-  const [sdk, setSdk] = useState(null);
-  const [safeInfo, setSafeInfo] = useState(null);
-  const [erc20Cache, setErc20Cache] = useState({});
+const globalArtifacts: Record<string, any> = {}; // Cache of artifacts for getCachedArtifact
+const globalArtifactPromises: Record<string, Promise<unknown>> = {}; // Cache of promises for getArtifact
+const globalDeployedContracts: Record<string, any> = {}; // Cache of Web3 Contracts by NetworkID for getDeployed
+const globalContractsByAddress: Record<string, any> = {}; // Cache of Contracts by Address for getContract
 
-  const handleInitSdk = useCallback(async () => {
+export const ContractInteractionProvider = ({
+  children,
+}: Props): JSX.Element => {
+  const [status, setStatus] = useState<StatusEnum>("LOADING");
+  const [web3Instance, setWeb3Instance] = useState<any>(null);
+  const [sdkInstance, setSdkInstance] = useState<SdkInstance>(null);
+  const [safeInfo, setSafeInfo] = useState<SafeInfo>(null);
+
+  const setTokenBalances = useSetRecoilState(tokenBalancesState);
+
+  const [erc20Cache, setErc20Cache] = useState<Record<string, TokenDetails>>(
+    {}
+  );
+
+  const handleInitSdk = useCallback(async (): Promise<SafeInfo> => {
     const newInstance = await initSdk();
-    setSdk(newInstance);
+    setSdkInstance(newInstance);
 
-    const newSafeInfo = await new Promise((resolve, reject) => {
+    const newSafeInfo: SafeInfo = await new Promise((resolve, reject) => {
       if (safeInfo) {
         // this only occours on dev hot-reload
         // addListeners only fires once. if it has fired before,
@@ -49,12 +87,12 @@ const Web3Provider = ({ children }) => {
         return resolve(safeInfo);
       }
 
-      const timeoutForConnect = setTimeout(() => {
+      const timeoutForConnect = setTimeout((): void => {
         logger.error("Safe SDK never fired - timeout");
         reject();
       }, 5000);
       newInstance.addListeners({
-        onSafeInfo: (safeInfo) => {
+        onSafeInfo: (safeInfo): void => {
           clearTimeout(timeoutForConnect);
           setSafeInfo(safeInfo);
           logger.log(`Safe connection established`, safeInfo);
@@ -64,15 +102,12 @@ const Web3Provider = ({ children }) => {
     });
 
     return newSafeInfo;
-  }, [setSdk, safeInfo]);
+  }, [safeInfo]);
 
-  const handleInitWeb3 = useCallback(
-    async (newSafeInfo) => {
-      const newInstance = await initWeb3(newSafeInfo.network);
-      setInstance(newInstance);
-    },
-    [setInstance]
-  );
+  const handleInitWeb3 = useCallback(async (safeInfo: SafeInfo) => {
+    const newInstance = await initWeb3(safeInfo.network);
+    setWeb3Instance(newInstance);
+  }, []);
 
   const handleInit = useCallback(async () => {
     setStatus("LOADING");
@@ -87,25 +122,17 @@ const Web3Provider = ({ children }) => {
       await handleInitWeb3(safeInfo);
     } catch (err) {
       console.error(err);
-      setInstance(null);
-      setSdk(null);
+      setWeb3Instance(null);
+      setSdkInstance(null);
       setStatus("ERROR");
       return;
     }
     setStatus("SUCCESS");
   }, [handleInitSdk, handleInitWeb3]);
 
-  useEffect(() => {
-    return () => {
-      if (sdk) sdk.removeListeners();
-    };
-  }, [sdk]);
-
-  const handleAsyncInit = useCallback(() => {
-    handleInit();
-  }, [handleInit]);
-
-  const handleGetArtifact = useCallback(async (dirtyContractName) => {
+  const handleGetArtifact = useCallback(async (dirtyContractName): Promise<
+    any
+  > => {
     // This removes file endings, because IProxy.sol and IProxy are the same
     const contractName = dirtyContractName.replace(/\..*/, "");
     if (!globalArtifacts[contractName]) {
@@ -120,7 +147,7 @@ const Web3Provider = ({ children }) => {
     return await globalArtifacts[contractName];
   }, []);
 
-  const handleGetCachedArtifact = useCallback((contractName) => {
+  const handleGetCachedArtifact = useCallback((contractName): any => {
     if (!globalArtifacts[contractName]) {
       throw new Error(
         `${contractName} has not been fetched previously. Please fetch it before running the part of the application that is using artifacts.require`
@@ -138,7 +165,7 @@ const Web3Provider = ({ children }) => {
    * @returns {web3.eth.Contract} Contractinstance
    */
   const handleGetContract = useCallback(
-    async (contractName, contractAddress = null) => {
+    async (contractName, contractAddress = null): Promise<any> => {
       const contractArtifact = await handleGetArtifact(contractName);
 
       if (!globalContractsByAddress[contractName]) {
@@ -146,12 +173,12 @@ const Web3Provider = ({ children }) => {
       }
 
       if (!globalContractsByAddress[contractName][contractAddress]) {
-        const contractInstance = new instance.eth.Contract(
+        const contractInstance = new web3Instance.eth.Contract(
           contractArtifact.abi,
           contractAddress
         );
 
-        contractInstance.setProvider(instance.currentProvider);
+        contractInstance.setProvider(web3Instance.currentProvider);
 
         // FIXME: Bad Monkeypatching
         // Allows us to access the contracts saved artifact later by referencing it by the contractname. Contractnames need to be unique.
@@ -164,7 +191,7 @@ const Web3Provider = ({ children }) => {
 
       return globalContractsByAddress[contractName][contractAddress];
     },
-    [handleGetArtifact, instance]
+    [handleGetArtifact, web3Instance]
   );
 
   /**
@@ -174,10 +201,10 @@ const Web3Provider = ({ children }) => {
    * @returns {web3.eth.Contract} - Contractinstance
    */
   const handleGetDeployed = useCallback(
-    async (contractName) => {
+    async (contractName): Promise<any> => {
       const contractArtifact = await handleGetArtifact(contractName);
 
-      const networkId = await instance.eth.net.getId();
+      const networkId = await web3Instance.eth.net.getId();
 
       if (!globalDeployedContracts[networkId]) {
         globalDeployedContracts[networkId] = {};
@@ -197,7 +224,7 @@ const Web3Provider = ({ children }) => {
       }
       return globalDeployedContracts[networkId][contractName];
     },
-    [handleGetContract, handleGetArtifact, instance]
+    [handleGetContract, handleGetArtifact, web3Instance]
   );
 
   /**
@@ -207,20 +234,19 @@ const Web3Provider = ({ children }) => {
    * @returns {object} - Erc20 token details (decimals, name, symbol, address)
    */
   const handleGetErc20Details = useCallback(
-    async (address) => {
+    async (address): Promise<TokenDetails> => {
       const [erc20Contract, batchExchangeContract] = await Promise.all([
         handleGetContract("ERC20Detailed", address),
         handleGetDeployed("BatchExchange"),
       ]);
 
-      const [decimals, symbol, name, balance, onGP] = await Promise.all([
+      const [decimals, symbol, name, onGP] = await Promise.all([
         (async () => {
           const decimalsString = await erc20Contract.methods.decimals().call();
           return parseInt(decimalsString, 10);
         })(),
         erc20Contract.methods.symbol().call(),
         erc20Contract.methods.name().call(),
-        erc20Contract.methods.balanceOf(safeInfo.safeAddress).call(),
         batchExchangeContract.methods.hasToken(address).call(),
       ]);
 
@@ -231,10 +257,9 @@ const Web3Provider = ({ children }) => {
         name,
         onGP,
         imageUrl: getImageUrl(address),
-        balance: new BN(balance),
       };
     },
-    [handleGetContract, handleGetDeployed, safeInfo]
+    [handleGetContract, handleGetDeployed]
   );
 
   /**
@@ -244,7 +269,7 @@ const Web3Provider = ({ children }) => {
    * @returns {object} - Erc20 token details (decimals, name, symbol, address)
    */
   const handleGetErc20FromCache = useCallback(
-    async (address) => {
+    async (address): Promise<TokenDetails> => {
       if (erc20Cache[address]) {
         return erc20Cache[address];
       }
@@ -257,14 +282,8 @@ const Web3Provider = ({ children }) => {
     [erc20Cache, handleGetErc20Details]
   );
 
-  /*
-   */
-
-  useEffect(handleAsyncInit, [handleAsyncInit]);
-
-  // Loads erc20 details for all tokens addresses for given network on load
   useEffect(() => {
-    if (!instance || !safeInfo?.safeAddress) {
+    if (!web3Instance || !safeInfo?.safeAddress) {
       return;
     }
 
@@ -272,6 +291,7 @@ const Web3Provider = ({ children }) => {
       let safeTokens = {};
       // get all tokens from safe
       try {
+        const balances: Record<string, BN> = {};
         safeTokens = (await getBalances(safeInfo.network, safeInfo.safeAddress))
           .filter(
             // exclude entry without tokenAddress, which corresponds to ETH
@@ -279,17 +299,29 @@ const Web3Provider = ({ children }) => {
           )
           .reduce(
             // transform it to erc20Details format
-            (acc, safeTokenDetails) => ({
-              ...acc,
-              [safeTokenDetails.tokenAddress]: {
-                ...safeTokenDetails.token,
-                imageUrl: safeTokenDetails.token.logoUri,
-                address: safeTokenDetails.tokenAddress,
-                balance: new BN(safeTokenDetails.balance),
-              },
-            }),
+            (acc, safeTokenDetails) => {
+              // side-effect: add to balances records
+              balances[safeTokenDetails.tokenAddress] = new BN(
+                safeTokenDetails.balance
+              );
+
+              return {
+                ...acc,
+                [safeTokenDetails.tokenAddress]: {
+                  ...safeTokenDetails.token,
+                  imageUrl: safeTokenDetails.token.logoUri,
+                  address: safeTokenDetails.tokenAddress,
+                },
+              };
+            },
             {}
           );
+
+        // update balance on recoil
+        setTokenBalances((oldBalances) => ({
+          ...oldBalances,
+          ...balances,
+        }));
       } catch (e) {
         logger.error(
           `Failed to fetch tokens from Safe '${safeInfo.safeAddress}'`,
@@ -300,10 +332,10 @@ const Web3Provider = ({ children }) => {
 
       // get standard list of tokens to load
       const tokenAddresses = await getTokenAddressesForNetwork(
-        await instance.eth.net.getId()
+        await web3Instance.eth.net.getId()
       );
 
-      const erc20Details = await Promise.all(
+      const erc20Details: TokenDetails[] = await Promise.all(
         tokenAddresses
           // except for tokens already present on the safe
           .filter((address) => !safeTokens[address])
@@ -348,7 +380,13 @@ const Web3Provider = ({ children }) => {
     }
 
     loadErc20Details();
-  }, [handleGetDeployed, handleGetErc20Details, instance, safeInfo]);
+  }, [
+    handleGetDeployed,
+    handleGetErc20Details,
+    web3Instance,
+    safeInfo,
+    setTokenBalances,
+  ]);
 
   const handleUpdateBalances = useCallback(async () => {
     if (!safeInfo?.safeAddress) {
@@ -358,25 +396,23 @@ const Web3Provider = ({ children }) => {
     logger.log("---> Updating balances");
 
     const updatedBalances = await Promise.all(
-      Object.keys(erc20Cache).map(async (address) => {
+      Object.keys(erc20Cache).map(async (address: string): Promise<
+        [string, BN]
+      > => {
         const contract = await handleGetContract("ERC20Detailed", address);
         const balance = await contract.methods
           .balanceOf(safeInfo.safeAddress)
           .call();
-        const token = erc20Cache[address];
-        token.balance = new BN(balance);
 
-        return token;
+        return [address, new BN(balance)];
       }, {})
     );
 
-    setErc20Cache(
-      updatedBalances.reduce((tokens, token) => {
-        tokens[token.address] = token;
-        return tokens;
-      }, {})
-    );
-  }, [erc20Cache, handleGetContract, safeInfo]);
+    setTokenBalances((oldBalances) => ({
+      ...oldBalances,
+      ...fromPairs(updatedBalances),
+    }));
+  }, [erc20Cache, handleGetContract, safeInfo, setTokenBalances]);
 
   useEffect(() => {
     // Poor's man background token balance updates
@@ -386,34 +422,42 @@ const Web3Provider = ({ children }) => {
     return () => clearInterval(interval);
   }, [handleUpdateBalances]);
 
-  const tokenList = useMemo(() => Object.values(erc20Cache), [erc20Cache]);
-
-  const contextState = useMemo(
-    () => ({
+  const contextValue = useMemo(
+    (): ContractInteractionContextProps => ({
       status,
-      instance,
-      sdk,
+      web3Instance,
+      sdkInstance,
       safeInfo,
       getArtifact: handleGetArtifact,
       getCachedArtifact: handleGetCachedArtifact,
-      tokenList,
-      getContract: handleGetContract,
       getDeployed: handleGetDeployed,
+      getContract: handleGetContract,
       getErc20Details: handleGetErc20FromCache,
     }),
     [
       status,
-      instance,
+      web3Instance,
+      sdkInstance,
       safeInfo,
-      sdk,
-      tokenList,
-      handleGetContract,
       handleGetArtifact,
       handleGetCachedArtifact,
       handleGetDeployed,
+      handleGetContract,
       handleGetErc20FromCache,
     ]
   );
+
+  const handleAsyncInit = useCallback(() => {
+    handleInit();
+  }, [handleInit]);
+
+  useEffect(() => {
+    return () => {
+      if (sdkInstance) sdkInstance.removeListeners();
+    };
+  }, [sdkInstance]);
+
+  useEffect(handleAsyncInit, [handleAsyncInit]);
 
   if (status === "NOT_IN_IFRAME") {
     return (
@@ -431,15 +475,13 @@ const Web3Provider = ({ children }) => {
     );
   }
 
+  if (status === "LOADING") {
+    return <Loader size="lg" />;
+  }
+
   return (
-    <Web3Context.Provider value={contextState}>
-      {status === "SUCCESS" ? children : <p>Loading</p>}
-    </Web3Context.Provider>
+    <ContractInteractionContext.Provider value={contextValue}>
+      {children}
+    </ContractInteractionContext.Provider>
   );
 };
-
-Web3Provider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-export default Web3Provider;

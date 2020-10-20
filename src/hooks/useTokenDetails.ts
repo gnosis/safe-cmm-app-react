@@ -1,20 +1,20 @@
 import { useState, useContext, useEffect } from "react";
-import { TokenBalance } from "types";
+import { TokenDetails } from "types";
 
-import { Web3Context } from "components/Web3Provider";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 interface Return {
-  tokenDetails: TokenBalance | null;
+  tokenDetails?: TokenDetails;
   isLoading: boolean;
   error: string;
 }
 
 export function useTokenDetails(token?: string): Return {
-  const [tokenDetails, setTokenDetails] = useState<TokenBalance | null>(null);
+  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { getErc20Details } = useContext(Web3Context);
+  const { getErc20Details } = useContext(ContractInteractionContext);
 
   useEffect(() => {
     async function fetchTokenDetails(): Promise<void> {

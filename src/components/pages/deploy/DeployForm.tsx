@@ -1,18 +1,17 @@
 import React, { memo, useCallback, useContext } from "react";
+import { useRecoilValue } from "recoil";
 import { FormApi, FormState, MutableState, Mutator, Tools } from "final-form";
-
 import { Form, FormSpy } from "react-final-form";
 import createCalculatedFieldsDecorator, {
   Calculation,
 } from "final-form-calculate";
 
-import { Web3Context } from "components/Web3Provider";
-import { Web3Context as Web3ContextType } from "types";
-
 import { useDeployStrategy } from "hooks/useDeployStrategy";
 
 import { setFieldData, setFieldValue } from "utils/finalForm";
 import { calculateBrackets } from "utils/calculateBrackets";
+
+import { tokenBalancesState } from "state/atoms";
 
 import { ValidationErrors } from "validators/types";
 import { isGreaterThan } from "validators/isGreaterThan";
@@ -22,6 +21,7 @@ import { hasBalanceFactory } from "validators/hasBalance";
 import { composeValidators } from "validators/misc";
 
 import { DeployFormValues, FormFields } from "./types";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 function Warnings({
   mutators: { setFieldData },
@@ -123,12 +123,17 @@ interface Props {
 export const DeployForm = memo(function DeployForm({
   children,
 }: Props): React.ReactElement {
-  const context = useContext(Web3Context) as Web3ContextType;
+  const context = useContext(ContractInteractionContext);
   const { getErc20Details } = context;
+  const tokenBalances = useRecoilValue(tokenBalancesState);
 
   const hasBalance = useCallback(
-    (tokenAddress: string) => hasBalanceFactory(getErc20Details)(tokenAddress),
-    [getErc20Details]
+    (tokenAddress: string) =>
+      hasBalanceFactory(getErc20Details)(
+        tokenAddress,
+        tokenBalances[tokenAddress] // TODO: show a warning when not able to fetch token balance?
+      ),
+    [tokenBalances, getErc20Details]
   );
 
   const validate = useCallback(

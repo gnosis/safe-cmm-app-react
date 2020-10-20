@@ -1,12 +1,16 @@
-import { Web3Context, TokenDetails } from "types";
+import { TokenDetails } from "types";
 import web3GLib from "web3";
 import Decimal from "decimal.js";
+import BN from "bn.js";
+
+import { ZERO } from "@gnosis.pm/dex-js";
 
 import {
   calculateFundsFromEvents,
   pricesToRange,
   PriceRange,
 } from "./utils/calculateFunds";
+import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 
 const { toBN } = web3GLib.utils;
 
@@ -44,6 +48,8 @@ class Strategy {
   quoteTokenAddress: string;
   baseTokenDetails: TokenDetails;
   quoteTokenDetails: TokenDetails;
+  tokenQuoteBalances: Record<string, BN>;
+  tokenBaseBalances: Record<string, BN>;
   baseFunding: string;
   quoteFunding: string;
   owner: string;
@@ -62,9 +68,11 @@ class Strategy {
     this.lastWithdrawClaimEvent = null;
   }
 
-  async fetchAllPossibleInfo(context: Web3Context): Promise<void> {
+  async fetchAllPossibleInfo(
+    context: ContractInteractionContextProps
+  ): Promise<void> {
     // Find creation date by block number
-    this.block = await context.instance.eth.getBlock(this.startBlockNumber);
+    this.block = await context.web3Instance.eth.getBlock(this.startBlockNumber);
     this.created = new Date(this.block.timestamp * 1000);
 
     this.prices = [];
@@ -81,7 +89,7 @@ class Strategy {
       this.safeAddresses.map(
         async (bracketAddress): Promise<Bracket> => {
           // Bracket orders find the tokens used for the strategy
-          const bracketOrderEvents = await batchExchangeContract.getPastEvents(
+          const bracketOrderEventsPromise = batchExchangeContract.getPastEvents(
             "OrderPlacement",
             {
               fromBlock: this.startBlockNumber - 1,
@@ -89,10 +97,8 @@ class Strategy {
             }
           );
 
-          allBracketOrderEvents.push(...bracketOrderEvents);
-
           // Bracket Deposits find the funding used for the strategy
-          const bracketDepositEvents = await batchExchangeContract.getPastEvents(
+          const bracketDepositEventsPromise = batchExchangeContract.getPastEvents(
             "Deposit",
             {
               fromBlock: this.startBlockNumber - 1,
@@ -100,7 +106,7 @@ class Strategy {
             }
           );
 
-          const withdrawClaims = await batchExchangeContract.getPastEvents(
+          const withdrawClaimsPromise = batchExchangeContract.getPastEvents(
             "Withdraw",
             {
               fromBlock: this.startBlockNumber - 1,
@@ -108,6 +114,17 @@ class Strategy {
             }
           );
 
+          const [
+            bracketOrderEvents,
+            bracketDepositEvents,
+            withdrawClaims,
+          ] = await Promise.all([
+            bracketOrderEventsPromise,
+            bracketDepositEventsPromise,
+            withdrawClaimsPromise,
+          ]);
+
+          allBracketOrderEvents.push(...bracketOrderEvents);
           allWithdrawClaims.push(...withdrawClaims);
 
           let withdrawRequestsWithBlock: WithdrawEvent[] = [];
@@ -129,7 +146,7 @@ class Strategy {
                   if (!withdrawRequestBlocks[withdrawRequest.blockNumber]) {
                     withdrawRequestBlocks[
                       withdrawRequest.blockNumber
-                    ] = await context.instance.eth.getBlock(
+                    ] = await context.web3Instance.eth.getBlock(
                       withdrawRequest.blockNumber
                     );
                   }
@@ -219,6 +236,10 @@ class Strategy {
     }
     const baseFundingBn = toBN(0);
     const quoteFundingBn = toBN(0);
+
+    const baseBalances: Record<string, BN> = {};
+    const quoteBalances: Record<string, BN> = {};
+
     if (brackets) {
       brackets.forEach((bracket): void => {
         bracket.deposits.forEach((deposit): void => {
@@ -230,9 +251,33 @@ class Strategy {
           }
         });
       });
+
+      if (this.quoteTokenAddress && this.baseTokenAddress) {
+        await Promise.all(
+          brackets.map(
+            async (bracket: Bracket): Promise<void> => {
+              const [quoteBalance, baseBalance] = await Promise.all([
+                batchExchangeContract.methods
+                  .getBalance(bracket.address, this.quoteTokenAddress)
+                  .call(),
+                batchExchangeContract.methods
+                  .getBalance(bracket.address, this.baseTokenAddress)
+                  .call(),
+              ]);
+
+              baseBalances[bracket.address] = new BN(baseBalance);
+              quoteBalances[bracket.address] = new BN(quoteBalance);
+            }
+          )
+        );
+      }
     }
+
     this.baseFunding = baseFundingBn.toString();
     this.quoteFunding = quoteFundingBn.toString();
+
+    this.tokenBaseBalances = baseBalances;
+    this.tokenQuoteBalances = quoteBalances;
 
     this.lastWithdrawRequestEvent = brackets[0]?.withdrawRequests[0];
     this.lastWithdrawClaimEvent = allWithdrawClaims[0];
@@ -247,6 +292,28 @@ class Strategy {
       this.quoteTokenDetails
     );
     this.brackets = brackets;
+  }
+
+  public totalBaseBalance(): BN | null {
+    return this.totalBalance(this.baseTokenDetails, this.tokenBaseBalances);
+  }
+
+  public totalQuoteBalance(): BN | null {
+    return this.totalBalance(this.quoteTokenDetails, this.tokenQuoteBalances);
+  }
+
+  private totalBalance(
+    details?: TokenDetails,
+    balances?: Record<string, BN>
+  ): BN | null {
+    if (!details || !balances) {
+      return null;
+    }
+
+    return Object.values(balances).reduce(
+      (acc, balance) => acc.add(balance),
+      ZERO
+    );
   }
 }
 
