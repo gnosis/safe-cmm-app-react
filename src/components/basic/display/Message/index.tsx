@@ -1,6 +1,8 @@
 import React, { memo, useMemo } from "react";
 import styled from "styled-components";
-import { Icon, Text } from "@gnosis.pm/safe-react-components";
+import { Icon } from "@gnosis.pm/safe-react-components";
+
+import { Text } from "components/basic/display/Text";
 
 import { theme } from "theme";
 

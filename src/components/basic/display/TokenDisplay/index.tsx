@@ -1,17 +1,19 @@
 import React, { memo } from "react";
 
-import { Text, Loader } from "@gnosis.pm/safe-react-components";
-import {
-  ThemeTextSize,
-  ThemeColors,
-} from "@gnosis.pm/safe-react-components/dist/theme";
+import { Loader } from "@gnosis.pm/safe-react-components";
+import { ThemeColors } from "@gnosis.pm/safe-react-components/dist/theme";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
+
+import { ThemeTextSize } from "theme";
+
+import { Text } from "components/basic/display/Text";
 
 export interface Props {
   token: string;
   size: ThemeTextSize;
   color?: ThemeColors;
+  className?: string;
 }
 
 /**
@@ -25,19 +27,19 @@ export interface Props {
 export const TokenDisplay = memo(function TokenDisplay(
   props: Props
 ): JSX.Element {
-  const { token, size, color } = props;
+  const { token, size, color, className } = props;
 
   // TODO: handle error
   const { tokenDetails, isLoading } = useTokenDetails(token);
 
   return tokenDetails ? (
-    <Text size={size} color={color} strong as="span">
+    <Text size={size} color={color} strong as="span" className={className}>
       {tokenDetails.symbol}
     </Text>
   ) : isLoading ? (
-    <Loader size={size === "xl" ? "lg" : size} />
+    <Loader size={size === "xl" ? "lg" : size} className={className} />
   ) : (
-    <Text size={size} color={color} strong as="span">
+    <Text size={size} color={color} strong as="span" className={className}>
       -
     </Text>
   );
