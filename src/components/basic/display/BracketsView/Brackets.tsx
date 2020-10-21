@@ -2,17 +2,15 @@ import React, { memo, useContext } from "react";
 import styled from "styled-components";
 import { range } from "lodash";
 
+import { theme } from "theme";
+
 import { BracketsViewContext } from "./viewer";
 
-// TODO: move to const? theme?
-const LEFT_BACKGROUND_COLOR = "rgba(0, 156, 180, 0.1)";
-const RIGHT_BACKGROUND_COLOR = "rgba(128, 94, 255, 0.1)";
-const LEFT_BORDER_LIGHT = "2px solid rgba(0, 156, 180, 0.2)";
-const LEFT_BORDER_THICK = "2px solid #009cb4";
-const RIGHT_BORDER_LIGHT = "2px solid rgba(128, 94, 255, 0.2)";
-const RIGHT_BORDER_THICK = "2px solid #805eff";
+function buildBorder(color: string): string {
+  return `2px solid ${color}`;
+}
 
-const Wrapper = styled.div<{ hasLeftBrackets?: boolean }>`
+const Wrapper = styled.div<{ hasLeftBrackets?: boolean; isDeploy?: boolean }>`
   height: inherit;
   display: flex;
 
@@ -21,18 +19,29 @@ const Wrapper = styled.div<{ hasLeftBrackets?: boolean }>`
   }
 
   /* Default to left side color */
-  background-color: ${LEFT_BACKGROUND_COLOR};
+  background-color: ${theme.colors.backgroundLightGreen};
 
   .left:first-of-type {
-    border-left: ${LEFT_BORDER_THICK};
+    border-left: ${buildBorder(theme.colors.borderDarkGreen)};
   }
 
   .left {
-    border-right: ${LEFT_BORDER_LIGHT};
+    border-right: ${({ isDeploy }) =>
+      buildBorder(
+        theme.colors[isDeploy ? "borderLightGreen" : "borderDarkGreen"]
+      )};
+
+    ${({ isDeploy }) =>
+      isDeploy
+        ? ""
+        : `
+          &:hover {
+            background-color: ${theme.colors.borderLightGreen};
+          }`}
   }
 
   .left:last-of-type {
-    border-right: ${LEFT_BORDER_THICK};
+    border-right: ${buildBorder(theme.colors.borderDarkGreen)};
   }
 
   ${({ hasLeftBrackets }) =>
@@ -40,27 +49,38 @@ const Wrapper = styled.div<{ hasLeftBrackets?: boolean }>`
       ? ""
       : `
   .right:first-of-type {
-    border-left: ${RIGHT_BORDER_THICK};
+    border-left: ${buildBorder(theme.colors.borderDarkPurple)};
   }`}
 
   .right {
-    background-color: ${RIGHT_BACKGROUND_COLOR};
+    background-color: ${theme.colors.backgroundLightPurple};
 
-    border-right: ${RIGHT_BORDER_LIGHT};
+    border-right: ${({ isDeploy }) =>
+      buildBorder(
+        theme.colors[isDeploy ? "borderLightPurple" : "borderDarkPurple"]
+      )};
+
+    ${({ isDeploy }) =>
+      isDeploy
+        ? ""
+        : `
+          &:hover {
+            background-color: ${theme.colors.borderLightPurple};
+          }`}
   }
 
   .right:last-of-type {
-    border-right: ${RIGHT_BORDER_THICK};
+    border-right: ${buildBorder(theme.colors.borderDarkPurple)};
   }
 `;
 
 export const Brackets = memo(function Brackets(): JSX.Element {
-  const { totalBrackets, leftBrackets, rightBrackets } = useContext(
+  const { totalBrackets, leftBrackets, rightBrackets, type } = useContext(
     BracketsViewContext
   );
 
   return (
-    <Wrapper hasLeftBrackets={!!leftBrackets}>
+    <Wrapper hasLeftBrackets={!!leftBrackets} isDeploy={type === "deploy"}>
       {range(
         !leftBrackets && !rightBrackets ? totalBrackets : leftBrackets
       ).map((id) => (
