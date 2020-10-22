@@ -34,7 +34,7 @@ export const BracketsViewer = memo(function BracketsViewer(
     isStrategy ? quoteTokenAddress : undefined
   );
   const { price } = useGetPrice({ baseToken, quoteToken });
-  const marketPrice = price?.toString() || "N/A";
+  const marketPrice = price?.isFinite() ? price.toString() : "N/A";
 
   // Calculate brackets, only if on Strategy page (marketPrice)
   const { baseTokenBrackets, quoteTokenBrackets } = calculateBrackets({

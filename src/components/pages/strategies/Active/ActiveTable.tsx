@@ -118,7 +118,9 @@ export const ActiveTable = memo(function ActiveTable({
                 }
               >
                 <TableCell colSpan={9} key={strategy.transactionHash}>
-                  <Details strategy={strategy} />
+                  {foldOutStrategy === strategy.transactionHash && (
+                    <Details strategy={strategy} />
+                  )}
                 </TableCell>
               </HideableTableRow>
             </>
