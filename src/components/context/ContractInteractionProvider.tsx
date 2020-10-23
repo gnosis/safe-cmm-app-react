@@ -214,7 +214,7 @@ export const ContractInteractionProvider = ({
         const networkDeploymentInfo = contractArtifact.networks[networkId];
         if (!networkDeploymentInfo) {
           throw new Error(
-            "Not deployed on current network according to build artifacts. Add address or update artifact"
+            `'${contractName}' contract not deployed on '${networkId}' network according to build artifacts. Add address or update artifact`
           );
         }
         globalDeployedContracts[networkId][contractName] = handleGetContract(

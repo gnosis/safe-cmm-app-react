@@ -23,6 +23,13 @@ const tokenAddresses: { [networkId: number]: string[] } = {
     "0xBD6A9921504fae42EaD2024F43305A8ED3890F6f", // pax
     "0xa9881E6459CA05d7D7C95374463928369cD7a90C", // usdt
   ],
+  [Network.xdai]: [
+    "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb", // GNO
+    "0x0905Ab807F8FD040255F0cF8fa14756c1D824931", // OWL
+    "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d", // wxDai
+    "0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e", // STAKE
+    "0xB1950Fb2C9C0CbC8553578c67dB52Aa110A93393", // sUSD
+  ],
 };
 
 // TODO: no need to be async now, but when we load it from a TCR it'll be

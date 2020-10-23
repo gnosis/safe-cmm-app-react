@@ -6,12 +6,14 @@ export enum Network {
   rinkeby = 4,
   goerli = 5,
   kovan = 42,
+  xdai = 100,
 }
 
 export const INFURA_API_KEY = process.env.INFURA_API_KEY;
 
 export const SAFE_ENDPOINT_URLS = {
   [Network.rinkeby]: `https://safe-transaction.rinkeby.gnosis.io`,
+  [Network.xdai]: `https://safe-transaction.xdai.gnosis.io`,
   [Network.mainnet]: `https://safe-transaction.gnosis.io`,
 };
 
