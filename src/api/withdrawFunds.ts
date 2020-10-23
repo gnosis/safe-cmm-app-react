@@ -43,10 +43,14 @@ export async function buildWithdrawRequestTxs(
   context: ContractInteractionContextProps,
   strategy: Strategy
 ): Promise<Transaction[]> {
+  const {
+    safeInfo: { network },
+  } = context;
+
   const withdrawals = await buildWithdrawals(
     context,
     strategy,
-    requestWithdrawAmountFunction,
+    requestWithdrawAmountFunctionFactory(network),
     "request"
   );
 
@@ -116,19 +120,24 @@ async function buildWithdrawals(
   return withdrawals;
 }
 
-async function requestWithdrawAmountFunction(
+const requestWithdrawAmountFunctionFactory = (network?: string) => async (
   bracketAddress: string,
   tokenData: TokenDetails,
   exchange: any // TODO: exchange contract type?
-): Promise<BN> {
+): Promise<BN> => {
   const amount = (
     await exchange.getBalance(bracketAddress, tokenData.address)
   ).toString();
 
-  let usdValue = ONE;
+  let usdValue: BN = ONE;
   try {
-    // TODO: remove restriction on xDai, don't even bother checking usdValue
-    usdValue = await amountUSDValue(amount, tokenData);
+    // xDai is cheap! And very likely the token doesn't exist on mainnet,
+    // so just skip this check
+    if (network === "xdai") {
+      logger.log(`On xDai network, not querying amount in USD`);
+    } else {
+      usdValue = await amountUSDValue(amount, tokenData);
+    }
   } catch (e) {
     logger.log(
       `Not able to determine USD value for amount ${amount}, requesting claim.`,
@@ -146,7 +155,7 @@ async function requestWithdrawAmountFunction(
   } else {
     return ZERO;
   }
-}
+};
 
 const claimAmountFunctionFactory = (context: ContractInteractionContextProps) =>
   async function (
