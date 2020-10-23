@@ -12,3 +12,8 @@ export interface SafeInfo {
   network: string;
   ethBalance: string;
 }
+
+export interface WithdrawState {
+  status?: "loading" | "success" | "error";
+  message?: string;
+}
