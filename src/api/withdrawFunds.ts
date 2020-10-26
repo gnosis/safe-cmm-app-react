@@ -1,7 +1,11 @@
+import BN from "bn.js";
+
+import { Transaction } from "@gnosis.pm/safe-apps-sdk";
 import { amountUSDValue } from "@gnosis.pm/dex-liquidity-provision/scripts/utils/price_utils";
 import {
   MAXUINT256,
   ONE,
+  ZERO,
 } from "@gnosis.pm/dex-liquidity-provision/scripts/utils/constants";
 import {
   importTradingStrategyHelpers,
@@ -13,56 +17,41 @@ import getLogger from "utils/logger";
 
 import Strategy from "logic/strategy";
 
-import BN from "bn.js";
 import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
+import { TokenDetails } from "types";
 
 const logger = getLogger("withdraw");
 
-export const withdrawRequest = async (
+// Local types.
+// When I say local I mean from dex-liquidity
+
+type Withdrawal = {
+  bracketAddress: string;
+  tokenAddress: string;
+  amount: BN;
+};
+
+type AmountFunction = (
+  bracketAddress: string,
+  tokenData: TokenDetails,
+  exchange: any
+) => Promise<BN>;
+
+// Public exports
+
+export async function buildWithdrawRequestTxs(
   context: ContractInteractionContextProps,
   strategy: Strategy
-): Promise<void> => {
-  await Promise.all([
-    context.getArtifact("IProxy"),
-    context.getArtifact("GnosisSafe"),
-    context.getArtifact("MultiSend"),
-    context.getArtifact("BatchExchange"),
-    context.getArtifact("FleetFactory"),
-    context.getArtifact("GnosisSafeProxyFactory"),
-  ]);
+): Promise<Transaction[]> {
+  const {
+    safeInfo: { network },
+  } = context;
 
-  const amountFunction = async function (
-    bracketAddress,
-    tokenData,
-    exchange
-  ): Promise<string> {
-    const amount = (
-      await exchange.getBalance(bracketAddress, tokenData.address)
-    ).toString();
-    const usdValue = await amountUSDValue(amount, tokenData, {});
-    logger.log(
-      `(request) ${bracketAddress} holds ${amount} (${usdValue}$) in ${tokenData.symbol}`
-    );
-    if (usdValue.gte(ONE)) {
-      return MAXUINT256.toString();
-    } else {
-      return "0";
-    }
-  };
-
-  const { getWithdrawalsAndTokenInfo } = importWithdrawWrapper(context);
-
-  const { withdrawals } = await getWithdrawalsAndTokenInfo(
-    amountFunction,
-    undefined,
-    strategy.brackets.map((bracket) => bracket.address),
-    [strategy.baseTokenAddress, strategy.quoteTokenAddress],
-    [strategy.baseTokenId, strategy.quoteTokenId],
-    true
-  );
-
-  logger.log(
-    `(request) started building withdraw transaction for ${withdrawals.length} withdraws`
+  const withdrawals = await buildWithdrawals(
+    context,
+    strategy,
+    requestWithdrawAmountFunctionFactory(network),
+    "request"
   );
 
   const { transactionGenericFundMovement } = importTradingStrategyHelpers(
@@ -74,12 +63,37 @@ export const withdrawRequest = async (
     withdrawals,
     "requestWithdraw"
   );
-};
+}
 
-export const withdrawClaim = async (
+export async function buildWithdrawClaimTxs(
   context: ContractInteractionContextProps,
   strategy: Strategy
-): Promise<void> => {
+): Promise<Transaction[]> {
+  const withdrawals = await buildWithdrawals(
+    context,
+    strategy,
+    claimAmountFunctionFactory(context),
+    "claim"
+  );
+
+  const {
+    transactionsWithdrawAndTransferFundsToMaster,
+  } = importTradingStrategyHelpers(context);
+
+  return transactionsWithdrawAndTransferFundsToMaster(
+    context.safeInfo.safeAddress,
+    withdrawals
+  );
+}
+
+// Helper functions
+
+async function buildWithdrawals(
+  context: ContractInteractionContextProps,
+  strategy: Strategy,
+  amountFunction: AmountFunction,
+  type: "request" | "claim"
+): Promise<Withdrawal[]> {
   await Promise.all([
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
@@ -88,25 +102,6 @@ export const withdrawClaim = async (
     context.getArtifact("FleetFactory"),
     context.getArtifact("GnosisSafeProxyFactory"),
   ]);
-
-  const amountFunction = async function (
-    bracketAddress,
-    tokenData,
-    exchange
-  ): Promise<string | BN> {
-    const amount = await getWithdrawableAmount(
-      bracketAddress,
-      tokenData.address,
-      exchange,
-      context.web3Instance
-    );
-    logger.log(
-      `(claim) requesting to claim ${amount.toString()} of ${
-        tokenData.symbol
-      } from ${bracketAddress}`
-    );
-    return amount;
-  };
 
   const { getWithdrawalsAndTokenInfo } = importWithdrawWrapper(context);
 
@@ -120,15 +115,66 @@ export const withdrawClaim = async (
   );
 
   logger.log(
-    `(claim) started building withdraw claim transaction for ${withdrawals.length} withdraws`
+    `(${type}) started building withdraw transaction for ${withdrawals.length} withdraws`
+  );
+  return withdrawals;
+}
+
+const requestWithdrawAmountFunctionFactory = (network?: string) => async (
+  bracketAddress: string,
+  tokenData: TokenDetails,
+  exchange: any // TODO: exchange contract type?
+): Promise<BN> => {
+  const amount = (
+    await exchange.getBalance(bracketAddress, tokenData.address)
+  ).toString();
+
+  let usdValue: BN = ONE;
+  try {
+    // xDai is cheap! And very likely the token doesn't exist on mainnet,
+    // so just skip this check
+    if (network === "xdai") {
+      logger.log(`On xDai network, not querying amount in USD`);
+    } else {
+      usdValue = await amountUSDValue(amount, tokenData);
+    }
+  } catch (e) {
+    logger.log(
+      `Not able to determine USD value for amount ${amount}, requesting claim.`,
+      tokenData,
+      e.message
+    );
+  }
+
+  logger.log(
+    `(request) ${bracketAddress} holds ${amount} (${usdValue}$) in ${tokenData.symbol}`
   );
 
-  const {
-    transactionsWithdrawAndTransferFundsToMaster,
-  } = importTradingStrategyHelpers(context);
-
-  return transactionsWithdrawAndTransferFundsToMaster(
-    context.safeInfo.safeAddress,
-    withdrawals
-  );
+  if (usdValue.gte(ONE)) {
+    return MAXUINT256;
+  } else {
+    return ZERO;
+  }
 };
+
+const claimAmountFunctionFactory = (context: ContractInteractionContextProps) =>
+  async function (
+    bracketAddress: string,
+    tokenData: TokenDetails,
+    exchange: any
+  ): Promise<BN> {
+    const amount = await getWithdrawableAmount(
+      bracketAddress,
+      tokenData.address,
+      exchange,
+      context.web3Instance
+    );
+
+    logger.log(
+      `(claim) requesting to claim ${amount.toString()} of ${
+        tokenData.symbol
+      } from ${bracketAddress}`
+    );
+
+    return amount;
+  };

@@ -6,6 +6,12 @@ import Strategy from "logic/strategy";
 import { Button } from "components/basic/inputs/Button";
 
 import { StrategyTab } from "./StrategyTab";
+import { WithdrawButton } from "./WithdrawButton";
+
+const Header = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
 
 const TabContents = styled.div`
   padding: 35px 0;
@@ -33,7 +39,7 @@ export const Details = memo(function Details({ strategy }: Props): JSX.Element {
 
   return (
     <>
-      <Box>
+      <Header>
         <ButtonGroup>
           <Button
             size="md"
@@ -60,7 +66,8 @@ export const Details = memo(function Details({ strategy }: Props): JSX.Element {
             Deployed Params.
           </Button>
         </ButtonGroup>
-      </Box>
+        <WithdrawButton strategy={strategy} />
+      </Header>
       <TabContents>
         {activeDetailScreen === "strategy" && (
           <StrategyTab strategy={strategy} />
