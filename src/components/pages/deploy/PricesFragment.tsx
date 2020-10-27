@@ -1,24 +1,30 @@
-import React, { memo, useCallback, useMemo } from "react";
-import { RecoilState, useRecoilCallback, useRecoilValue } from "recoil";
+import React, { memo, useCallback } from "react";
+import { Field, useField, useForm } from "react-final-form";
 import styled from "styled-components";
+
+import { formatAmountFull, ZERO } from "@gnosis.pm/dex-js";
+
+import { useTokenDetails } from "hooks/useTokenDetails";
+
+import { TokenDetails } from "types";
+
+import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
 
 import { PriceInput } from "components/basic/inputs/PriceInput";
 import { FundingInput } from "components/basic/inputs/FundingInput";
 import { TotalBrackets } from "components/basic/inputs/TotalBrackets";
 
-import { calculateBrackets } from "utils/calculateBrackets";
+import { composeValidators } from "validators/misc";
+import { isRequired } from "validators/isRequired";
+import { isNumber } from "validators/isNumber";
+import { isGreaterThan } from "validators/isGreaterThan";
+import { isSmallerThan } from "validators/isSmallerThan";
 
-import {
-  baseTokenAddressAtom,
-  baseTokenAmountAtom,
-  highestPriceAtom,
-  lowestPriceAtom,
-  quoteTokenAddressAtom,
-  quoteTokenAmountAtom,
-  startPriceAtom,
-  totalBracketsAtom,
-  totalInvestmentAtom,
-} from "./atoms";
+import { getBracketValue } from "./DeployForm";
+import { FormFields } from "./types";
+import { useTokenBalance } from "hooks/useTokenBalance";
+
+import BN from "bn.js";
 
 const Wrapper = styled.div`
   display: flex;
@@ -46,126 +52,195 @@ const Wrapper = styled.div`
   }
 `;
 
-function component(): JSX.Element {
-  const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
-  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
-  const baseTokenAmount = useRecoilValue(baseTokenAmountAtom);
-  const quoteTokenAmount = useRecoilValue(quoteTokenAmountAtom);
-  const totalBrackets = useRecoilValue(totalBracketsAtom);
-  const totalInvestment = useRecoilValue(totalInvestmentAtom);
-  const startPrice = useRecoilValue(startPriceAtom);
-  const lowestPrice = useRecoilValue(lowestPriceAtom);
-  const highestPrice = useRecoilValue(highestPriceAtom);
+const InvisibleField = styled(Field)`
+  display: none;
+`;
 
-  const { baseTokenBrackets, quoteTokenBrackets } = useMemo(() => {
-    const lp = Number(lowestPrice);
-    const sp = Number(startPrice);
-    const hp = Number(highestPrice);
-    const tb = Number(totalBrackets);
+export const PricesFragment = memo(function PricesFragment(): JSX.Element {
+  const {
+    input: { value: baseTokenAddress },
+  } = useField<string>("baseTokenAddress");
+  const {
+    input: { value: quoteTokenAddress },
+  } = useField<string>("quoteTokenAddress");
+  const {
+    input: { value: baseTokenAmount },
+  } = useField<string>("baseTokenAmount");
+  const {
+    input: { value: quoteTokenAmount },
+  } = useField<string>("quoteTokenAmount");
 
-    if (
-      isNaN(lp) ||
-      isNaN(sp) ||
-      isNaN(hp) ||
-      isNaN(tb) ||
-      lp <= 0 ||
-      lp > sp ||
-      sp > hp ||
-      tb <= 0
-    ) {
-      return { baseTokenBrackets: 0, quoteTokenBrackets: 0 };
-    } else {
-      return calculateBrackets({
-        lowestPrice,
-        startPrice,
-        highestPrice,
-        totalBrackets,
-      });
-    }
-  }, [lowestPrice, startPrice, highestPrice, totalBrackets]);
+  const {
+    mutators: { setFieldValue },
+  } = useForm();
 
-  const onChangeHandlerFactory = useRecoilCallback(
-    ({ set }) => (atom: RecoilState<string>) => (
-      event: React.ChangeEvent<HTMLInputElement>
+  const { tokenDetails: baseTokenDetails } = useTokenDetails(baseTokenAddress);
+  const { tokenDetails: quoteTokenDetails } = useTokenDetails(
+    quoteTokenAddress
+  );
+
+  const baseTokenBalance = useTokenBalance(baseTokenAddress);
+  const quoteTokenBalance = useTokenBalance(quoteTokenAddress);
+
+  const onMaxClickFactory = useCallback(
+    (
+      field: FormFields,
+      tokenDetails: TokenDetails,
+      maxBalance: BN | null
     ): void => {
-      set(atom, event.target.value);
-    }
+      if (tokenDetails && maxBalance?.gt(ZERO)) {
+        const value = formatAmountFull({
+          amount: maxBalance,
+          precision: tokenDetails.decimals,
+          thousandSeparator: false,
+          isLocaleAware: false,
+        });
+        setFieldValue(field, { value });
+      }
+    },
+    [setFieldValue]
   );
 
-  const onLowestPriceChange = useCallback(
-    onChangeHandlerFactory(lowestPriceAtom),
-    []
+  const onBaseTokenMaxClick = useCallback(
+    () =>
+      onMaxClickFactory("baseTokenAmount", baseTokenDetails, baseTokenBalance),
+    [baseTokenDetails, onMaxClickFactory, baseTokenBalance]
   );
-  const onBaseTokenAmountChange = useCallback(
-    onChangeHandlerFactory(baseTokenAmountAtom),
-    []
-  );
-  const onStartPriceChange = useCallback(
-    onChangeHandlerFactory(startPriceAtom),
-    []
-  );
-  const onTotalBracketsChange = useCallback(
-    onChangeHandlerFactory(totalBracketsAtom),
-    []
-  );
-  const onHighestPriceChange = useCallback(
-    onChangeHandlerFactory(highestPriceAtom),
-    []
-  );
-  const onQuoteTokenAmountChange = useCallback(
-    onChangeHandlerFactory(quoteTokenAmountAtom),
-    []
+  const onQuoteTokenMaxClick = useCallback(
+    () =>
+      onMaxClickFactory(
+        "quoteTokenAmount",
+        quoteTokenDetails,
+        quoteTokenBalance
+      ),
+    [onMaxClickFactory, quoteTokenDetails, quoteTokenBalance]
   );
 
   return (
     <Wrapper>
       <div>
-        <PriceInput
-          tokenAddress={quoteTokenAddress}
-          labelText="Lowest price"
-          labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
-          value={lowestPrice}
-          onChange={onLowestPriceChange}
+        <Field<string>
+          name="lowestPrice"
+          validate={composeValidators("Lowest Price", [
+            isRequired(),
+            isNumber(),
+            isGreaterThan(0),
+          ])}
+          render={({ input, meta }) => (
+            <PriceInput
+              {...input}
+              warn={meta.touched && !!meta.data?.warn}
+              error={meta.touched && meta.error}
+              tokenAddress={baseTokenAddress}
+              labelText="Lowest price"
+              labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
+            />
+          )}
         />
-        <FundingInput
-          brackets={baseTokenBrackets}
-          tokenAddress={baseTokenAddress}
-          value={baseTokenAmount}
-          onChange={onBaseTokenAmountChange}
-        />
+        <Field<string> name="calculatedBrackets" subscription={{ value: true }}>
+          {({ input: { value } }) => (
+            // Field `baseTokenAmount` is "subscribed" to field `calculatedBrackets`
+            // `calculatedBrackets` value is a string storing "base|quote" brackets value
+            <Field<string>
+              name="baseTokenAmount"
+              // validation done at form level since this field might not be used
+              render={({ input, meta }) => (
+                <FundingInput
+                  {...input}
+                  warn={meta.touched && !!meta.data?.warn}
+                  error={meta.touched && meta.error}
+                  brackets={getBracketValue(value, "base")}
+                  tokenAddress={baseTokenAddress}
+                  onMaxClick={onBaseTokenMaxClick}
+                />
+              )}
+            />
+          )}
+        </Field>
       </div>
       <div className="middle">
-        <PriceInput
-          tokenAddress={quoteTokenAddress}
-          labelText="Start Price"
-          labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
-          value={startPrice}
-          labelSize="xl"
-          onChange={onStartPriceChange}
+        <Field<string>
+          name="startPrice"
+          validate={composeValidators("Start Price", [
+            isRequired(),
+            isNumber(),
+            isGreaterThan(0),
+          ])}
+          render={({ input, meta }) => (
+            <PriceInput
+              {...input}
+              warn={meta.touched && !!meta.data?.warn}
+              error={meta.touched && meta.error}
+              tokenAddress={baseTokenAddress}
+              labelText="Start Price"
+              labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
+              labelSize="xl"
+            />
+          )}
         />
-        <TotalBrackets
-          value={totalBrackets}
-          amount={totalInvestment}
-          onChange={onTotalBracketsChange}
+        <Field<string>
+          name="totalBrackets"
+          validate={composeValidators("Total Brackets", [
+            isRequired(),
+            isNumber(true),
+            isGreaterThan(MINIMUM_BRACKETS - 1),
+            isSmallerThan(MAXIMUM_BRACKETS + 1),
+          ])}
+          render={({ input, meta }) => (
+            <TotalBrackets
+              {...input}
+              warn={meta.touched && !!meta.data?.warn}
+              error={meta.touched && meta.error}
+              baseTokenAddress={baseTokenAddress}
+              baseTokenAmount={baseTokenAmount}
+              quoteTokenAddress={quoteTokenAddress}
+              quoteTokenAmount={quoteTokenAmount}
+            />
+          )}
         />
       </div>
       <div>
-        <PriceInput
-          tokenAddress={quoteTokenAddress}
-          labelText="Highest price"
-          labelTooltip="The max price per token A you are willing to sell or buy"
-          value={highestPrice}
-          onChange={onHighestPriceChange}
+        <Field<string>
+          name="highestPrice"
+          validate={composeValidators("Highest Price", [
+            isRequired(),
+            isNumber(),
+            isGreaterThan(0),
+          ])}
+          render={({ input, meta }) => (
+            <PriceInput
+              {...input}
+              warn={meta.touched && !!meta.data?.warn}
+              error={meta.touched && meta.error}
+              tokenAddress={baseTokenAddress}
+              labelText="Highest price"
+              labelTooltip="The max price per token A you are willing to sell or buy"
+            />
+          )}
         />
-        <FundingInput
-          brackets={quoteTokenBrackets}
-          tokenAddress={quoteTokenAddress}
-          value={quoteTokenAmount}
-          onChange={onQuoteTokenAmountChange}
-        />
+        <Field<string> name="calculatedBrackets" subscription={{ value: true }}>
+          {({ input: { value } }) => (
+            // Field `quoteTokenAmount` is "subscribed" to field `calculatedBrackets`
+            // `calculatedBrackets` value is a string storing "base|quote" brackets value
+            <Field<string>
+              name="quoteTokenAmount"
+              // validation done at form level since this field might not be used
+              render={({ input, meta }) => (
+                <FundingInput
+                  {...input}
+                  warn={meta.touched && !!meta.data?.warn}
+                  error={meta.touched && meta.error}
+                  brackets={getBracketValue(value, "quote")}
+                  tokenAddress={quoteTokenAddress}
+                  onMaxClick={onQuoteTokenMaxClick}
+                />
+              )}
+            />
+          )}
+        </Field>
       </div>
+      {/* stores the calculated brackets as string separated by a '|' */}
+      <InvisibleField name="calculatedBrackets" component="input" />
     </Wrapper>
   );
-}
-
-export const PricesFragment = memo(component);
+});

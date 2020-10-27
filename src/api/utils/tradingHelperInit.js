@@ -10,7 +10,7 @@ let initializedTradingStrategyHelpers;
 const runInitializerIfNotRan = (context) => {
   if (!initializedTradingStrategyHelpers) {
     initializedTradingStrategyHelpers = tradingHelperInit(
-      context.instance,
+      context.web3Instance,
       makeFakeArtifacts(context)
     );
   }

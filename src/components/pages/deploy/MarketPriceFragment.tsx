@@ -1,39 +1,41 @@
-import React, { memo } from "react";
-import { useRecoilCallback, useRecoilValue } from "recoil";
+import React, { memo, useCallback } from "react";
 import styled from "styled-components";
+import { useField, useForm } from "react-final-form";
 
 import { MarketPrice } from "components/basic/display/MarketPrice";
-
-import {
-  baseTokenAddressAtom,
-  quoteTokenAddressAtom,
-  startPriceAtom,
-} from "./atoms";
 
 const Wrapper = styled.div`
   align-self: center;
 `;
 
-function component(): JSX.Element {
-  const baseTokenAddress = useRecoilValue(baseTokenAddressAtom);
-  const quoteTokenAddress = useRecoilValue(quoteTokenAddressAtom);
+export const MarketPriceFragment = memo(
+  function MarketPriceFragment(): JSX.Element {
+    const {
+      input: { value: baseTokenAddress },
+    } = useField<string>("baseTokenAddress");
+    const {
+      input: { value: quoteTokenAddress },
+    } = useField<string>("quoteTokenAddress");
 
-  const onPriceClick = useRecoilCallback(
-    ({ set }) => async (price: string): Promise<void> => {
-      set(startPriceAtom, price);
-    },
-    []
-  );
+    const {
+      mutators: { setFieldValue },
+    } = useForm();
 
-  return (
-    <Wrapper>
-      <MarketPrice
-        baseTokenAddress={baseTokenAddress}
-        quoteTokenAddress={quoteTokenAddress}
-        onPriceClick={onPriceClick}
-      />
-    </Wrapper>
-  );
-}
+    const onPriceClick = useCallback(
+      (price: string) => {
+        setFieldValue("startPrice", { value: price });
+      },
+      [setFieldValue]
+    );
 
-export const MarketPriceFragment = memo(component);
+    return (
+      <Wrapper>
+        <MarketPrice
+          baseTokenAddress={baseTokenAddress}
+          quoteTokenAddress={quoteTokenAddress}
+          onPriceClick={onPriceClick}
+        />
+      </Wrapper>
+    );
+  }
+);

@@ -2,17 +2,9 @@ if: (branch = development) OR (branch = master) OR (type = pull_request) OR (tag
 dist: xenial
 language: node_js
 node_js:
-  - '12.4.0'
-matrix:
-  include:
-    - env:
-        - NETWORK='mainnet'
-        - INFURA_API_KEY=${INFURA_API_KEY}
-      if: (branch = master AND NOT type = pull_request) OR tag IS present
-    - env:
-        - NETWORK='rinkeby'
-        - INFURA_API_KEY=${INFURA_API_KEY}
-      if: (branch != master) OR tag IS NOT present
+  - "12.4.0"
+env:
+  - INFURA_API_KEY=${INFURA_API_KEY}
 cache:
   yarn: true
 before_install:
@@ -21,6 +13,14 @@ before_install:
   - pip install awscli --upgrade --user
 script:
   - npm run build
+after_success:
+  # add storybook to build
+  - if [[ $TRAVIS_TAG != "" || $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_BRANCH = master || $TRAVIS_BRANCH = development ]]; then
+      npm run release-storybook;
+    fi
+  # Pull Request - Deploy it to a review environment
+  # Travis doesn't do deploy step with pull requests builds
+  - ./travis/deploy_pull_request.sh
 deploy:
   # Development environment
   - provider: s3
@@ -33,6 +33,7 @@ deploy:
     on:
       branch: development
 
+
     # Staging environment
   - provider: s3
     bucket: $STAGING_BUCKET_NAME
@@ -44,6 +45,7 @@ deploy:
     skip_cleanup: true
     on:
       branch: master
+
 
     # Prepare production deployment
   - provider: s3

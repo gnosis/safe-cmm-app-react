@@ -15,7 +15,7 @@ const loadArtifact = (context) => (dirtyContractName) => {
 
   const artifact = context.getCachedArtifact(contractName);
   const contract = TruffleContract(artifact);
-  contract.setProvider(context.instance.currentProvider);
+  contract.setProvider(context.web3Instance.currentProvider);
 
   return contract;
 };

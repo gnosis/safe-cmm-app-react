@@ -1,9 +1,11 @@
 import { useTokenDetails as hook } from "hooks/useTokenDetails";
-import { TokenDetails } from "types";
+import { TokenDetails } from "../types";
 
 import { mockTokenDetails } from "./data";
 
-export const useTokenDetails: typeof hook = (token) => {
+export const useTokenDetails: typeof hook = (
+  token: string | TokenDetails
+): any => {
   let tokenDetails: null | TokenDetails;
 
   if (!token) {

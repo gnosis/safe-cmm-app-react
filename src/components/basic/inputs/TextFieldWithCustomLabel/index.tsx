@@ -4,8 +4,6 @@ import styled from "styled-components";
 import { InputLabel } from "@material-ui/core";
 import { TextField } from "@gnosis.pm/safe-react-components";
 
-import { Theme } from "theme";
-
 import { pxOrCustomCssUnits } from "utils/cssUtils";
 
 // To match parent's width https://github.com/gnosis/safe-react-components/blob/development/src/inputs/TextField/index.tsx#L24
@@ -61,7 +59,7 @@ const Wrapper = styled.div<WrapperProps>`
 
   // Set's WARN/ERROR based on boolean
   // Parent doesn't provide WARN, and requires error message for ERROR
-  ${({ theme, error, warn }: { theme: Theme } & WrapperProps): string => {
+  ${({ theme, error, warn }): string => {
     if (!error && !warn) {
       return "";
     }

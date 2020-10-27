@@ -1,8 +1,9 @@
 import React from "react";
 import { Meta } from "@storybook/react";
 
+import { Text } from "components/basic/display/Text";
+
 import { Message, Props } from ".";
-import { Text } from "@gnosis.pm/safe-react-components";
 
 export default {
   component: Message,
@@ -35,9 +36,9 @@ export const WithComponentChildren = Template.bind({});
 WithComponentChildren.args = {
   ...Default.args,
   children: (
-    <Text size="sm" color="shadow">
+    <Text color="shadow">
       The specified{" "}
-      <Text size="sm" strong as="span">
+      <Text strong as="span">
         Start Price
       </Text>{" "}
       is at least 2% higher than the current indicated market price. If

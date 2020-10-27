@@ -1,9 +1,5 @@
 import React, { memo } from "react";
-import { useRecoilValue } from "recoil";
-import { Backdrop, withStyles } from "@material-ui/core";
 import styled from "styled-components";
-
-import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { SideBar } from "./SideBar";
 import { TokenSelectorsFragment } from "./TokenSelectorsFragment";
@@ -11,11 +7,22 @@ import { PricesFragment } from "./PricesFragment";
 import { MarketPriceFragment } from "./MarketPriceFragment";
 import { ErrorMessagesFragment } from "./ErrorMessagesFragment";
 import { DeployStrategyButtonFragment } from "./DeployStrategyButtonFragment";
-import { isSubmittingAtom } from "./atoms";
+import { DeployForm } from "./DeployForm";
+import { FormBackdrop } from "./FormBackdrop";
+import { BracketsViewFragment } from "./BracketsViewFragment";
 
 const PageLayout = styled.div`
   display: flex;
   min-width: 860px;
+`;
+
+const DeployColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* Some space for sidebar */
+  margin-right: 48px;
 `;
 
 const DeployWidget = styled.div`
@@ -24,9 +31,6 @@ const DeployWidget = styled.div`
   min-height: 482px;
 
   padding: 16px 13px;
-
-  // Some space for sidebar
-  margin-right: 48px;
 
   // Spacing between elements
   & > *:not(:last-child) {
@@ -43,36 +47,23 @@ const DeployWidget = styled.div`
   align-items: stretch;
 `;
 
-const StyledBackdrop = withStyles(() => ({ root: { zIndex: 999 } }))(Backdrop);
-
-export interface Props {
-  onSubmit?: (event: React.FormEvent<HTMLFormElement>) => Promise<void>;
-}
-
-/**
- * All component props are passed down into a local context
- * Every fragment takes what is needs from it
- */
-function component(props: Props): JSX.Element {
-  const isSubmitting = useRecoilValue(isSubmittingAtom);
-
+export const DeployPageViewer = memo(function DeployPageViewer(): JSX.Element {
   return (
     <PageLayout>
-      <form onSubmit={props.onSubmit}>
-        <DeployWidget>
-          <TokenSelectorsFragment />
-          <MarketPriceFragment />
-          <PricesFragment />
-          <ErrorMessagesFragment />
-          <DeployStrategyButtonFragment />
-        </DeployWidget>
-      </form>
+      <DeployForm>
+        <DeployColumn>
+          <DeployWidget>
+            <TokenSelectorsFragment />
+            <MarketPriceFragment />
+            <PricesFragment />
+            <ErrorMessagesFragment />
+            <DeployStrategyButtonFragment />
+          </DeployWidget>
+          <BracketsViewFragment />
+          <FormBackdrop />
+        </DeployColumn>
+      </DeployForm>
       <SideBar />
-      <StyledBackdrop open={isSubmitting}>
-        <Loader size="lg" color="primaryLight" />
-      </StyledBackdrop>
     </PageLayout>
   );
-}
-
-export const DeployPageViewer: typeof component = memo(component);
+});

@@ -1,52 +1,56 @@
-import { useCallback, useState, useEffect, useContext } from "react"
-import useInterval from "@use-it/interval"
+import { useCallback, useState, useEffect, useContext } from "react";
 
-import getLogger from 'utils/logger';
+import getLogger from "utils/logger";
 
-import findStrategiesForOwner from 'api/web3/findStrategiesForOwner';
-import { Web3Context } from 'components/Web3Provider';
+import findStrategiesForOwner from "api/web3/findStrategiesForOwner";
 
-import { Web3Context as Web3ContextType } from "types";
+import Strategy from "logic/strategy";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
-const logger = getLogger('web3-strategy-hook');
+const logger = getLogger("web3-strategy-hook");
 
-const useWeb3Strategies = () : any => {
-  const [status, setStatus] = useState('LOADING');
-  const [isFetching, setIsFetching] = useState(false);
+interface Web3StrategyHook {
+  status: string;
+  strategies: Strategy[];
+}
+
+// sorry about this - workaround to make sure we dont refresh when we're already fetching
+let isFetching = false;
+export const useWeb3Strategies = (): Web3StrategyHook => {
+  const [status, setStatus] = useState("LOADING");
   const [strategies, setStrategies] = useState([]);
 
-  const context : Web3ContextType = useContext(Web3Context);
+  const context = useContext(ContractInteractionContext);
 
   const handleFindStrategies = useCallback(async () => {
-    setIsFetching(true);
+    if (isFetching) {
+      logger.log("already fetching, ignoring interval/refresh");
+      return;
+    }
+
+    isFetching = true;
     try {
-      const strategies = await findStrategiesForOwner(context)
-      logger.log('Active strategies loaded via web3:', strategies)
-      setStatus('SUCCESS')
+      const strategies = await findStrategiesForOwner(context);
+      logger.log("Active strategies loaded via web3:", strategies);
+      setStatus("SUCCESS");
       setStrategies(strategies);
     } catch (err) {
-      setStatus('ERROR')
+      setStatus("ERROR");
       console.error(err);
     } finally {
-      setIsFetching(false);
+      isFetching = false;
     }
-  }, [context])
+  }, [context]);
 
   useEffect(() => {
-    setStatus('LOADING');
-    handleFindStrategies()
-  }, [])
-
-  useInterval(() => {
-    if (!isFetching) {
+    if (strategies.length === 0) {
+      logger.log("fetching strategies");
       handleFindStrategies();
     }
-  }, 10000)
+  }, [strategies, handleFindStrategies]);
 
   return {
     status,
-    strategies
-  }
-}
-
-export default useWeb3Strategies;
+    strategies,
+  };
+};

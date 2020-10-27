@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import styled from "styled-components";
 
-import { Text } from "@gnosis.pm/safe-react-components";
+import { Text } from "components/basic/display/Text";
 
 interface WrapperProps {
   inline?: boolean;
@@ -28,10 +28,12 @@ const Wrapper = styled.div<WrapperProps>`
 
 export interface Props extends WrapperProps {
   subtext: string;
-  amount: string | React.ReactElement;
+  amount: React.ReactNode;
 }
 
-function component(props: Props): JSX.Element {
+export const SubtextAmount = memo(function SubtextAmount(
+  props: Props
+): JSX.Element {
   const { subtext, amount, inline } = props;
 
   return (
@@ -44,6 +46,4 @@ function component(props: Props): JSX.Element {
       </Text>
     </Wrapper>
   );
-}
-
-export const SubtextAmount: typeof component = memo(component);
+});

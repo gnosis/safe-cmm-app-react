@@ -2,12 +2,15 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const GenerateJSONPlugin = require("generate-json-webpack-plugin");
-const upperFirst = require("lodash/upperFirst");
+const truncate = require("lodash/truncate");
+
+const pkg = require("./package.json");
 
 const path = require("path");
 const webpack = require("webpack");
 
 const isDevelopment = process.env.NODE_ENV !== "production";
+const isDeployed = process.env.CONTINUOUS_INTEGRATION === "true";
 
 // Make sure required envs are set
 if (!process.env.INFURA_API_KEY) {
@@ -16,13 +19,9 @@ if (!process.env.INFURA_API_KEY) {
   );
 }
 
-const ALLOWED_NETWORKS = ["mainnet", "rinkeby", "local"];
-
-if (!ALLOWED_NETWORKS.includes(process.env.NETWORK)) {
-  throw new Error(
-    `Invalid or missing Network defined - please set NETWORK env variable with one of: ${ALLOWED_NETWORKS.join(
-      ", "
-    )}`
+if (process.env.NETWORK != null) {
+  console.warn(
+    "Network property is deprecated. The app works on any network configured in utils/constants.ts now"
   );
 }
 
@@ -34,15 +33,29 @@ const MANIFEST_JSON = {
 };
 
 if (isDevelopment) {
-  // For development versions, always add network
-  MANIFEST_JSON.name += ` - Dev - ${upperFirst(process.env.NETWORK)}`;
-} else {
-  // For production, only add network if not mainnet
-  if (process.env.NETWORK !== "mainnet") {
-    MANIFEST_JSON.name += ` - ${upperFirst(process.env.NETWORK)}`;
+  if (isDeployed) {
+    // For development versions, always add network
+    const verString = [
+      process.env.TRAVIS_BRANCH
+        ? truncate(process.env.TRAVIS_BRANCH, {
+            length: 15,
+            omission: "",
+          })
+        : "unknown branch",
+      process.env.TRAVIS_BUILD_ID || "unknown build",
+      process.env.TRAVIS_COMMIT
+        ? truncate(process.env.TRAVIS_COMMIT, {
+            length: 6,
+            omission: "",
+          })
+        : "unknown commit",
+    ];
+
+    MANIFEST_JSON.name += ` - ${pkg.version} - ${verString.join(" - ")}`;
+  } else {
+    MANIFEST_JSON.name += " - Local Dev";
   }
 }
-
 const BABELRC = {
   // Unfortunately babelrc is causing issues when trying to
   // force it to transpile something inside node_modules
@@ -135,6 +148,9 @@ module.exports = {
     ],
     headers: {
       "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET",
+      "Access-Control-Allow-Headers":
+        "X-Requested-With, content-type, Authorization",
     },
     public: process.env.PUBLIC_ENDPOINT,
     port: 8080,
@@ -148,6 +164,10 @@ module.exports = {
       NODE_ENV: "development",
       NETWORK: "local",
       INFURA_API_KEY: null,
+      CONTINUOUS_INTEGRATION: null,
+      TRAVIS_BRANCH: "unknown branch",
+      TRAVIS_BUILD_ID: "unknown build",
+      TRAVIS_COMMIT: "unknown commit",
     }),
     // Add assets and build artifacts to the dist/ folder on build
     new CopyWebpackPlugin({

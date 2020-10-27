@@ -2,7 +2,7 @@ import React, { useEffect, useContext, useCallback, useState } from "react";
 
 import findPendingStrategiesForOwner from "api/safe/findPendingStrategiesForOwner";
 
-import { Web3Context } from "components/Web3Provider";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 import { Loader } from "@gnosis.pm/safe-react-components";
 
@@ -16,17 +16,16 @@ import {
 } from "@material-ui/core";
 
 const Pending = () => {
-  const context = useContext(Web3Context);
+  const context = useContext(ContractInteractionContext);
   const [strategies, setStrategies] = useState(null);
   const handleLoadPending = useCallback(async () => {
     const pendingStrategies = await findPendingStrategiesForOwner(context);
     setStrategies(pendingStrategies);
-    console.log(pendingStrategies);
   }, [context]);
 
   useEffect(() => {
     handleLoadPending();
-  }, []);
+  }, [handleLoadPending]);
 
   if (!strategies) {
     return (

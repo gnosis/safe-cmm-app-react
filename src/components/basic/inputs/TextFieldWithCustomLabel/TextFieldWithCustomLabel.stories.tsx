@@ -9,7 +9,7 @@ export default {
   excludeStories: /.*Data$/,
 };
 
-const onSubmit = (e: React.FormEvent) => e.preventDefault();
+const onSubmit = (e: React.FormEvent): void => e.preventDefault();
 
 export const textFieldData = {
   id: "fieldId",
@@ -27,7 +27,7 @@ export const textFieldData = {
   ),
 };
 
-export const Default = () => {
+export const Default: React.FC = () => {
   const [value, setValue] = useState("");
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
@@ -40,7 +40,7 @@ export const Default = () => {
   );
 };
 
-export const CustomWidth = () => {
+export const CustomWidth: React.FC = () => {
   const [value, setValue] = useState("");
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
@@ -54,7 +54,7 @@ export const CustomWidth = () => {
   );
 };
 
-export const VeryLongValue = () => {
+export const VeryLongValue: React.FC = () => {
   const [value, setValue] = useState(
     "564897654165765132578645325746146254890849084089"
   );
@@ -69,7 +69,7 @@ export const VeryLongValue = () => {
   );
 };
 
-export const WithAdornmentsAndLongInput = () => {
+export const WithAdornmentsAndLongInput: React.FC = () => {
   const [value, setValue] = useState(
     "38798749879879879543574.2468165735484657465"
   );
@@ -86,7 +86,7 @@ export const WithAdornmentsAndLongInput = () => {
   );
 };
 
-export const WithErrorMessage = () => {
+export const WithErrorMessage: React.FC = () => {
   const [value, setValue] = useState("kajsdla");
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
@@ -100,7 +100,7 @@ export const WithErrorMessage = () => {
   );
 };
 
-export const WithErrorHighlightWithoutMessage = () => {
+export const WithErrorHighlightWithoutMessage: React.FC = () => {
   const [value, setValue] = useState("");
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
@@ -114,7 +114,7 @@ export const WithErrorHighlightWithoutMessage = () => {
   );
 };
 
-export const WithWarningHighlight = () => {
+export const WithWarningHighlight: React.FC = () => {
   const [value, setValue] = useState("");
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>

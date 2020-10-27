@@ -102,7 +102,7 @@ const StyledAccordionDetails = withStyles({
   },
 })(AccordionDetails);
 
-function component(): JSX.Element {
+export const SideBar = memo(function SideBar(): JSX.Element {
   return (
     <Wrapper>
       <div>
@@ -112,14 +112,18 @@ function component(): JSX.Element {
 
         <Text size="lg" as="span">
           👉 Check out the{" "}
-          <Link textSize="lg" color="primary" href="#add-link-here">
+          <Link
+            textSize="lg"
+            color="primary"
+            href="https://docs.gnosis.io/protocol/docs/intro-cmm/"
+          >
             GP CMM intro article
           </Link>
         </Text>
 
         <Text size="lg">
           👉{" "}
-          <Link textSize="lg" color="primary" href="#add-link-here">
+          <Link textSize="lg" color="primary" href="https://chat.gnosis.io/ ">
             Join Discord
           </Link>
         </Text>
@@ -142,6 +146,4 @@ function component(): JSX.Element {
       </StyledAccordion>
     </Wrapper>
   );
-}
-
-export const SideBar = memo(component);
+});

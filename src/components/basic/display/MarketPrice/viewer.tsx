@@ -23,7 +23,7 @@ export interface MarketPriceViewerProps {
   onClick?: () => void;
 }
 
-function component(props: MarketPriceViewerProps): JSX.Element {
+function UMarketPriceViewer(props: MarketPriceViewerProps): JSX.Element {
   const {
     price,
     isPriceLoading,
@@ -48,7 +48,7 @@ function component(props: MarketPriceViewerProps): JSX.Element {
             per
           </Text>
           <TokenDisplay token={baseTokenAddress} size="md" />
-          <Tooltip title="TODO: add tooltip!!">
+          <Tooltip title="Reflects the current market price of Token B, denominated in Token A.">
             <Icon type="question" size="sm" />
           </Tooltip>
         </Amount>
@@ -59,4 +59,6 @@ function component(props: MarketPriceViewerProps): JSX.Element {
   return <SubtextAmount subtext="Market price:" amount={amount} inline />;
 }
 
-export const MarketPriceViewer = memo(component);
+export const MarketPriceViewer: typeof UMarketPriceViewer = memo(
+  UMarketPriceViewer
+);

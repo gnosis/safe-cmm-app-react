@@ -36,5 +36,5 @@ export const ComponentAsText = Template.bind({});
 ComponentAsText.args = {
   ...Default.args,
   color: "error",
-  children: <span>I'm a component</span>,
+  children: <span>I&apos;m a component</span>,
 };

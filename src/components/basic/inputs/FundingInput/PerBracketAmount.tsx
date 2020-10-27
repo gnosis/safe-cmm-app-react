@@ -14,7 +14,7 @@ export interface Props {
   tokenAddress: string;
 }
 
-function component(props: Props): JSX.Element {
+function UPerBracketAmount(props: Props): JSX.Element {
   const { totalAmount, brackets = 0, tokenAddress } = props;
 
   const { tokenDetails } = useTokenDetails(tokenAddress);
@@ -52,4 +52,6 @@ function component(props: Props): JSX.Element {
   );
 }
 
-export const PerBracketAmount: typeof component = memo(component);
+export const PerBracketAmount: typeof UPerBracketAmount = memo(
+  UPerBracketAmount
+);
