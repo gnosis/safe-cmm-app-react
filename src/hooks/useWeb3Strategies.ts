@@ -14,6 +14,8 @@ interface Web3StrategyHook {
   strategies: Strategy[];
 }
 
+// sorry about this - workaround to make sure we dont refresh when we're already fetching
+let isFetching = false;
 export const useWeb3Strategies = (): Web3StrategyHook => {
   const [status, setStatus] = useState("LOADING");
   const [strategies, setStrategies] = useState([]);
@@ -21,6 +23,12 @@ export const useWeb3Strategies = (): Web3StrategyHook => {
   const context = useContext(ContractInteractionContext);
 
   const handleFindStrategies = useCallback(async () => {
+    if (isFetching) {
+      logger.log("already fetching, ignoring interval/refresh");
+      return;
+    }
+
+    isFetching = true;
     try {
       const strategies = await findStrategiesForOwner(context);
       logger.log("Active strategies loaded via web3:", strategies);
@@ -29,6 +37,8 @@ export const useWeb3Strategies = (): Web3StrategyHook => {
     } catch (err) {
       setStatus("ERROR");
       console.error(err);
+    } finally {
+      isFetching = false;
     }
   }, [context]);
 

@@ -220,6 +220,6 @@ export function WithdrawButton(props: Props): React.ReactElement {
   }
 
   // TODO: default is to return null??? o.O
-  return null;
+  return <span>Strategy closed</span>;
   // });
 }
