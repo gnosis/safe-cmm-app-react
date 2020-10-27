@@ -1,26 +1,24 @@
 import { useState, useContext, useEffect } from "react";
 import { TokenDetails } from "types";
 
-import { Web3Context } from "components/Web3Provider";
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 interface Return {
-  tokenDetails: TokenDetails | null;
+  tokenDetails?: TokenDetails;
   isLoading: boolean;
   error: string;
 }
 
-export function useTokenDetails(token?: string | TokenDetails): Return {
-  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(
-    typeof token === "string" || typeof token === undefined ? null : token
-  );
+export function useTokenDetails(token?: string): Return {
+  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { getErc20Details } = useContext(Web3Context);
+  const { getErc20Details } = useContext(ContractInteractionContext);
 
   useEffect(() => {
     async function fetchTokenDetails(): Promise<void> {
-      if (typeof token === "string" && token) {
+      if (token) {
         setIsLoading(true);
         setError("");
         try {
@@ -34,7 +32,7 @@ export function useTokenDetails(token?: string | TokenDetails): Return {
       }
     }
     fetchTokenDetails();
-  }, [token]);
+  }, [token, getErc20Details]);
 
   return { tokenDetails, isLoading, error };
 }

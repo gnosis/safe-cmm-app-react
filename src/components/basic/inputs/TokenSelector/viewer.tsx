@@ -2,7 +2,7 @@ import React, { useMemo, memo } from "react";
 import BN from "bn.js";
 import styled from "styled-components";
 
-import { Loader, Select } from "@gnosis.pm/safe-react-components";
+import { Select } from "@gnosis.pm/safe-react-components";
 import { SelectItem } from "@gnosis.pm/safe-react-components/dist/inputs/Select";
 import { formatSmart } from "@gnosis.pm/dex-js";
 
@@ -37,25 +37,16 @@ export interface TokenSelectorViewerProps
   extends Omit<Props, "selectedTokenAddress" | "setError"> {
   items: SelectItem[];
   tokenBalance: BN | null;
-  isBalanceLoading: boolean;
   tokenDetails?: TokenDetails;
 }
 
-function component(props: TokenSelectorViewerProps): JSX.Element {
-  const {
-    label,
-    tooltip,
-    items,
-    tokenBalance,
-    isBalanceLoading,
-    tokenDetails,
-    onSelect,
-  } = props;
+export const TokenSelectorViewer = memo(function TokenSelectorViewer(
+  props: TokenSelectorViewerProps
+): JSX.Element {
+  const { label, tooltip, items, tokenBalance, tokenDetails, onSelect } = props;
 
   const amount = useMemo((): string | React.ReactElement => {
-    if (isBalanceLoading) {
-      return <Loader size="xs" />;
-    } else if (!tokenDetails || !tokenBalance) {
+    if (!tokenDetails || !tokenBalance) {
       return "-";
     }
 
@@ -65,7 +56,7 @@ function component(props: TokenSelectorViewerProps): JSX.Element {
     });
 
     return `${formattedAmount} ${tokenDetails.symbol}`;
-  }, [tokenBalance, tokenDetails, isBalanceLoading]);
+  }, [tokenBalance, tokenDetails]);
 
   return (
     <Wrapper>
@@ -81,6 +72,4 @@ function component(props: TokenSelectorViewerProps): JSX.Element {
       <SubtextAmount subtext="Safe balance:" amount={amount} inline />
     </Wrapper>
   );
-}
-
-export const TokenSelectorViewer = memo(component);
+});

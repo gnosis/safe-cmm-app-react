@@ -1,11 +1,15 @@
 import React, { memo, useMemo } from "react";
 import styled from "styled-components";
-import { Icon, Text } from "@gnosis.pm/safe-react-components";
+import { Icon } from "@gnosis.pm/safe-react-components";
+
+import { Text } from "components/basic/display/Text";
 
 import { theme } from "theme";
 
+type TypeStrings = "error" | "warning";
+
 export interface Props {
-  type: "error" | "warning";
+  type: TypeStrings;
   label: string;
   children: React.ReactNode;
 }
@@ -36,7 +40,7 @@ const Wrapper = styled.div<Props>`
   }
 `;
 
-const component: React.FC<Props> = (props) => {
+export const Message = memo(function Message(props: Props): JSX.Element {
   const { type, label, children } = props;
 
   const msgBody = useMemo((): React.ReactNode => {
@@ -68,6 +72,4 @@ const component: React.FC<Props> = (props) => {
       {msgBody}
     </Wrapper>
   );
-};
-
-export const Message = memo(component);
+});

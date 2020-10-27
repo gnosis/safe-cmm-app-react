@@ -13,7 +13,7 @@ const Wrapper = styled(SRCButtonLink)`
   }
 `;
 
-export interface Props extends ComponentProps<typeof SRCButtonLink> {}
+export type Props = ComponentProps<typeof SRCButtonLink>;
 
 export const ButtonLink = (props: Props): ReturnType<typeof SRCButtonLink> => (
   <Wrapper {...props} />

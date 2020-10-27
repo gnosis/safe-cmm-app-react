@@ -1,8 +1,7 @@
 import React, { memo } from "react";
 import styled from "styled-components";
 
-import { Text } from "@gnosis.pm/safe-react-components";
-
+import { Text } from "components/basic/display/Text";
 import { ButtonLink } from "components/basic/inputs/ButtonLink";
 
 const Wrapper = styled.span`
@@ -17,7 +16,7 @@ interface Props {
   disabled?: boolean;
 }
 
-function component(props: Props): JSX.Element {
+export const Label = memo(function Label(props: Props): JSX.Element {
   const { onClick, error, disabled } = props;
   return (
     <Wrapper {...props}>
@@ -40,6 +39,4 @@ function component(props: Props): JSX.Element {
       </ButtonLink>
     </Wrapper>
   );
-}
-
-export const Label: typeof component = memo(component);
+});
