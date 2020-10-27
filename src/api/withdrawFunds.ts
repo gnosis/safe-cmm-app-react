@@ -95,6 +95,7 @@ async function buildWithdrawals(
   type: "request" | "claim"
 ): Promise<Withdrawal[]> {
   await Promise.all([
+    context.getArtifact("Migrations"),
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
     context.getArtifact("MultiSend"),

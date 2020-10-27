@@ -36,6 +36,7 @@ const deployStrategy = async (
     sdkInstance,
     getContract,
     getDeployed,
+    getArtifact,
     getErc20Details,
     safeInfo: { safeAddress },
   } = context;
@@ -50,6 +51,7 @@ const deployStrategy = async (
     getContract("ERC20Detailed", tokenAddressBase),
     getContract("ERC20Detailed", tokenAddressQuote),
     getDeployed("GnosisSafe"),
+    getArtifact("Migrations"),
   ]);
   const masterSafeAddress = masterSafeContract.options.address;
 

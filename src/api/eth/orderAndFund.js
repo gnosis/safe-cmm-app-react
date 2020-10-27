@@ -24,7 +24,6 @@ const orderAndFund = async (
   // because it uses artifacts.require - even though it's a shim, it still expects to receive
   // contract artifacts without delay (no promises), so we need to preload them here.
   await Promise.all([
-    context.getArtifact("IProxy.sol"),
     context.getArtifact("IProxy"),
     context.getArtifact("GnosisSafe"),
     context.getArtifact("MultiSend"),
