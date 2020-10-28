@@ -19,13 +19,15 @@ export function useTokenList(): TokenDetails[] {
   const { getErc20Details } = useContext(ContractInteractionContext);
 
   const handleUpdateTokenList = useCallback(async (): Promise<void> => {
-    const tokenDetailList = await Promise.all(
-      tokenAddresses.map(
-        async (tokenAddress): Promise<TokenDetails> => {
-          return getErc20Details(tokenAddress);
-        }
+    const tokenDetailList = (
+      await Promise.all(
+        tokenAddresses.map(
+          async (tokenAddress): Promise<TokenDetails> => {
+            return getErc20Details(tokenAddress);
+          }
+        )
       )
-    );
+    ).filter((tokenDetails: TokenDetails): boolean => tokenDetails.onGP); // Remove tokens not on GP
     setTokenList(tokenDetailList);
   }, [getErc20Details, tokenAddresses]);
 
