@@ -126,32 +126,13 @@ const requestWithdrawAmountFunctionFactory = (network?: string) => async (
   tokenData: TokenDetails,
   exchange: any // TODO: exchange contract type?
 ): Promise<BN> => {
-  const amount = (
-    await exchange.getBalance(bracketAddress, tokenData.address)
-  ).toString();
-
-  let usdValue: BN = ONE;
-  try {
-    // xDai is cheap! And very likely the token doesn't exist on mainnet,
-    // so just skip this check
-    if (network === "xdai") {
-      logger.log(`On xDai network, not querying amount in USD`);
-    } else {
-      usdValue = await amountUSDValue(amount, tokenData);
-    }
-  } catch (e) {
-    logger.log(
-      `Not able to determine USD value for amount ${amount}, requesting claim.`,
-      tokenData,
-      e.message
-    );
-  }
+  const amount = await exchange.getBalance(bracketAddress, tokenData.address);
 
   logger.log(
-    `(request) ${bracketAddress} holds ${amount} (${usdValue}$) in ${tokenData.symbol}`
+    `(request) ${bracketAddress} holds ${amount} in ${tokenData.symbol}`
   );
 
-  if (usdValue.gte(ONE)) {
+  if (amount.gt(ZERO)) {
     return MAXUINT256;
   } else {
     return ZERO;
