@@ -117,12 +117,12 @@ class PendingStrategy {
     );
 
     const bracketsWithBaseToken =
-      fundingDetails.bracketsByToken[this.baseTokenAddress];
+      fundingDetails.bracketsByToken[this.baseTokenAddress] || [];
     const bracketsWithQuoteToken =
-      fundingDetails.bracketsByToken[this.quoteTokenAddress];
+      fundingDetails.bracketsByToken[this.quoteTokenAddress] || [];
 
-    this.bracketsWithBaseToken = bracketsWithBaseToken || [];
-    this.bracketsWithQuoteToken = bracketsWithQuoteToken || [];
+    this.bracketsWithBaseToken = bracketsWithBaseToken;
+    this.bracketsWithQuoteToken = bracketsWithQuoteToken;
 
     const baseFundingWei = Object.keys(bracketsWithBaseToken).reduce(
       (acc: BN, bracketAddress: string) => {
