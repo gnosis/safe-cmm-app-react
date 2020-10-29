@@ -292,30 +292,38 @@ export const ContractInteractionProvider = ({
       // get all tokens from safe
       try {
         const balances: Record<string, BN> = {};
-        safeTokens = (await getBalances(safeInfo.network, safeInfo.safeAddress))
-          .filter(
-            // exclude entry without tokenAddress, which corresponds to ETH
-            (token) => !!token.tokenAddress
-          )
-          .reduce(
-            // transform it to erc20Details format
-            (acc, safeTokenDetails) => {
-              // side-effect: add to balances records
-              balances[safeTokenDetails.tokenAddress] = new BN(
-                safeTokenDetails.balance
-              );
+        safeTokens = fromPairs(
+          await Promise.all(
+            (await getBalances(safeInfo.network, safeInfo.safeAddress))
+              .filter(
+                // exclude entry without tokenAddress, which corresponds to ETH
+                (token) => !!token.tokenAddress
+              )
+              .map(
+                // transform it to erc20Details format
+                async (safeTokenDetails) => {
+                  const hasTokenOnGP = await batchExchangeContract.methods.hasToken(
+                    safeTokenDetails.address
+                  );
 
-              return {
-                ...acc,
-                [safeTokenDetails.tokenAddress]: {
-                  ...safeTokenDetails.token,
-                  imageUrl: safeTokenDetails.token.logoUri,
-                  address: safeTokenDetails.tokenAddress,
-                },
-              };
-            },
-            {}
-          );
+                  // side-effect: add to balances records
+                  balances[safeTokenDetails.tokenAddress] = new BN(
+                    safeTokenDetails.balance
+                  );
+
+                  return [
+                    safeTokenDetails.tokenAddress,
+                    {
+                      ...safeTokenDetails.token,
+                      imageUrl: safeTokenDetails.token.logoUri,
+                      address: safeTokenDetails.tokenAddress,
+                      onGP: hasTokenOnGP,
+                    },
+                  ];
+                }
+              )
+          )
+        );
 
         // update balance on recoil
         setTokenBalances((oldBalances) => ({
