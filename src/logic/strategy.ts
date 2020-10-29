@@ -2,8 +2,9 @@ import { TokenDetails } from "types";
 import web3GLib from "web3";
 import Decimal from "decimal.js";
 import BN from "bn.js";
-
 import { ZERO } from "@gnosis.pm/dex-js";
+
+import makeArtifactLoader from "utils/makeFakeArtifacts";
 
 import {
   calculateFundsFromEvents,
@@ -11,6 +12,7 @@ import {
   PriceRange,
 } from "./utils/calculateFunds";
 import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
+import { getWithdrawableAmount } from "@gnosis.pm/dex-contracts";
 
 const { toBN } = web3GLib.utils;
 
@@ -79,6 +81,10 @@ class Strategy {
 
     // Find all placed orders, to determine the brackets, token pairs and funding
     const batchExchangeContract = await context.getDeployed("BatchExchange");
+
+    const artifacts = makeArtifactLoader(context);
+    const batchExchangeTC = artifacts.require("BatchExchange");
+    const batchExchangeDeployedWithTruffle = await batchExchangeTC.deployed();
 
     const orderBatchIds = [];
     const withdrawRequestBlocks = {};
@@ -253,20 +259,43 @@ class Strategy {
       });
 
       if (this.quoteTokenAddress && this.baseTokenAddress) {
+        // Extremely unoptimized
+
         await Promise.all(
           brackets.map(
             async (bracket: Bracket): Promise<void> => {
-              const [quoteBalance, baseBalance] = await Promise.all([
+              const [quoteBalance, quoteWithdrawAvailable] = await Promise.all([
+                // In BatchExchange
                 batchExchangeContract.methods
                   .getBalance(bracket.address, this.quoteTokenAddress)
                   .call(),
+                // Available for Withdraw
+                getWithdrawableAmount(
+                  bracket.address,
+                  this.quoteTokenAddress,
+                  batchExchangeDeployedWithTruffle,
+                  context.web3Instance
+                ),
+              ]);
+              const [baseBalance, baseWithdrawAvailable] = await Promise.all([
+                // In BatchExchange
                 batchExchangeContract.methods
                   .getBalance(bracket.address, this.baseTokenAddress)
                   .call(),
+                // Available for Withdraw
+                getWithdrawableAmount(
+                  bracket.address,
+                  this.baseTokenAddress,
+                  batchExchangeDeployedWithTruffle,
+                  context.web3Instance
+                ),
               ]);
-
-              baseBalances[bracket.address] = new BN(baseBalance);
-              quoteBalances[bracket.address] = new BN(quoteBalance);
+              baseBalances[bracket.address] = new BN(baseBalance).add(
+                baseWithdrawAvailable
+              );
+              quoteBalances[bracket.address] = new BN(quoteBalance).add(
+                quoteWithdrawAvailable
+              );
             }
           )
         );
