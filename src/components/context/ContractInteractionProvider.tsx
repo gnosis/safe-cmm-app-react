@@ -290,6 +290,9 @@ export const ContractInteractionProvider = ({
     async function loadErc20Details() {
       let safeTokens = {};
       // get all tokens from safe
+
+      const batchExchangeContract = await handleGetDeployed("BatchExchange");
+
       try {
         const balances: Record<string, BN> = {};
         safeTokens = fromPairs(
@@ -352,8 +355,6 @@ export const ContractInteractionProvider = ({
       );
       logger.log("==> Additional tokens", erc20Details);
 
-      // exclude tokens from Safe that have not been added to GP contract
-      const batchExchangeContract = await handleGetDeployed("BatchExchange");
       (
         await Promise.all(
           Object.keys(safeTokens).map(async (address) => [
