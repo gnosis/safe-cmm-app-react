@@ -13,33 +13,22 @@ import {
 } from "./utils/calculateFunds";
 import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 import { getWithdrawableAmount } from "@gnosis.pm/dex-contracts";
+import {
+  Bracket,
+  FleetDeployEvent,
+  StatusEnum,
+  WithdrawEvent,
+  //DepositEvent,
+  PendingStrategySafeTransaction,
+} from "./types";
 
 const { toBN } = web3GLib.utils;
 
 const globalResolvedTokenPromises = {};
 
-export interface Bracket {
-  address: string;
-  events: any[];
-  deposits: DepositEvent[];
-  withdrawRequests: WithdrawEvent[];
-  withdraws: any[];
-}
-
-export interface DepositEvent {
-  amount: string; // BN string
-  token: string;
-  batchId: number;
-}
-
-export interface WithdrawEvent {
-  amount: string;
-  batchId: number;
-  created: Date;
-}
-
 class Strategy {
   transactionHash: string;
+  transactionDataSource: FleetDeployEvent | PendingStrategySafeTransaction;
   safeAddresses: string[];
   brackets: Bracket[];
   prices: Decimal[];
@@ -56,20 +45,57 @@ class Strategy {
   quoteFunding: string;
   owner: string;
   created: Date;
+  nonce: number;
   block: any;
   lastWithdrawRequestEvent: WithdrawEvent;
   lastWithdrawClaimEvent: any;
   priceRange: PriceRange;
+  status: StatusEnum;
 
-  constructor(fleetDeployEvent: Record<string, any>) {
+  private constructor() {
+    /*
     this.transactionHash = fleetDeployEvent.transactionHash;
     this.startBlockNumber = fleetDeployEvent.blockNumber;
     this.safeAddresses = fleetDeployEvent.returnValues.fleet;
     this.owner = fleetDeployEvent.returnValues.owner;
     this.lastWithdrawRequestEvent = null;
     this.lastWithdrawClaimEvent = null;
+    */
   }
 
+  static fromSafeTx(
+    pendingTransactionData: PendingStrategySafeTransaction
+  ): Strategy {
+    const strategy = new Strategy();
+    strategy.transactionHash = pendingTransactionData.safeTxHash;
+    strategy.transactionDataSource = pendingTransactionData;
+
+    strategy.nonce = pendingTransactionData.nonce;
+    strategy.created = new Date(pendingTransactionData.submissionDate);
+
+    return strategy;
+  }
+
+  /**
+   * Creates a strategy instance from a fleet deploy event
+   *
+   * @param fleetDeployEvent
+   * @returns Strategy
+   */
+  static fromFleetDeployEvent(fleetDeployEvent: FleetDeployEvent): Strategy {
+    const strategy = new Strategy();
+    strategy.transactionHash = fleetDeployEvent.transactionHash;
+    strategy.transactionDataSource = fleetDeployEvent;
+    strategy.startBlockNumber = fleetDeployEvent.blockNumber;
+
+    strategy.brackets = fleetDeployEvent.returnValues.fleet.map(
+      (address: string): Bracket => ({ address })
+    );
+
+    return strategy;
+  }
+
+  /*
   async fetchAllPossibleInfo(
     context: ContractInteractionContextProps
   ): Promise<void> {
@@ -344,6 +370,7 @@ class Strategy {
       ZERO
     );
   }
+  */
 }
 
 export default Strategy;

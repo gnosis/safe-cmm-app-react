@@ -1,11 +1,8 @@
 import Decimal from "decimal.js";
-import web3 from "web3";
 import BN from "bn.js";
 
 import find from "lodash/find";
 import { TokenDetails } from "types";
-
-const { toBN } = web3.utils;
 
 /**
  * Price entry abstraction for entries from `Strategy` and `PendingStrategy`.
@@ -145,8 +142,8 @@ interface TxTreeNode {
 export const calculateFundsFromTxData = (
   txDataRoot: DecoderData
 ): FundingDetails => {
-  const sumFundingTokenBase = toBN(0);
-  const sumFundingTokenQuote = toBN(0);
+  const sumFundingTokenBase = new BN(0);
+  const sumFundingTokenQuote = new BN(0);
 
   let tokenIdBase;
   let tokenIdQuote;
@@ -195,12 +192,12 @@ export const calculateFundsFromTxData = (
       // Check to see if we sum onto base/quote depending on which tokenId we have
       if (tokenIdBase === tokenIdBuy) {
         prices.push(new Decimal(buyAmount).div(sellAmount));
-        sumFundingTokenBase.iadd(toBN(buyAmount));
-        sumFundingTokenQuote.iadd(toBN(sellAmount));
+        sumFundingTokenBase.iadd(new BN(buyAmount));
+        sumFundingTokenQuote.iadd(new BN(sellAmount));
       } else {
         prices.push(new Decimal(sellAmount).div(buyAmount));
-        sumFundingTokenBase.iadd(toBN(sellAmount));
-        sumFundingTokenQuote.iadd(toBN(buyAmount));
+        sumFundingTokenBase.iadd(new BN(sellAmount));
+        sumFundingTokenQuote.iadd(new BN(buyAmount));
       }
 
       // Collect bracket address, as this transaction will be executed from a bracket
@@ -223,11 +220,11 @@ export const calculateFundsFromTxData = (
       }
 
       if (!bracketTokenBalances[bracketAddress][tokenAddress]) {
-        bracketTokenBalances[bracketAddress][tokenAddress] = toBN(0);
+        bracketTokenBalances[bracketAddress][tokenAddress] = new BN(0);
       }
 
       bracketTokenBalances[bracketAddress][tokenAddress].iadd(
-        toBN(tokenAmount)
+        new BN(tokenAmount)
       );
     }
 
@@ -283,10 +280,10 @@ export const calculateFundsFromTxData = (
         }
 
         if (!acc[tokenAddress][bracketAddress]) {
-          acc[tokenAddress][bracketAddress] = toBN(0);
+          acc[tokenAddress][bracketAddress] = new BN(0);
         }
         acc[tokenAddress][bracketAddress].iadd(
-          toBN(tokenBalances[tokenAddress])
+          new BN(tokenBalances[tokenAddress])
         );
       });
       return acc;
