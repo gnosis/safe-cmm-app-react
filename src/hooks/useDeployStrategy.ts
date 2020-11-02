@@ -88,6 +88,7 @@ export function useDeployStrategy(): Result {
       // success
       return undefined;
     } catch (e) {
+      console.error(e);
       return {
         [FORM_ERROR]: {
           label: "Failed to deploy strategy",
