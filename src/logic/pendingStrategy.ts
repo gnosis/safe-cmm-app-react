@@ -148,6 +148,7 @@ class PendingStrategy {
       this.baseTokenDetails,
       this.quoteTokenDetails
     );
+    console.log(this);
   }
 }
 

@@ -25,7 +25,15 @@ describe("Strategy class", () => {
       nonce: 123,
       submissionDate: "2020-10-30T11:32:12.929Z",
       dataDecoded: {
-        /* */
+        method: "notReallyAMethod",
+        parameters: [
+          {
+            name: "transactions",
+            type: "bytes",
+            value: "0x12345678",
+            valueDecoded: [],
+          },
+        ],
       },
     };
 

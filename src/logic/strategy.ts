@@ -63,6 +63,12 @@ class Strategy {
     */
   }
 
+  /**
+   * Creates a strategy instance from a Safe Transaction Log
+   *
+   * @param pendingTransactionData
+   * @returns Strategy
+   */
   static fromSafeTx(
     pendingTransactionData: PendingStrategySafeTransaction
   ): Strategy {
