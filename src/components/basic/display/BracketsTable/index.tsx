@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import styled from "styled-components";
+import Decimal from "decimal.js";
 
 import { Title } from "./Title";
 import { Table } from "./Table";
@@ -8,13 +9,15 @@ import { Table } from "./Table";
 const Wrapper = styled.div``;
 
 export type BracketRowData = {
-  lowPrice: string; //TODO: BN or string
-  highPrice: string;
-  balance: string;
+  lowPrice: Decimal;
+  highPrice: Decimal;
+  balanceBase: string;
+  balanceQuote: string;
 };
 
 export type Props = {
-  tokenAddress: string;
+  baseTokenAddress: string;
+  quoteTokenAddress: string;
   brackets: BracketRowData[];
   type: "left" | "right";
 };
@@ -22,16 +25,17 @@ export type Props = {
 export const BracketsTable = memo(function BracketsTable(
   props: Props
 ): JSX.Element {
-  const { tokenAddress, brackets, type } = props;
+  const { baseTokenAddress, quoteTokenAddress, brackets, type } = props;
 
+  const isLeft = type === "left";
   return (
     <Wrapper>
       <Title
-        tokenAddress={tokenAddress}
-        isLeft={type === "left"}
+        tokenAddress={isLeft ? baseTokenAddress : quoteTokenAddress}
+        isLeft={isLeft}
         bracketsCount={brackets.length}
       />
-      <Table tokenAddress={tokenAddress} brackets={brackets} type={type} />
+      <Table {...props} />
     </Wrapper>
   );
 });

@@ -21,7 +21,7 @@ const StyledTable = withStyles({
 })(MUITable);
 
 type CellProps = {
-  greyText?: boolean;
+  grey?: boolean;
 };
 
 const StyledCell = withStyles({
@@ -34,8 +34,7 @@ const StyledCell = withStyles({
     textTransform: "uppercase",
     padding: "0 10px",
     borderBottom: "none",
-    color: ({ greyText }: CellProps) =>
-      theme.colors[greyText ? "textGrey" : "text"],
+    color: ({ grey }: CellProps) => theme.colors[grey ? "textGrey" : "text"],
   },
 })(TableCell);
 
@@ -74,52 +73,67 @@ const StyledRow = withStyles({
 })(TableRow);
 
 export type Props = {
-  tokenAddress: string;
+  baseTokenAddress: string;
+  quoteTokenAddress: string;
   brackets: BracketRowData[];
 } & RowProps;
 
 export const Table = memo(function Table(props: Props): JSX.Element {
-  const { tokenAddress, brackets, type } = props;
+  const { baseTokenAddress, quoteTokenAddress, brackets, type } = props;
 
-  // Both token components are repeated often, reusing same instance
-  const greyToken = (
-    <TokenDisplay token={tokenAddress} size="md" color="textGrey" />
+  // Token components are repeated often, reusing same instance
+  const priceTokenDisplay = (
+    <TokenDisplay token={baseTokenAddress} size="md" color="textGrey" />
   );
-  const blackToken = (
-    <TokenDisplay token={tokenAddress} size="md" color="text" />
+  const baseTokenDisplay = (
+    <TokenDisplay token={baseTokenAddress} size="md" color="text" />
+  );
+  const quoteTokenDisplay = (
+    <TokenDisplay token={quoteTokenAddress} size="md" color="text" />
   );
 
-  const total = brackets.reduce(
-    (acc, bracket) => acc + Number(bracket.balance),
-    0
+  const [totalBase, totalQuote] = brackets.reduce(
+    (acc, bracket) => [
+      acc[0] + Number(bracket.balanceBase),
+      acc[1] + Number(bracket.balanceQuote),
+    ],
+    [0, 0]
   );
 
   return (
     <StyledTable>
       <TableHead>
         <StyledRow>
-          <StyledCell greyText>Range</StyledCell>
-          <StyledCell greyText>Balance</StyledCell>
+          <StyledCell grey>Range</StyledCell>
+          <StyledCell grey colSpan={2}>
+            Balance
+          </StyledCell>
         </StyledRow>
       </TableHead>
       <TableBody>
         {brackets.map((bracket, id) => (
           <StyledRow key={id} type={type}>
-            <StyledCell greyText>
-              {bracket.lowPrice} {greyToken} <br />
-              {bracket.highPrice} {greyToken}
+            <StyledCell grey>
+              {bracket.lowPrice.toFixed(4)} {priceTokenDisplay} <br />
+              {bracket.highPrice.toFixed(4)} {priceTokenDisplay}
             </StyledCell>
             <StyledCell>
-              {bracket.balance} {blackToken}
+              {bracket.balanceBase} {baseTokenDisplay}
+            </StyledCell>
+            <StyledCell>
+              {bracket.balanceQuote} {quoteTokenDisplay}
             </StyledCell>
           </StyledRow>
         ))}
       </TableBody>
       <TableFooter>
         <StyledRow>
-          <StyledCell greyText>Total</StyledCell>
+          <StyledCell grey>Total</StyledCell>
           <StyledCell>
-            {total} {blackToken}
+            {totalBase} {baseTokenDisplay}
+          </StyledCell>
+          <StyledCell>
+            {totalQuote} {quoteTokenDisplay}
           </StyledCell>
         </StyledRow>
       </TableFooter>
