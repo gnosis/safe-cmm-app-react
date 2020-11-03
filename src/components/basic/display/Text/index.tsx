@@ -2,28 +2,33 @@ import React from "react";
 import styled from "styled-components";
 
 import { Text as SRCText } from "@gnosis.pm/safe-react-components";
-import { ThemeTextSize } from "@gnosis.pm/safe-react-components/dist/theme";
 
-import { theme } from "theme";
+import { ThemeColors, ThemeTextSize } from "theme";
 
-type OverwrittenSize = { size?: ThemeTextSize | "xs" };
+type Overwrites = { size?: ThemeTextSize; color?: ThemeColors };
 
-export type Props = Omit<React.ComponentProps<typeof SRCText>, "size"> &
-  OverwrittenSize;
+export type Props = Omit<
+  React.ComponentProps<typeof SRCText>,
+  "size" | "color"
+> &
+  Overwrites;
 
-const ReStyledText = styled(SRCText)<OverwrittenSize>`
-  font-size: ${({ size }) => `${theme.text.size[size].fontSize}`};
-  line-height: ${({ size }) => `${theme.text.size[size].lineHeight}`};
+const ReStyledText = styled(SRCText)<Overwrites>`
+  font-size: ${({ size, theme }) =>
+    `${theme.text.size[size || "md"].fontSize}`};
+  line-height: ${({ size, theme }) =>
+    `${theme.text.size[size || "md"].lineHeight}`};
+  color: ${({ color, theme }) => theme.colors[color || "text"]};
 `;
 
 /**
  * Overwrites Safe React Components <Text/> to introduce on extra size: `xs`
  */
 export const Text = (props: Props): React.ReactElement => {
-  const { children, size = "sm", as, ...rest } = props;
+  const { children, as, ...rest } = props;
 
   return (
-    <ReStyledText {...rest} size={size} forwardedAs={as}>
+    <ReStyledText {...rest} forwardedAs={as}>
       {children}
     </ReStyledText>
   );
