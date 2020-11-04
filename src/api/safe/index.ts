@@ -14,10 +14,22 @@ export const getTransactions = async (
   return txs.results;
 };
 
+type SafeTokenDetails = {
+  name: string;
+  symbol: string;
+  decimals: number;
+  logoUri: string;
+};
+type SafeBalance = {
+  tokenAddress: null | string;
+  token: null | SafeTokenDetails;
+  balance: string;
+};
+
 export const getBalances = async (
   network: string,
   safeAddress: string
-): Promise<any> => {
+): Promise<SafeBalance[]> => {
   const safeEndpoint = getSafeEndpoint(network);
   const response = await fetch(
     `${safeEndpoint}/api/v1/safes/${safeAddress}/balances`
