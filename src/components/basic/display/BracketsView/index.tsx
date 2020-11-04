@@ -33,7 +33,11 @@ export const BracketsViewer = memo(function BracketsViewer(
   const { tokenDetails: quoteToken } = useTokenDetails(
     isStrategy ? quoteTokenAddress : undefined
   );
-  const { price } = useGetPrice({ baseToken, quoteToken });
+  const { price } = useGetPrice({
+    source: "GnosisProtocol",
+    baseToken,
+    quoteToken,
+  });
   const marketPrice = price?.isFinite() ? price.toString() : "N/A";
 
   // Calculate brackets, only if on Strategy page (marketPrice)
