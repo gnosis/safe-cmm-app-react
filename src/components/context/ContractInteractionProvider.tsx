@@ -240,7 +240,7 @@ export const ContractInteractionProvider = ({
         handleGetDeployed("BatchExchange"),
       ]);
 
-      const [decimals, symbol, name, onGP] = await Promise.all([
+      const [decimals, symbol, name, onGP, id] = await Promise.all([
         (async () => {
           const decimalsString = await erc20Contract.methods.decimals().call();
           return parseInt(decimalsString, 10);
@@ -248,6 +248,22 @@ export const ContractInteractionProvider = ({
         erc20Contract.methods.symbol().call(),
         erc20Contract.methods.name().call(),
         batchExchangeContract.methods.hasToken(address).call(),
+        (async (address: string): Promise<number | undefined> => {
+          try {
+            const id = await batchExchangeContract.methods
+              .tokenAddressToIdMap(address)
+              .call();
+            return +id;
+          } catch (e) {
+            // When not registered, call might fail
+            logger.warn(
+              `Failed to get id for token '${address}'. Likely not registered on GP`,
+              e.message
+            );
+
+            return undefined;
+          }
+        })(address),
       ]);
 
       return {
@@ -256,6 +272,7 @@ export const ContractInteractionProvider = ({
         symbol,
         name,
         onGP,
+        id,
         imageUrl: getImageUrl(address),
       };
     },
@@ -305,9 +322,19 @@ export const ContractInteractionProvider = ({
               .map(
                 // transform it to erc20Details format
                 async (safeTokenDetails) => {
-                  const hasTokenOnGP = await batchExchangeContract.methods.hasToken(
-                    safeTokenDetails.address
-                  );
+                  const hasTokenOnGP = await batchExchangeContract.methods
+                    .hasToken(safeTokenDetails.tokenAddress)
+                    .call();
+
+                  // only check exchange id if registered on exchange
+                  let id: undefined | number;
+                  if (hasTokenOnGP) {
+                    id = Number(
+                      await batchExchangeContract.methods
+                        .tokenAddressToIdMap(safeTokenDetails.tokenAddress)
+                        .call()
+                    );
+                  }
 
                   // side-effect: add to balances records
                   balances[safeTokenDetails.tokenAddress] = new BN(
@@ -321,6 +348,7 @@ export const ContractInteractionProvider = ({
                       imageUrl: safeTokenDetails.token.logoUri,
                       address: safeTokenDetails.tokenAddress,
                       onGP: hasTokenOnGP,
+                      id,
                     },
                   ];
                 }
