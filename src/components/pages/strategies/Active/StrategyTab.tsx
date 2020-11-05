@@ -26,7 +26,7 @@ const Wrapper = styled.div``;
 const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  align-items: center;
+  align-items: baseline;
 `;
 
 // TODO: move to constants
