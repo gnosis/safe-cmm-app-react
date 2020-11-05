@@ -62,13 +62,11 @@ function formatBrackets(strategy: Strategy): BracketRowData[] {
       baseTokenDecimals,
       quoteTokenDecimals
     ),
-    balanceBase: formatAmount(
-      tokenBaseBalances[bracket.address],
-      baseTokenDecimals
+    balanceBase: new Decimal(
+      formatAmount(tokenBaseBalances[bracket.address], baseTokenDecimals)
     ),
-    balanceQuote: formatAmount(
-      tokenQuoteBalances[bracket.address],
-      quoteTokenDecimals
+    balanceQuote: new Decimal(
+      formatAmount(tokenQuoteBalances[bracket.address], quoteTokenDecimals)
     ),
   }));
 }

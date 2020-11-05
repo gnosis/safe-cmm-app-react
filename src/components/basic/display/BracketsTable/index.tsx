@@ -11,8 +11,8 @@ const Wrapper = styled.div``;
 export type BracketRowData = {
   lowPrice: Decimal;
   highPrice: Decimal;
-  balanceBase: string;
-  balanceQuote: string;
+  balanceBase: Decimal;
+  balanceQuote: Decimal;
 };
 
 export type Props = {

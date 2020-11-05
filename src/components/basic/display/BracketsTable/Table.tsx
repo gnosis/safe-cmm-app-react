@@ -12,6 +12,9 @@ import {
 
 import { theme } from "theme";
 
+import { ZERO_DECIMAL } from "utils/constants";
+import { formatSmart } from "utils/format";
+
 import { TokenDisplay } from "components/basic/display/TokenDisplay";
 
 import { BracketRowData } from ".";
@@ -94,10 +97,10 @@ export const Table = memo(function Table(props: Props): JSX.Element {
 
   const [totalBase, totalQuote] = brackets.reduce(
     (acc, bracket) => [
-      acc[0] + Number(bracket.balanceBase),
-      acc[1] + Number(bracket.balanceQuote),
+      acc[0].add(bracket.balanceBase),
+      acc[1].add(bracket.balanceQuote),
     ],
-    [0, 0]
+    [ZERO_DECIMAL, ZERO_DECIMAL]
   );
 
   return (
@@ -114,14 +117,14 @@ export const Table = memo(function Table(props: Props): JSX.Element {
         {brackets.map((bracket, id) => (
           <StyledRow key={id} type={type}>
             <StyledCell grey>
-              {bracket.lowPrice.toFixed(4)} {priceTokenDisplay} <br />
-              {bracket.highPrice.toFixed(4)} {priceTokenDisplay}
+              {formatSmart(bracket.lowPrice)} {priceTokenDisplay} <br />
+              {formatSmart(bracket.highPrice)} {priceTokenDisplay}
             </StyledCell>
             <StyledCell>
-              {bracket.balanceBase} {baseTokenDisplay}
+              {formatSmart(bracket.balanceBase)} {baseTokenDisplay}
             </StyledCell>
             <StyledCell>
-              {bracket.balanceQuote} {quoteTokenDisplay}
+              {formatSmart(bracket.balanceQuote)} {quoteTokenDisplay}
             </StyledCell>
           </StyledRow>
         ))}
@@ -130,10 +133,10 @@ export const Table = memo(function Table(props: Props): JSX.Element {
         <StyledRow>
           <StyledCell grey>Total</StyledCell>
           <StyledCell>
-            {totalBase} {baseTokenDisplay}
+            {formatSmart(totalBase)} {baseTokenDisplay}
           </StyledCell>
           <StyledCell>
-            {totalQuote} {quoteTokenDisplay}
+            {formatSmart(totalQuote)} {quoteTokenDisplay}
           </StyledCell>
         </StyledRow>
       </TableFooter>
