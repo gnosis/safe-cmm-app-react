@@ -1,7 +1,8 @@
 import { filter } from "lodash";
 import { flattenMultiSend } from "logic/utils/flattenMultiSend";
 
-import multiSendTxData from "./multiSendTx.json";
+import safeTx from "../safeTx.json";
+const multiSendTxData = safeTx.dataDecoded;
 
 describe("flattenMultiSend function", () => {
   test("rejects non MultiSend transactions", () => {
@@ -52,6 +53,12 @@ describe("flattenMultiSend function", () => {
     expect(
       filter(methodCalls, { method: "deployFleetWithNonce" })[0].target
     ).toBe(fleetFactoryAddr);
+
+    const firstBracketAddr = "0xcc42a81caf6DA6c5fee344630253B6519F929a4a";
+
+    expect(filter(methodCalls, { method: "placeOrder" })[0].target).toBe(
+      firstBracketAddr
+    );
   });
 
   test("reads params correctly", () => {

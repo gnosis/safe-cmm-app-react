@@ -1,6 +1,7 @@
 import Strategy from "logic/strategy";
 
 import { FleetDeployEvent } from "logic/types";
+import safeTxData from "./safeTx.json";
 
 describe("Strategy class", () => {
   test("creates instance from fleet deploy event", () => {
@@ -20,27 +21,15 @@ describe("Strategy class", () => {
   });
 
   test("creates instance from safe pending transaction", () => {
-    const fakePendingStrategyTransaction = {
-      safeTxHash: "0xdeadbeef",
-      nonce: 123,
-      submissionDate: "2020-10-30T11:32:12.929Z",
-      dataDecoded: {
-        method: "notReallyAMethod",
-        parameters: [
-          {
-            name: "transactions",
-            type: "bytes",
-            value: "0x12345678",
-            valueDecoded: [],
-          },
-        ],
-      },
-    };
-
-    const instance = Strategy.fromSafeTx(fakePendingStrategyTransaction);
+    const instance = Strategy.fromSafeTx(safeTxData);
     expect(instance).toBeInstanceOf(Strategy);
-    expect(instance.transactionHash).toBe(
-      fakePendingStrategyTransaction.safeTxHash
-    );
+    expect(instance.transactionHash).toBe(safeTxData.safeTxHash);
+  });
+
+  test("it reads funding from safe tx log", () => {
+    const instance = Strategy.fromSafeTx(safeTxData);
+    expect(instance.status).toBe("PENDING");
+    expect(instance.baseFundingWei.toString()).toBe("0");
+    expect(instance.quoteFundingWei.toString()).toBe("0.1");
   });
 });

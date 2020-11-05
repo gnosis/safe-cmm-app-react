@@ -21,6 +21,8 @@ import {
   //DepositEvent,
   PendingStrategySafeTransaction,
 } from "./types";
+import { flattenMultiSend } from "./utils/flattenMultiSend";
+import { filter } from "lodash";
 
 const { toBN } = web3GLib.utils;
 
@@ -29,6 +31,7 @@ const globalResolvedTokenPromises = {};
 class Strategy {
   transactionHash: string;
   transactionDataSource: FleetDeployEvent | PendingStrategySafeTransaction;
+  dataSource: "TxLog" | "Event";
   safeAddresses: string[];
   brackets: Bracket[];
   prices: Decimal[];
@@ -41,6 +44,9 @@ class Strategy {
   quoteTokenDetails: TokenDetails;
   tokenQuoteBalances: Record<string, BN>;
   tokenBaseBalances: Record<string, BN>;
+  bracketBalancesByTokenAddr: Record<string, Record<string, BN>>;
+  baseFundingWei: BN;
+  quoteFundingWei: BN;
   baseFunding: string;
   quoteFunding: string;
   owner: string;
@@ -52,15 +58,14 @@ class Strategy {
   priceRange: PriceRange;
   status: StatusEnum;
 
-  private constructor() {
-    /*
-    this.transactionHash = fleetDeployEvent.transactionHash;
-    this.startBlockNumber = fleetDeployEvent.blockNumber;
-    this.safeAddresses = fleetDeployEvent.returnValues.fleet;
-    this.owner = fleetDeployEvent.returnValues.owner;
-    this.lastWithdrawRequestEvent = null;
-    this.lastWithdrawClaimEvent = null;
-    */
+  private constructor(
+    txHash: string,
+    dataSource: PendingStrategySafeTransaction | FleetDeployEvent
+  ) {
+    // Private constructor, as the strategies should only
+    // be created with the static helper functions.
+    this.transactionHash = txHash;
+    this.transactionDataSource = dataSource;
   }
 
   /**
@@ -72,14 +77,115 @@ class Strategy {
   static fromSafeTx(
     pendingTransactionData: PendingStrategySafeTransaction
   ): Strategy {
-    const strategy = new Strategy();
-    strategy.transactionHash = pendingTransactionData.safeTxHash;
-    strategy.transactionDataSource = pendingTransactionData;
+    const strategy = new Strategy(
+      pendingTransactionData.safeTxHash,
+      pendingTransactionData
+    );
+    strategy.status = "PENDING";
+    strategy.dataSource = "TxLog";
 
-    strategy.nonce = pendingTransactionData.nonce;
-    strategy.created = new Date(pendingTransactionData.submissionDate);
-
+    strategy.readFromPendingTransaction(pendingTransactionData);
     return strategy;
+  }
+
+  private readFromPendingTransaction(
+    pendingTransactionData: PendingStrategySafeTransaction
+  ): void {
+    this.nonce = pendingTransactionData.nonce;
+    this.created = new Date(pendingTransactionData.submissionDate);
+
+    const methodCalls = flattenMultiSend(pendingTransactionData.dataDecoded);
+
+    const tokenBalancePerBracket = {};
+    const transfers = filter(methodCalls, { method: "transfer" });
+    transfers.forEach((transferCall) => {
+      const bracketAddress = transferCall.params.to;
+
+      if (!tokenBalancePerBracket[bracketAddress]) {
+        tokenBalancePerBracket[bracketAddress] = {};
+      }
+
+      if (!tokenBalancePerBracket[bracketAddress][transferCall.target]) {
+        tokenBalancePerBracket[bracketAddress][transferCall.target] = new BN(0);
+      }
+
+      tokenBalancePerBracket[bracketAddress][transferCall.target].iadd(
+        new BN(transferCall.params.value)
+      );
+    });
+
+    const placeOrders = filter(methodCalls, { method: "placeOrder" });
+
+    if (placeOrders.length > 0) {
+      // FIXME: This uses first transaction to determine sell/buy tokens
+      this.baseTokenId = placeOrders[0].params.buyToken;
+      this.quoteTokenId = placeOrders[0].params.sellToken;
+
+      const prices = [];
+      const sumBaseFunding = new BN(0);
+      const sumQuoteFunding = new BN(0);
+
+      placeOrders.forEach((placeOrderCall) => {
+        const buyToken = placeOrderCall.params.buyToken;
+        const sellAmount = placeOrderCall.params.value || "0";
+        const buyAmount = placeOrderCall.params.value || "0";
+
+        if (buyToken === this.baseTokenId) {
+          prices.push(new Decimal(buyAmount).div(sellAmount));
+          sumBaseFunding.iadd(new BN(buyAmount));
+          sumQuoteFunding.iadd(new BN(sellAmount));
+        } else {
+          prices.push(new Decimal(sellAmount).div(buyAmount));
+          sumBaseFunding.iadd(new BN(sellAmount));
+          sumQuoteFunding.iadd(new BN(buyAmount));
+        }
+      });
+
+      const bracketsByToken = Object.keys(tokenBalancePerBracket).reduce(
+        (acc, bracketAddress): any => {
+          const tokenBalances = tokenBalancePerBracket[bracketAddress];
+          const tokens = Object.keys(tokenBalances);
+
+          tokens.forEach((tokenAddress) => {
+            if (!acc[tokenAddress]) {
+              acc[tokenAddress] = {};
+            }
+
+            if (!acc[tokenAddress][bracketAddress]) {
+              acc[tokenAddress][bracketAddress] = new BN(0);
+            }
+            acc[tokenAddress][bracketAddress].iadd(
+              new BN(tokenBalances[tokenAddress])
+            );
+          });
+          return acc;
+        },
+        {}
+      );
+
+      this.prices = prices;
+      this.bracketBalancesByTokenAddr = bracketsByToken;
+
+      /*
+      const bracketsWithBaseToken =
+        bracketsByToken[this.baseTokenAddress] || [];
+      const bracketsWithQuoteToken =
+        bracketsByToken[this.quoteTokenAddress] || [];
+      console.log(bracketsByToken);
+      this.baseFundingWei = Object.keys(bracketsWithBaseToken).reduce(
+        (acc: BN, bracketAddress: string) => {
+          return acc.iadd(bracketsWithBaseToken[bracketAddress]);
+        },
+        toBN(0)
+      );
+      this.quoteFundingWei = Object.keys(bracketsWithQuoteToken).reduce(
+        (acc: BN, bracketAddress: string) => {
+          return acc.iadd(bracketsWithQuoteToken[bracketAddress]);
+        },
+        toBN(0)
+      );
+      */
+    }
   }
 
   /**
@@ -89,9 +195,12 @@ class Strategy {
    * @returns Strategy
    */
   static fromFleetDeployEvent(fleetDeployEvent: FleetDeployEvent): Strategy {
-    const strategy = new Strategy();
-    strategy.transactionHash = fleetDeployEvent.transactionHash;
-    strategy.transactionDataSource = fleetDeployEvent;
+    const strategy = new Strategy(
+      fleetDeployEvent.transactionHash,
+      fleetDeployEvent
+    );
+    strategy.status = "UNKNOWN";
+    strategy.dataSource = "Event";
     strategy.startBlockNumber = fleetDeployEvent.blockNumber;
 
     strategy.brackets = fleetDeployEvent.returnValues.fleet.map(
