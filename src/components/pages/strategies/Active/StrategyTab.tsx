@@ -4,6 +4,11 @@ import Decimal from "decimal.js";
 
 import { formatAmount } from "@gnosis.pm/dex-js";
 
+import { useGetPrice } from "hooks/useGetPrice";
+
+import { ZERO_DECIMAL } from "utils/constants";
+import { calculateBracketsFromMarketPrice } from "utils/calculateBrackets";
+
 import Strategy from "logic/strategy";
 
 import { BracketsViewer } from "components/basic/display/BracketsView";
@@ -72,32 +77,59 @@ export const StrategyTab = memo(function StrategyTab(
   props: Props
 ): JSX.Element {
   const { strategy } = props;
+  const {
+    baseTokenDetails,
+    baseTokenAddress,
+    quoteTokenDetails,
+    quoteTokenAddress,
+    brackets,
+    priceRange,
+  } = strategy;
 
-  const brackets = formatBrackets(strategy);
+  const { price } = useGetPrice({
+    source: "GnosisProtocol",
+    baseToken: baseTokenDetails,
+    quoteToken: quoteTokenDetails,
+  });
+
+  const {
+    baseTokenBrackets,
+    quoteTokenBrackets,
+  } = calculateBracketsFromMarketPrice({
+    marketPrice: price || ZERO_DECIMAL,
+    totalBrackets: brackets.length,
+    lowestPrice: priceRange?.lower || ZERO_DECIMAL,
+    highestPrice: priceRange?.upper || ZERO_DECIMAL,
+  });
+
+  const tableBrackets = formatBrackets(strategy);
 
   return (
     <Wrapper>
       <BracketsViewer
         type="strategy"
-        baseTokenAddress={strategy.baseTokenAddress}
-        quoteTokenAddress={strategy.quoteTokenAddress}
-        lowestPrice={strategy.priceRange?.lower.toString()}
-        highestPrice={strategy.priceRange?.upper.toString()}
-        totalBrackets={strategy.brackets?.length}
+        baseTokenAddress={baseTokenAddress}
+        quoteTokenAddress={quoteTokenAddress}
+        lowestPrice={priceRange?.lower.toString()}
+        highestPrice={priceRange?.upper.toString()}
+        totalBrackets={brackets.length}
+        leftBrackets={baseTokenBrackets}
+        rightBrackets={quoteTokenBrackets}
+        startPrice={price?.isFinite() ? price.toString() : "N/A"}
       />
       <Grid>
         <BracketsTable
-          baseTokenAddress={strategy.baseTokenAddress}
-          quoteTokenAddress={strategy.quoteTokenAddress}
+          baseTokenAddress={baseTokenAddress}
+          quoteTokenAddress={quoteTokenAddress}
           type="left"
-          brackets={brackets}
+          brackets={tableBrackets.slice(0, baseTokenBrackets)}
         />
         <div style={{ justifySelf: "center" }}>TODO</div>
         <BracketsTable
-          baseTokenAddress={strategy.baseTokenAddress}
-          quoteTokenAddress={strategy.quoteTokenAddress}
+          baseTokenAddress={baseTokenAddress}
+          quoteTokenAddress={quoteTokenAddress}
           type="right"
-          brackets={brackets}
+          brackets={tableBrackets.slice(baseTokenBrackets)}
         />
       </Grid>
     </Wrapper>
