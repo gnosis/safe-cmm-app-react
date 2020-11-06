@@ -17,6 +17,12 @@ export const SAFE_ENDPOINT_URLS = {
   [Network.mainnet]: `https://safe-transaction.gnosis.io`,
 };
 
+export const DEX_PRICE_ESTIMATOR_URLS = {
+  [Network.rinkeby]: `https://dex-price-estimator.rinkeby.gnosis.io`,
+  [Network.xdai]: `https://dex-price-estimator.xdai.gnosis.io`,
+  [Network.mainnet]: `https://dex-price-estimator.gnosis.io`,
+};
+
 export const DEFAULT_INPUT_WIDTH = "130px";
 
 export const ZERO_DECIMAL = new Decimal("0");

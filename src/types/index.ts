@@ -5,6 +5,7 @@ export interface TokenDetails {
   name: string;
   imageUrl?: string;
   onGP?: boolean;
+  id?: number;
 }
 
 export interface SafeInfo {

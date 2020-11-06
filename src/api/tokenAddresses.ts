@@ -22,6 +22,7 @@ const tokenAddresses: { [networkId: number]: string[] } = {
     "0x784B46A4331f5c7C495F296AE700652265ab2fC6", // gusd
     "0xBD6A9921504fae42EaD2024F43305A8ED3890F6f", // pax
     "0xa9881E6459CA05d7D7C95374463928369cD7a90C", // usdt
+    "0xa3a0b8ce8aed4d90362782758767e3a0bb9ffdd5", // uni --- not registered, here to test only
   ],
   [Network.xdai]: [
     "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb", // GNO
