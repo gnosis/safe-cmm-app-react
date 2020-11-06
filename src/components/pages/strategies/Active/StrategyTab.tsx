@@ -2,7 +2,7 @@ import React, { memo } from "react";
 import styled from "styled-components";
 import Decimal from "decimal.js";
 
-import { formatAmount } from "@gnosis.pm/dex-js";
+import { formatAmountFull } from "@gnosis.pm/dex-js";
 
 import { useGetPrice } from "hooks/useGetPrice";
 
@@ -63,10 +63,20 @@ function formatBrackets(strategy: Strategy): BracketRowData[] {
       quoteTokenDecimals
     ),
     balanceBase: new Decimal(
-      formatAmount(tokenBaseBalances[bracket.address], baseTokenDecimals)
+      formatAmountFull({
+        amount: tokenBaseBalances[bracket.address],
+        precision: baseTokenDecimals,
+        thousandSeparator: false,
+        isLocaleAware: false,
+      })
     ),
     balanceQuote: new Decimal(
-      formatAmount(tokenQuoteBalances[bracket.address], quoteTokenDecimals)
+      formatAmountFull({
+        amount: tokenQuoteBalances[bracket.address],
+        precision: quoteTokenDecimals,
+        thousandSeparator: false,
+        isLocaleAware: false,
+      })
     ),
   }));
 }
