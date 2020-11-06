@@ -25,10 +25,10 @@ const ReStyledText = styled(SRCText)<Overwrites>`
  * Overwrites Safe React Components <Text/> to introduce on extra size: `xs`
  */
 export const Text = (props: Props): React.ReactElement => {
-  const { children, as, ...rest } = props;
+  const { children, as, size = "md", ...rest } = props;
 
   return (
-    <ReStyledText {...rest} forwardedAs={as}>
+    <ReStyledText {...rest} size={size} forwardedAs={as}>
       {children}
     </ReStyledText>
   );
