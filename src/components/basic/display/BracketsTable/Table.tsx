@@ -34,7 +34,6 @@ const StyledCell = withStyles({
     lineHeight: theme.text.size.sm.lineHeight,
     fontWeight: "bold",
     letterSpacing: "0",
-    textTransform: "uppercase",
     padding: "0 10px",
     borderBottom: "none",
     color: ({ grey }: CellProps) => theme.colors[grey ? "textGrey" : "text"],
@@ -107,9 +106,9 @@ export const Table = memo(function Table(props: Props): JSX.Element {
     <StyledTable>
       <TableHead>
         <StyledRow>
-          <StyledCell grey>Range</StyledCell>
+          <StyledCell grey>RANGE</StyledCell>
           <StyledCell grey colSpan={2}>
-            Balance
+            BALANCE
           </StyledCell>
         </StyledRow>
       </TableHead>
@@ -131,7 +130,7 @@ export const Table = memo(function Table(props: Props): JSX.Element {
       </TableBody>
       <TableFooter>
         <StyledRow>
-          <StyledCell grey>Total</StyledCell>
+          <StyledCell grey>TOTAL</StyledCell>
           <StyledCell>
             {formatSmart(totalBase)} {baseTokenDisplay}
           </StyledCell>
