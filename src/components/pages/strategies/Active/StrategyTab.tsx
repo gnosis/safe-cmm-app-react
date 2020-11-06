@@ -42,6 +42,10 @@ function calculatePriceFromPartial(
 }
 
 function formatBrackets(strategy: Strategy): BracketRowData[] {
+  if (!strategy.baseTokenDetails || !strategy.quoteTokenDetails) {
+    return [];
+  }
+
   const {
     baseTokenDetails: { decimals: baseTokenDecimals },
     quoteTokenDetails: { decimals: quoteTokenDecimals },
