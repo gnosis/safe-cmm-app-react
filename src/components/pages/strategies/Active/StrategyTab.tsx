@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
 import styled from "styled-components";
 import Decimal from "decimal.js";
 
@@ -42,6 +42,8 @@ function calculatePriceFromPartial(
 }
 
 function formatBrackets(strategy: Strategy): BracketRowData[] {
+  // Edge case when strategy was not properly deployed
+  // Most likely the first strategies deployed during development
   if (!strategy.baseTokenDetails || !strategy.quoteTokenDetails) {
     return [];
   }
@@ -104,17 +106,25 @@ export const StrategyTab = memo(function StrategyTab(
     quoteToken: quoteTokenDetails,
   });
 
-  const {
-    baseTokenBrackets,
-    quoteTokenBrackets,
-  } = calculateBracketsFromMarketPrice({
-    marketPrice: price || ZERO_DECIMAL,
-    totalBrackets: brackets.length,
-    lowestPrice: priceRange?.lower || ZERO_DECIMAL,
-    highestPrice: priceRange?.upper || ZERO_DECIMAL,
-  });
+  const { baseTokenBrackets, quoteTokenBrackets } = useMemo(
+    () =>
+      calculateBracketsFromMarketPrice({
+        marketPrice: price || ZERO_DECIMAL,
+        totalBrackets: brackets.length,
+        lowestPrice: priceRange?.lower || ZERO_DECIMAL,
+        highestPrice: priceRange?.upper || ZERO_DECIMAL,
+      }),
+    [brackets.length, price, priceRange?.lower, priceRange?.upper]
+  );
 
-  const tableBrackets = formatBrackets(strategy);
+  const { leftBrackets, rightBrackets } = useMemo(() => {
+    const tableBrackets = formatBrackets(strategy);
+
+    const leftBrackets = tableBrackets.slice(0, baseTokenBrackets);
+    const rightBrackets = tableBrackets.slice(baseTokenBrackets);
+
+    return { leftBrackets, rightBrackets };
+  }, [baseTokenBrackets, strategy]);
 
   return (
     <Wrapper>
@@ -134,14 +144,14 @@ export const StrategyTab = memo(function StrategyTab(
           baseTokenAddress={baseTokenAddress}
           quoteTokenAddress={quoteTokenAddress}
           type="left"
-          brackets={tableBrackets.slice(0, baseTokenBrackets)}
+          brackets={leftBrackets}
         />
         <div style={{ justifySelf: "center" }}>TODO</div>
         <BracketsTable
           baseTokenAddress={baseTokenAddress}
           quoteTokenAddress={quoteTokenAddress}
           type="right"
-          brackets={tableBrackets.slice(baseTokenBrackets)}
+          brackets={rightBrackets}
         />
       </Grid>
     </Wrapper>
