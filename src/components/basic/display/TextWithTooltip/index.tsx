@@ -1,13 +1,12 @@
 import React, { memo } from "react";
 import styled from "styled-components";
 
-import {
-  ThemeColors,
-  ThemeTextSize,
-} from "@gnosis.pm/safe-react-components/dist/theme";
-import { Text, Icon } from "@gnosis.pm/safe-react-components";
+import { Icon } from "@gnosis.pm/safe-react-components";
+
+import { ThemeColors, ThemeTextSize } from "theme";
 
 import { Tooltip } from "components/basic/display/Tooltip";
+import { Text } from "components/basic/display/Text";
 
 const Wrapper = styled.span`
   display: flex;
@@ -21,13 +20,15 @@ const Wrapper = styled.span`
 
 export interface Props {
   tooltip: string;
-  size: ThemeTextSize;
+  size?: ThemeTextSize;
   color?: ThemeColors;
   className?: string;
   children: React.ReactElement | string;
 }
 
-const component: React.FC<Props> = (props) => {
+export const TextWithTooltip = memo(function TextWithTooltip(
+  props: Props
+): JSX.Element {
   const { children, tooltip, size, color, className } = props;
 
   return (
@@ -40,6 +41,4 @@ const component: React.FC<Props> = (props) => {
       </Tooltip>
     </Wrapper>
   );
-};
-
-export const TextWithTooltip = memo(component);
+});
