@@ -49,4 +49,5 @@ export const theme: Theme = {
 };
 
 export type ThemeTextSize = keyof typeof theme["text"]["size"];
+export type ThemeLoaderSize = keyof typeof theme["loader"]["size"];
 export type ThemeColors = keyof typeof theme["colors"];

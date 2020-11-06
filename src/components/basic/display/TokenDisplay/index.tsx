@@ -4,13 +4,13 @@ import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
 
-import { ThemeColors, ThemeTextSize } from "theme";
+import { ThemeColors, ThemeLoaderSize } from "theme";
 
 import { Text } from "components/basic/display/Text";
 
 export interface Props {
   token: string;
-  size?: ThemeTextSize;
+  size?: ThemeLoaderSize;
   color?: ThemeColors;
   className?: string;
 }
@@ -36,7 +36,7 @@ export const TokenDisplay = memo(function TokenDisplay(
       {tokenDetails.symbol}
     </Text>
   ) : isLoading ? (
-    <Loader size={size === "xl" ? "lg" : size} className={className} />
+    <Loader size={size} className={className} />
   ) : (
     <Text size={size} color={color} strong as="span" className={className}>
       -
