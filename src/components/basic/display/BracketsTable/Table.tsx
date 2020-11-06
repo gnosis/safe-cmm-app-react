@@ -38,7 +38,15 @@ const StyledCell = withStyles({
     borderBottom: "none",
     color: ({ grey }: CellProps) => theme.colors[grey ? "textGrey" : "text"],
   },
-})(TableCell);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+})(({ grey, ...rest }: React.ComponentProps<typeof TableCell> & CellProps) => (
+  // This wrapper component is a work around to avoid the error:
+  // "Warning: Received `false` for a non-boolean attribute `grey`."
+  // The issue arises when the prop `grey` is passed down MUI component
+  // which doesn't know what `grey` is.
+  // This wrapper swallows it and passes down only known props.
+  <TableCell {...rest} />
+));
 
 type RowProps = {
   type?: "left" | "right";
