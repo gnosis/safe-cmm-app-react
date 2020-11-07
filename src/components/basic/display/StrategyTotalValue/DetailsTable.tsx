@@ -25,7 +25,7 @@ const Wrapper = styled.div`
   }
 `;
 
-export type Props = { holdValue: Decimal; roi?: Decimal; apy?: Decimal };
+export type Props = { holdValue?: Decimal; roi?: Decimal; apy?: Decimal };
 
 export const DetailsTable = memo(function DetailsTable(
   props: Props
@@ -38,7 +38,7 @@ export const DetailsTable = memo(function DetailsTable(
         HODL VALUE
       </Text>
       <Text className="value" size="lg" as="span" strong>
-        ${formatSmart(holdValue)}
+        {holdValue ? `$${formatSmart(holdValue)}` : "N/A"}
       </Text>
 
       <Text className="title" color="textGrey" size="xs" as="span">

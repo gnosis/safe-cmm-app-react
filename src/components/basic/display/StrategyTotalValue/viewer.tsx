@@ -12,8 +12,8 @@ const Wrapper = styled.div`
 `;
 
 export type Props = {
-  totalValue: Decimal;
-  holdValue: Decimal;
+  totalValue?: Decimal;
+  holdValue?: Decimal;
   roi?: Decimal;
   apy?: Decimal;
 };

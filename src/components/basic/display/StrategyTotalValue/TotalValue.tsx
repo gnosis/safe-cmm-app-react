@@ -15,7 +15,7 @@ const Wrapper = styled.div`
   margin-bottom: 15px;
 `;
 
-export type Props = { value: Decimal };
+export type Props = { value?: Decimal };
 
 const TOOLTIP =
   "The total value of all your brackets combined in your strategy. This can be compared with the HODL VALUE to compare performance of your strategy vs. if you held the assets without a strategy.";
@@ -29,7 +29,7 @@ export const TotalValue = memo(function TotalValue(props: Props): JSX.Element {
         TOTAL VALUE
       </TextWithTooltip>
       <Text size="xxl" strong>
-        ${formatSmart(value)}
+        {value ? `$${formatSmart(value)}` : "N/A"}
       </Text>
     </Wrapper>
   );
