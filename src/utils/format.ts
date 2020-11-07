@@ -2,18 +2,23 @@ import BN from "bn.js";
 import Decimal from "decimal.js";
 
 import { formatSmart as dexJsFormatSmart } from "@gnosis.pm/dex-js";
-import { TEN_DECIMAL } from "./constants";
+
+import { TEN_DECIMAL } from "utils/constants";
+
+const EXPAND_PRECISION_BY = 20;
 
 // TODO: consider moving to dex-js
 /**
  * Formats given amount nicely.
+ * If precision is given, does a down shit of `precision` decimals.
  * Does not expose additional options as original dex-js' formatSmart yet
  *
  * @param amount Amount either Decimal or String
+ * @param precision Precision to down shift the amount. When not given,
+ *  assumes values already at the correct precision.
  */
-export function formatSmart(amount: Decimal | string): string {
+export function formatSmart(amount: Decimal | string, precision = 0): string {
   let amountDecimal: Decimal;
-  const precision = 20;
 
   if (typeof amount === "string") {
     amountDecimal = new Decimal(amount);
@@ -21,19 +26,17 @@ export function formatSmart(amount: Decimal | string): string {
     amountDecimal = amount;
   }
 
-  // Store current Decimal defaults
-  const [toExpNeg, toExpPos] = [Decimal.toExpNeg, Decimal.toExpPos];
+  // "Why expand precision?" You might ask
+  // Because BNs can't handle decimals.
+  // Passing anything with a decimal makes BN constructor go bananas.
+  // Since we are reusing `formatSmart` from dex-js that deals only with BNs,
+  // we need to convert it first.
 
-  // Increase  range to avoid returning 1e+20 from Decimal.toString()
-  // Which BN constructor doesn't like
-  Decimal.set({ toExpNeg: -20, toExpPos: 40 });
+  console.log("amount to format", amountDecimal.toFixed());
 
   const amountBN = new BN(
-    amountDecimal.mul(TEN_DECIMAL.pow(precision)).toString()
+    amountDecimal.mul(TEN_DECIMAL.pow(EXPAND_PRECISION_BY)).toFixed()
   );
 
-  // Restore original Decimal config
-  Decimal.set({ toExpNeg, toExpPos });
-
-  return dexJsFormatSmart(amountBN, precision);
+  return dexJsFormatSmart(amountBN, EXPAND_PRECISION_BY + precision);
 }
