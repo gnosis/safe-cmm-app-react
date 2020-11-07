@@ -16,6 +16,7 @@ import {
   BracketRowData,
   BracketsTable,
 } from "components/basic/display/BracketsTable";
+import { StrategyTotalValue } from "components/basic/display/StrategyTotalValue";
 
 export type Props = {
   strategy: Strategy;
@@ -146,7 +147,7 @@ export const StrategyTab = memo(function StrategyTab(
           type="left"
           brackets={leftBrackets}
         />
-        <div style={{ justifySelf: "center" }}>TODO</div>
+        <StrategyTotalValue strategy={strategy} />
         <BracketsTable
           baseTokenAddress={baseTokenAddress}
           quoteTokenAddress={quoteTokenAddress}
