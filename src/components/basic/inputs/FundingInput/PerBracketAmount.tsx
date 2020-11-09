@@ -24,6 +24,11 @@ function UPerBracketAmount(props: Props): JSX.Element {
       return "";
     }
     const amountInTokenUnits = parseAmount(totalAmount, tokenDetails.decimals);
+
+    if (amountInTokenUnits == null) {
+      return "";
+    }
+
     const amountPerBracket = amountInTokenUnits.div(new BN(brackets));
 
     return formatSmart({
