@@ -5,8 +5,6 @@ import { formatSmart as dexJsFormatSmart } from "@gnosis.pm/dex-js";
 
 import { TEN_DECIMAL } from "utils/constants";
 
-const EXPAND_PRECISION_BY = 20;
-
 // TODO: consider moving to dex-js
 /**
  * Formats given amount nicely.
@@ -34,9 +32,14 @@ export function formatSmart(amount: Decimal | string, precision = 0): string {
 
   console.log("amount to format", amountDecimal.toFixed());
 
+  const decimalPlaces = amountDecimal.decimalPlaces();
+
   const amountBN = new BN(
-    amountDecimal.mul(TEN_DECIMAL.pow(EXPAND_PRECISION_BY)).toFixed()
+    amountDecimal
+      .mul(TEN_DECIMAL.pow(decimalPlaces))
+      .toDecimalPlaces(0)
+      .toFixed()
   );
 
-  return dexJsFormatSmart(amountBN, EXPAND_PRECISION_BY + precision);
+  return dexJsFormatSmart(amountBN, decimalPlaces + precision);
 }
