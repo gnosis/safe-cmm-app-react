@@ -20,8 +20,8 @@ export const StrategyTotalValue = memo(function StrategyTotalValue(
   const {
     baseTokenAddress,
     quoteTokenAddress,
-    baseTokenDetails: { decimals: baseTokenDecimals },
-    quoteTokenDetails: { decimals: quoteTokenDecimals },
+    baseTokenDetails,
+    quoteTokenDetails,
   } = strategy;
 
   const {
@@ -31,7 +31,7 @@ export const StrategyTotalValue = memo(function StrategyTotalValue(
     tokenAddress: baseTokenAddress,
     amount: formatAmountFull({
       amount: strategy.totalBaseBalance(),
-      precision: baseTokenDecimals,
+      precision: baseTokenDetails?.decimals || 18,
       thousandSeparator: false,
       isLocaleAware: false,
     }),
@@ -44,7 +44,7 @@ export const StrategyTotalValue = memo(function StrategyTotalValue(
     tokenAddress: quoteTokenAddress,
     amount: formatAmountFull({
       amount: strategy.totalQuoteBalance(),
-      precision: quoteTokenDecimals,
+      precision: quoteTokenDetails?.decimals || 18,
       thousandSeparator: false,
       isLocaleAware: false,
     }),
