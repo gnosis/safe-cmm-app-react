@@ -30,16 +30,21 @@ export function formatSmart(amount: Decimal | string, precision = 0): string {
   // Since we are reusing `formatSmart` from dex-js that deals only with BNs,
   // we need to convert it first.
 
-  console.log("amount to format", amountDecimal.toFixed());
-
   const decimalPlaces = amountDecimal.decimalPlaces();
+  const amountExpandedAndAsString = amountDecimal
+    .mul(TEN_DECIMAL.pow(decimalPlaces))
+    .toDecimalPlaces(0)
+    .toFixed();
 
-  const amountBN = new BN(
-    amountDecimal
-      .mul(TEN_DECIMAL.pow(decimalPlaces))
-      .toDecimalPlaces(0)
-      .toFixed()
-  );
+  try {
+    const amountBN = new BN(amountExpandedAndAsString);
 
-  return dexJsFormatSmart(amountBN, decimalPlaces + precision);
+    return dexJsFormatSmart(amountBN, decimalPlaces + precision);
+  } catch (e) {
+    const message = `Failed to nicely format '${amountDecimal.toFixed()}'. Was trying to create a BN with the string: '${amountExpandedAndAsString}'`;
+    console.error(message, e);
+    // Swallow potential BN error message which is too cryptic to understand what went wrong.
+    // Very likely the issue is that the string used to create the BN with was invalid
+    throw new Error(message);
+  }
 }
