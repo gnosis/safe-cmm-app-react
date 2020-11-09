@@ -10,6 +10,8 @@ import Strategy from "logic/strategy";
 
 import { StrategyTotalValueViewer } from "./viewer";
 
+// TODO: move to utils?
+
 function addTotals(
   baseAmount: Decimal | null,
   quoteAmount: Decimal | null
@@ -23,6 +25,19 @@ function addTotals(
   } else {
     return undefined;
   }
+}
+
+// TODO: move to utils?
+
+function calculateRoi(
+  current: Decimal | undefined,
+  initial: Decimal | undefined
+): Decimal | undefined {
+  if (!current || !initial) {
+    return undefined;
+  }
+  const difference = current.minus(initial);
+  return difference.div(initial);
 }
 
 export type Props = {
@@ -98,7 +113,6 @@ export const StrategyTotalValue = memo(function StrategyTotalValue(
     source: "GnosisProtocol",
   });
 
-  // TODO: calculate roi
   // TODO: calculate apy
 
   if (
@@ -114,10 +128,13 @@ export const StrategyTotalValue = memo(function StrategyTotalValue(
 
   const holdValue = addTotals(baseDepositAmountInUsd, quoteDepositAmountInUsd);
 
+  const roi = calculateRoi(totalValue, holdValue);
+
   return (
     <StrategyTotalValueViewer
       totalValue={totalValue}
       holdValue={holdValue}
+      roi={roi}
     />
   );
 });
