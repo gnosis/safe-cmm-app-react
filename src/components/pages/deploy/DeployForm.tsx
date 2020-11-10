@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useContext } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { FormApi, FormState, MutableState, Mutator, Tools } from "final-form";
-import { Form, FormSpy } from "react-final-form";
+import { useRecoilValue } from "recoil";
+import { MutableState, Mutator, Tools } from "final-form";
+import { Form } from "react-final-form";
 import createCalculatedFieldsDecorator, {
   Calculation,
 } from "final-form-calculate";
@@ -22,43 +22,9 @@ import { composeValidators } from "validators/misc";
 
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
+import { Warnings } from "./Warnings";
+
 import { DeployFormValues, FormFields } from "./types";
-import { warningsAtom } from "./atoms";
-
-function Warnings({
-  mutators: { setFieldData },
-}: Pick<FormApi, "mutators">): JSX.Element {
-  const setWarnings = useSetRecoilState(warningsAtom);
-
-  const handleWarnings = useCallback(
-    ({ values }: FormState<DeployFormValues>) => {
-      const totalBracketsHasWarning = +values.totalBrackets === 1;
-
-      // Split warnings into two parts, because we can't access field data state on the form
-
-      // This part tells the field it has a warning
-      setFieldData("totalBrackets", {
-        warn: totalBracketsHasWarning,
-      });
-
-      // This part aggregates all the warnings to display them at the end of the form
-      // since we can't easily access the field `data` state, we are using an external source
-      setWarnings((warnings) => ({
-        ...warnings,
-        totalBrackets: totalBracketsHasWarning
-          ? {
-              label: "Strategy with only one bracket",
-              children:
-                "You specified a total brackets count of 1. This will create a strategy which will only use a single bracket for a single token.",
-            }
-          : false,
-      }));
-    },
-    [setFieldData, setWarnings]
-  );
-
-  return <FormSpy subscription={{ values: true }} onChange={handleWarnings} />;
-}
 
 // Syntactic sugar to extract bracket value from stored input field value
 export function getBracketValue(
