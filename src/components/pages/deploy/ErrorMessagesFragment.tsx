@@ -1,9 +1,11 @@
 import React, { memo } from "react";
+import { useRecoilValue } from "recoil";
+import { useFormState } from "react-final-form";
 import styled from "styled-components";
 
 import { Message } from "components/basic/display/Message";
 
-import { useFormState } from "react-final-form";
+import { warningsAtom } from "./atoms";
 
 const Wrapper = styled.div`
   & > :not(:last-child) {
@@ -17,7 +19,13 @@ export const ErrorMessagesFragment = memo(
       subscription: { errors: true, touched: true, submitErrors: true },
     });
 
-    if ((!errors || !Object.values(touched).some(Boolean)) && !submitErrors) {
+    const warnings = useRecoilValue(warningsAtom);
+
+    if (
+      (!errors || !Object.values(touched).some(Boolean)) &&
+      !submitErrors &&
+      !Object.values(warnings).some(Boolean)
+    ) {
       return null;
     }
 
@@ -40,6 +48,21 @@ export const ErrorMessagesFragment = memo(
           .map((fieldName, id) => (
             <Message {...allErrors[fieldName]} type="error" key={id} />
           ))}
+        {Object.values(warnings)
+          .filter((warning) => !!warning)
+          .map((warning, id) => {
+            // Casting needed because warning can be either the obj below or false.
+            // Even though we are filtering the only case where a boolean is possible, TS doesn't know that.
+            const { label, children } = warning as {
+              label: string;
+              children?: React.ReactNode;
+            };
+            return (
+              <Message label={label} type="warning" key={id}>
+                {children}
+              </Message>
+            );
+          })}
       </Wrapper>
     );
   }
