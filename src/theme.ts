@@ -17,6 +17,9 @@ const newColors = {
   borderDarkGreen: "#009cb4",
   borderLightPurple: "rgba(128, 94, 255, 0.2)",
   borderDarkPurple: "#805eff",
+
+  // text
+  textGrey: "#5D6D74",
 };
 
 const xsTextSize = {

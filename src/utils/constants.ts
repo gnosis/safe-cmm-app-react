@@ -27,6 +27,7 @@ export const DEFAULT_INPUT_WIDTH = "130px";
 
 export const ZERO_DECIMAL = new Decimal("0");
 export const ONE_DECIMAL = new Decimal("1");
+export const TEN_DECIMAL = new Decimal("10");
 
 export const MINIMUM_BRACKETS = 1;
 export const MAXIMUM_BRACKETS = 10;
