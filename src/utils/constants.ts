@@ -17,10 +17,18 @@ export const SAFE_ENDPOINT_URLS = {
   [Network.mainnet]: `https://safe-transaction.gnosis.io`,
 };
 
+export const DEX_PRICE_ESTIMATOR_URLS = {
+  [Network.rinkeby]: `https://dex-price-estimator.rinkeby.gnosis.io`,
+  [Network.xdai]: `https://dex-price-estimator.xdai.gnosis.io`,
+  [Network.mainnet]: `https://dex-price-estimator.gnosis.io`,
+};
+
 export const DEFAULT_INPUT_WIDTH = "130px";
 
 export const ZERO_DECIMAL = new Decimal("0");
 export const ONE_DECIMAL = new Decimal("1");
+export const TEN_DECIMAL = new Decimal("10");
+export const ONE_HUNDRED_DECIMAL = new Decimal("100");
 
 export const MINIMUM_BRACKETS = 1;
 export const MAXIMUM_BRACKETS = 10;

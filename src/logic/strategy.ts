@@ -344,6 +344,38 @@ class Strategy {
       ZERO
     );
   }
+
+  public totalDeposits(): {
+    baseTokenDeposits: BN;
+    quoteTokenDeposits: BN;
+  } {
+    const [baseTokenDeposits, quoteTokenDeposits] = this.brackets.reduce<
+      [BN, BN]
+    >(
+      ([totalBaseBalance, totalQuoteBalance], bracket) => {
+        const [baseBalance, quoteBalance] = bracket.deposits.reduce<[BN, BN]>(
+          ([baseBracketBalance, quoteBracketBalance], deposit) => {
+            const bnAmount = new BN(deposit.amount);
+
+            if (deposit.token === this.baseTokenAddress) {
+              return [baseBracketBalance.add(bnAmount), quoteBracketBalance];
+            } else {
+              return [baseBracketBalance, quoteBracketBalance.add(bnAmount)];
+            }
+          },
+          [ZERO, ZERO]
+        );
+
+        return [
+          totalBaseBalance.add(baseBalance),
+          totalQuoteBalance.add(quoteBalance),
+        ];
+      },
+      [ZERO, ZERO]
+    );
+
+    return { baseTokenDeposits, quoteTokenDeposits };
+  }
 }
 
 export default Strategy;
