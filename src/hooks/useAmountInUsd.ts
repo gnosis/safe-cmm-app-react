@@ -1,18 +1,16 @@
 import Decimal from "decimal.js";
-import { useGetPrice } from "./useGetPrice";
-import { useTokenDetails } from "./useTokenDetails";
+import { useMemo, useState } from "react";
 
-// Quote price in USDC
-const USDC = {
-  address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-  decimals: 6,
-  symbol: "USDC",
-  name: "USDC",
-};
+import { TokenDetails } from "types";
+
+import { PriceSources, useGetPrice } from "./useGetPrice";
+import { useTokenDetails } from "./useTokenDetails";
+import { useTokenList } from "./useTokenList";
 
 type Params = {
   tokenAddress?: string;
   amount?: string;
+  source?: PriceSources;
 };
 
 type Result = {
@@ -25,7 +23,10 @@ type Result = {
  * Quotes given amount of token in USDC
  */
 export function useAmountInUsd(params: Params): Result {
-  const { tokenAddress, amount } = params;
+  const { tokenAddress, amount, source } = params;
+
+  // TODO: what about storing this on recoil to avoid extra work?
+  const [usdc, setUsdc] = useState<undefined | TokenDetails>(undefined);
 
   // Setting address to be queried `undefined` when no amount is provided
   // to avoid fetching price when there's no amount
@@ -37,9 +38,21 @@ export function useAmountInUsd(params: Params): Result {
     error: tokenDetailsError,
   } = useTokenDetails(address);
 
+  const tokenList = useTokenList();
+
+  // Loading USDC TokenDetails object because depending on the price source,
+  // we'll need the token id on the exchange to query it
+  useMemo(() => {
+    // Only need to find USDC once
+    if (!usdc) {
+      setUsdc(tokenList.find((token) => token.symbol === "USDC"));
+    }
+  }, [setUsdc, tokenList, usdc]);
+
   const { price, isLoading: isLoadingPrice, error: priceError } = useGetPrice({
     baseToken,
-    quoteToken: USDC,
+    quoteToken: usdc,
+    source,
   });
 
   return {

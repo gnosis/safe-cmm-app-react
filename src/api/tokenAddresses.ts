@@ -30,6 +30,7 @@ const tokenAddresses: { [networkId: number]: string[] } = {
     "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d", // wxDai
     "0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e", // STAKE
     "0xB1950Fb2C9C0CbC8553578c67dB52Aa110A93393", // sUSD
+    "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83", // USDC
   ],
 };
 
