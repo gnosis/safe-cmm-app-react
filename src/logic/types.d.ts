@@ -1,5 +1,3 @@
-import { DecoderData } from "./utils/flattenMultiSend";
-
 export type StatusEnum = "PENDING" | "ACTIVE" | "CLOSED" | "UNKNOWN";
 
 export interface Bracket {
@@ -14,6 +12,7 @@ export interface DepositEvent {
   amount: string; // BN string
   token: string;
   batchId: number;
+  bracketAddress: string; // target bracket address
 }
 
 export interface WithdrawEvent {
@@ -29,35 +28,4 @@ export interface FleetDeployEvent {
   };
   transactionHash: string;
   blockNumber: number;
-}
-
-export interface PendingStrategySafeTransaction {
-  safeTxHash: string;
-  dataDecoded: DecoderData;
-  to: string;
-  value: string;
-  data: string;
-  operation: number;
-  gasToken: string;
-  safeTxGas: number;
-  baseGas: number;
-  gasPrice: string;
-  refundReceiver: string;
-  nonce: number;
-  submissionDate: string;
-  executionDate: string;
-  modified: string;
-  blockNumber?: number;
-  transactionHash?: string;
-  safeTxHash: string;
-  executor?: string;
-  isExecuted: boolean;
-  isSuccessful?: boolean;
-  ethGasPrice?: string;
-  gasUsed?: string;
-  fee?: string;
-  origin: string;
-  confirmationsRequired?: any;
-  confirmations?: Record<string, any>[];
-  signatures?: any;
 }

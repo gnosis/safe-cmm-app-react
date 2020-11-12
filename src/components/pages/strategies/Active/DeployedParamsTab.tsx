@@ -1,12 +1,12 @@
 import React from "react";
 
 import { Box, Typography } from "@material-ui/core";
-import Strategy from "logic/strategy";
 import { memo, useMemo } from "react";
 import Decimal from "decimal.js";
+import { StrategyState } from "types";
 
 export type Props = {
-  strategy: Strategy;
+  strategy: StrategyState;
 };
 
 export const DeployedParamsTab = memo(function DeployedParamsTab(
@@ -40,7 +40,7 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
       [
         "Funding per bracket > TOKEN A",
         `${new Decimal(strategy.baseFunding)
-          .div(Math.pow(10, strategy.baseTokenDetails.decimals))
+          .div(Math.pow(10, strategy.baseToken.decimals))
           .div(strategy.brackets.length)
           .toSD(4)
           .toString()}`,
@@ -48,7 +48,7 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
       [
         "Funding per bracket > TOKEN B",
         `${new Decimal(strategy.quoteFunding)
-          .div(Math.pow(10, strategy.quoteTokenDetails.decimals))
+          .div(Math.pow(10, strategy.quoteToken.decimals))
           .div(strategy.brackets.length)
           .toSD(4)
           .toString()}`,

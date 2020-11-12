@@ -3,6 +3,7 @@ import BN from "bn.js";
 
 import find from "lodash/find";
 import { TokenDetails } from "types";
+import { OrderPlacementEvent } from 'logic/EventStrategy';
 
 /**
  * Price entry abstraction for entries from `Strategy` and `PendingStrategy`.
@@ -27,8 +28,8 @@ export interface FundingDetails {
   bracketPrices: Decimal[];
   baseTokenId: number;
   quoteTokenId: number;
-  primaryFunding: BN;
-  quoteFunding: BN;
+  baseFundingWei: BN;
+  quoteFundingWei: BN;
   bracketAddresses: string[];
   bracketTokenBalances: any;
   bracketsByToken: any;
@@ -73,27 +74,32 @@ export const pricesToRange = (
 };
 
 export const calculateFundsFromEvents = (
-  bracketOrderEvents: any[],
+  bracketOrderEvents: OrderPlacementEvent[],
   bracketAddresses: string[]
 ): FundingDetails => {
+  console.log(bracketOrderEvents)
+  if (!bracketOrderEvents || !bracketOrderEvents.length) {
+    return null;
+  }
+
   const firstBracketEvent = bracketOrderEvents[0];
-  const baseToken = firstBracketEvent.returnValues.buyToken;
-  const quoteToken = firstBracketEvent.returnValues.sellToken;
+  const baseToken = firstBracketEvent.buyToken;
+  const quoteToken = firstBracketEvent.sellToken;
 
   const bracketPrices = [];
 
   bracketOrderEvents.forEach((bracketOrder) => {
-    if (bracketOrder.returnValues.buyToken === baseToken) {
+    if (bracketOrder.buyToken === baseToken) {
       bracketPrices.push(
-        new Decimal(bracketOrder.returnValues.priceDenominator).div(
-          new Decimal(bracketOrder.returnValues.priceNumerator)
+        new Decimal(bracketOrder.priceDenominator).div(
+          new Decimal(bracketOrder.priceNumerator)
         )
       );
     }
-    if (bracketOrder.returnValues.buyToken === quoteToken) {
+    if (bracketOrder.buyToken === quoteToken) {
       bracketPrices.push(
-        new Decimal(bracketOrder.returnValues.priceNumerator).div(
-          new Decimal(bracketOrder.returnValues.priceDenominator)
+        new Decimal(bracketOrder.priceNumerator).div(
+          new Decimal(bracketOrder.priceDenominator)
         )
       );
     }
@@ -103,8 +109,8 @@ export const calculateFundsFromEvents = (
     bracketPrices,
     baseTokenId: baseToken,
     quoteTokenId: quoteToken,
-    primaryFunding: null,
-    quoteFunding: null,
+    baseFundingWei: null,
+    quoteFundingWei: null,
     bracketAddresses,
     bracketTokenBalances: null,
     bracketsByToken: null,
@@ -295,8 +301,8 @@ export const calculateFundsFromTxData = (
     bracketPrices: prices,
     baseTokenId: tokenIdBase,
     quoteTokenId: tokenIdQuote,
-    primaryFunding: sumFundingTokenBase,
-    quoteFunding: sumFundingTokenQuote,
+    baseFundingWei: sumFundingTokenBase,
+    quoteFundingWei: sumFundingTokenQuote,
     bracketAddresses: bracketAddresses,
     bracketTokenBalances,
     bracketsByToken,

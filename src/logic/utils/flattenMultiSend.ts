@@ -15,7 +15,7 @@ interface DecoderParameter {
   valueDecoded?: DecoderValue[] | DecoderNode;
 }
 
-interface DecoderNode {
+export interface DecoderNode {
   method: string;
   parameters: DecoderParameter[];
 }

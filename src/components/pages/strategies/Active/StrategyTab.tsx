@@ -1,11 +1,11 @@
 import React, { memo } from "react";
 import styled from "styled-components";
 
-import Strategy from "logic/strategy";
 import { BracketsViewer } from "components/basic/display/BracketsView";
+import { StrategyState } from "types";
 
 export type Props = {
-  strategy: Strategy;
+  strategy: StrategyState;
 };
 
 const Wrapper = styled.div``;
@@ -19,8 +19,8 @@ export const StrategyTab = memo(function StrategyTab(
     <Wrapper>
       <BracketsViewer
         type="strategy"
-        baseTokenAddress={strategy.baseTokenAddress}
-        quoteTokenAddress={strategy.quoteTokenAddress}
+        baseTokenAddress={strategy.baseToken.address}
+        quoteTokenAddress={strategy.quoteToken.address}
         lowestPrice={strategy.priceRange?.lower.toString()}
         highestPrice={strategy.priceRange?.upper.toString()}
         totalBrackets={strategy.brackets?.length}

@@ -1,8 +1,6 @@
 import React, { memo, useState, useCallback } from "react";
 import styled from "styled-components";
 
-import { formatSmart } from "@gnosis.pm/dex-js";
-
 import {
   TableContainer,
   Table,
@@ -12,11 +10,11 @@ import {
   TableBody,
   IconButton,
 } from "@material-ui/core";
-import Strategy from "logic/strategy";
 
 import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
 import { Details } from "./Details";
+import { StrategyState } from "types";
 
 const HideableTableRow = styled(TableRow)`
   &.hide {
@@ -36,7 +34,7 @@ const StyledTableContainer = styled(TableContainer)`
 `;
 
 export interface Props {
-  strategies: Strategy[];
+  strategies: StrategyState[];
 }
 
 export const ActiveTable = memo(function ActiveTable({
@@ -44,7 +42,7 @@ export const ActiveTable = memo(function ActiveTable({
 }: Props): JSX.Element {
   const [foldOutStrategy, setFoldOutStrategy] = useState(null);
 
-  const makeStrategyFoldoutHandler = useCallback((strategy: Strategy) => {
+  const makeStrategyFoldoutHandler = useCallback((strategy: StrategyState) => {
     return () => {
       setFoldOutStrategy((currFoldoutTxHash: string) => {
         if (currFoldoutTxHash === strategy.transactionHash) {
@@ -79,24 +77,18 @@ export const ActiveTable = memo(function ActiveTable({
               <TableRow key={strategy.transactionHash}>
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
-                  {strategy.quoteTokenDetails && strategy.baseTokenDetails
-                    ? `${strategy.quoteTokenDetails?.symbol} - ${strategy.baseTokenDetails?.symbol}`
+                  {strategy.quoteToken && strategy.baseToken
+                    ? `${strategy.quoteToken?.symbol} - ${strategy.baseToken?.symbol}`
                     : "Unknown"}
                 </TableCell>
                 <TableCell>{strategy.brackets.length}</TableCell>
                 <TableCell>
-                  {formatSmart(
-                    strategy.totalBaseBalance(),
-                    strategy.baseTokenDetails?.decimals || 18
-                  ) || "-"}{" "}
-                  {strategy.baseTokenDetails?.symbol}
+                  {strategy.baseFunding.toSD(4).toString() || "-"}{" "}
+                  {strategy.baseToken?.symbol}
                 </TableCell>
                 <TableCell>
-                  {formatSmart(
-                    strategy.totalQuoteBalance(),
-                    strategy.quoteTokenDetails?.decimals || 18
-                  ) || "-"}{" "}
-                  {strategy.quoteTokenDetails?.symbol}
+                  {strategy.quoteFunding.toSD(4).toString() || "-"}{" "}
+                  {strategy.quoteToken?.symbol}
                 </TableCell>
                 <TableCell>TODO</TableCell>
                 <TableCell>TODO</TableCell>

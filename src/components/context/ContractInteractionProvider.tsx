@@ -25,7 +25,7 @@ import { tokenBalancesState } from "state/atoms";
 
 const logger = getLogger("contract-interaction-provider");
 
-type StatusEnum = "LOADING" | "SUCCESS" | "ERROR" | "NOT_IN_IFRAME";
+export type StatusEnum = "LOADING" | "SUCCESS" | "ERROR" | "NOT_IN_IFRAME";
 
 export interface ContractInteractionContextProps {
   status: StatusEnum;

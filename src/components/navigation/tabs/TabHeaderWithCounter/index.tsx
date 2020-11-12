@@ -43,7 +43,7 @@ export const TabHeaderWithCounter = memo(function TabHeader({
   inactiveTextColor,
 }: Props): JSX.Element {
   const handleClick = useCallback(() => {
-    onClick(name);
+    if (onClick) onClick(name);
   }, [onClick, name]);
 
   return (

@@ -1,3 +1,6 @@
+import { Bracket, PriceRange } from "logic/IStrategy";
+import Decimal from "decimal.js";
+
 export interface TokenDetails {
   address: string;
   decimals: number;
@@ -17,4 +20,28 @@ export interface SafeInfo {
 export interface WithdrawState {
   status?: "loading" | "success" | "error";
   message?: string;
+}
+
+export type StrategyStatusEnum =
+  | "UNKNOWN"
+  | "INCOMPLETE"
+  | "ACTIVE"
+  | "PENDING"
+  | "TRADING_STOPPED"
+  | "CLOSED";
+
+export type LoadingState = "LOADING" | "SUCCESS" | "ERROR";
+export interface StrategyState {
+  transactionHash: string;
+  status: StrategyStatusEnum;
+  created: Date;
+  priceRange: PriceRange;
+  withdrawRequestDate: Date;
+  baseToken: TokenDetails;
+  quoteToken: TokenDetails;
+  baseFunding: Decimal;
+  quoteFunding: Decimal;
+  baseBalance: Decimal;
+  quoteBalance: Decimal;
+  brackets: Bracket[];
 }

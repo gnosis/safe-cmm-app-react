@@ -3,14 +3,17 @@ import { Box } from "@material-ui/core";
 
 import { Loader } from "@gnosis.pm/safe-react-components";
 
-import { useWeb3Strategies } from "hooks/useWeb3Strategies";
-
 import { ActiveTable } from "./ActiveTable";
+import { useRecoilValue } from "recoil";
+import { strategiesOfStatusSelector } from "state/selectors/strategiesOfStatus";
+import { strategiesLoadingState } from "state/atoms";
 
 export const Active = memo(function Active(): JSX.Element {
-  const { strategies, status } = useWeb3Strategies();
+  //const { strategies, status } = useWeb3Strategies();
+  const strategies = useRecoilValue(strategiesOfStatusSelector("ACTIVE"));
+  const strategyLoadingState = useRecoilValue(strategiesLoadingState);
 
-  if (status === "LOADING") {
+  if (strategyLoadingState === "LOADING" && strategies.length === 0) {
     return (
       <Box>
         <Loader size="lg" />
