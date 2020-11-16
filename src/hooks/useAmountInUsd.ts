@@ -1,5 +1,7 @@
 import Decimal from "decimal.js";
 import { useMemo, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { tokenListState, usdReferenceTokenState } from "state/selectors";
 
 import { TokenDetails } from "types";
 
@@ -33,6 +35,7 @@ export function useAmountInUsd(params: Params): Result {
 
   const baseToken = useTokenDetails(address);
 
+  const tokenList = useRecoilValue(tokenListState);
 
   // Loading USDC TokenDetails object because depending on the price source,
   // we'll need the token id on the exchange to query it
