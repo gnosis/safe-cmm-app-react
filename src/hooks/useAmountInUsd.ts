@@ -5,7 +5,6 @@ import { TokenDetails } from "types";
 
 import { PriceSources, useGetPrice } from "./useGetPrice";
 import { useTokenDetails } from "./useTokenDetails";
-import { useTokenList } from "./useTokenList";
 
 type Params = {
   tokenAddress?: string;
@@ -38,7 +37,6 @@ export function useAmountInUsd(params: Params): Result {
     error: tokenDetailsError,
   } = useTokenDetails(address);
 
-  const tokenList = useTokenList();
 
   // Loading USDC TokenDetails object because depending on the price source,
   // we'll need the token id on the exchange to query it

@@ -1,13 +1,14 @@
 import React, { useMemo, memo } from "react";
+import { useRecoilValue } from "recoil";
 
 import { SelectItem } from "@gnosis.pm/safe-react-components/dist/inputs/Select";
 
-import { useTokenList } from "hooks/useTokenList";
 import { useTokenBalance } from "hooks/useTokenBalance";
 
 import { TokenSelectorViewer } from "./viewer";
 import { tokenDetailsToSelectItem } from "utils/misc";
 import { useTokenDetails } from "hooks/useTokenDetails";
+import { tokenListState } from "state/selectors";
 
 export interface Props {
   selectedTokenAddress?: string;
@@ -28,7 +29,7 @@ export const TokenSelector = memo(function TokenSelector(
 ): JSX.Element {
   const { selectedTokenAddress, setError, ...rest } = props;
 
-  const tokenList = useTokenList();
+  const tokenList = useRecoilValue(tokenListState);
   const tokenBalance = useTokenBalance(selectedTokenAddress);
   const { tokenDetails } = useTokenDetails(selectedTokenAddress);
 
