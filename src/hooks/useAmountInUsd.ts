@@ -31,11 +31,7 @@ export function useAmountInUsd(params: Params): Result {
   // to avoid fetching price when there's no amount
   const address = Number(amount) > 0 ? tokenAddress : undefined;
 
-  const {
-    tokenDetails: baseToken,
-    isLoading: isLoadingTokenDetails,
-    error: tokenDetailsError,
-  } = useTokenDetails(address);
+  const baseToken = useTokenDetails(address);
 
 
   // Loading USDC TokenDetails object because depending on the price source,
@@ -54,8 +50,8 @@ export function useAmountInUsd(params: Params): Result {
   });
 
   return {
-    isLoading: isLoadingTokenDetails || isLoadingPrice,
+    isLoading: isLoadingPrice,
     amountInUsd: address && price ? price.mul(amount) : null,
-    error: tokenDetailsError || priceError || "",
+    error: priceError || "",
   };
 }
