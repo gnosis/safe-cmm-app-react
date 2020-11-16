@@ -18,3 +18,5 @@ export interface WithdrawState {
   status?: "loading" | "success" | "error";
   message?: string;
 }
+
+export type Unpromise<T> = T extends Promise<infer U> ? U : T;
