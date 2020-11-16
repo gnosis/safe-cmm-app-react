@@ -29,6 +29,7 @@ type StatusEnum = "LOADING" | "SUCCESS" | "ERROR" | "NOT_IN_IFRAME";
 
 export interface ContractInteractionContextProps {
   status: StatusEnum;
+  tokenListLoaded: boolean;
   sdkInstance?: SdkInstance;
   web3Instance?: any;
   safeInfo?: SafeInfo;
@@ -48,6 +49,7 @@ export const ContractInteractionContext = createContext<
   ContractInteractionContextProps
 >({
   status: "LOADING",
+  tokenListLoaded: false,
   sdkInstance: null,
   web3Instance: null,
 });
@@ -66,6 +68,7 @@ export const ContractInteractionProvider = ({
   children,
 }: Props): JSX.Element => {
   const [status, setStatus] = useState<StatusEnum>("LOADING");
+  const [tokenListLoaded, setTokenListLoaded] = useState(false);
   const [web3Instance, setWeb3Instance] = useState<any>(null);
   const [sdkInstance, setSdkInstance] = useState<SdkInstance>(null);
   const [safeInfo, setSafeInfo] = useState<SafeInfo>(null);
@@ -413,6 +416,7 @@ export const ContractInteractionProvider = ({
           };
         }, safeTokens)
       );
+      setTokenListLoaded(true);
     }
 
     loadErc20Details();
@@ -442,6 +446,7 @@ export const ContractInteractionProvider = ({
   const contextValue = useMemo(
     (): ContractInteractionContextProps => ({
       status,
+      tokenListLoaded,
       web3Instance,
       sdkInstance,
       safeInfo,
@@ -454,6 +459,7 @@ export const ContractInteractionProvider = ({
     }),
     [
       status,
+      tokenListLoaded,
       web3Instance,
       sdkInstance,
       safeInfo,
