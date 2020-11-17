@@ -25,13 +25,24 @@ function buildCacheKey(
   quoteToken: TokenDetails,
   sourceOptions?: Record<string, any>
 ): string {
+  const parts = [source, baseToken.address, quoteToken.address];
+
+  if (source === "GnosisProtocol") {
+    // GP prices use average of both sides to account for potentially high spreads
+    // Thus, sorting parts make the key the same doesn't matter the token order
+    parts.sort();
+  }
+
   const options = sourceOptions
     ? Object.keys(sourceOptions)
         .sort()
         .map((key) => `${key}${sourceOptions[key]}`)
         .join("")
     : "";
-  return source + baseToken.address + quoteToken.address + options;
+
+  parts.push(options);
+
+  return parts.join("");
 }
 
 function fetchPriceFromCache(key: string): Decimal | null {
@@ -88,25 +99,9 @@ async function getGnosisProtocolPrice(
     }),
   ]);
 
-  console.log(
-    `base price in quote`,
-    priceBaseInQuote?.toString(),
-    `quote price in base`,
-    priceQuoteInBase?.toString(),
-    `batchId`,
-    options?.batchId
-  );
   // invert opposite price to have it in the same unit
   const priceQuoteInQuote =
     priceQuoteInBase && ONE_DECIMAL.div(priceQuoteInBase);
-  console.log(
-    `base price in quote`,
-    priceBaseInQuote?.toString(),
-    `quote price in quote`,
-    priceQuoteInQuote?.toString(),
-    `batchId`,
-    options?.batchId
-  );
 
   if (priceBaseInQuote && priceQuoteInQuote) {
     // When both prices are present (and second already inverted), return average
@@ -185,6 +180,15 @@ export async function getPrice(
 
     // only store on cache if not `null`
     price && cache.set(cacheKey, price);
+  } else {
+    console.log(
+      `cache hit for `,
+      source,
+      baseToken.symbol,
+      quoteToken.symbol,
+      networkId,
+      sourceOptions
+    );
   }
 
   return price;
