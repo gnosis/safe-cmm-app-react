@@ -1,12 +1,20 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
 import Decimal from "decimal.js";
 
 import { formatAmountFull } from "@gnosis.pm/dex-js";
-import { Loader } from "@gnosis.pm/safe-react-components";
-
-import { useAmountInUsd } from "hooks/useAmountInUsd";
 
 import Strategy from "logic/strategy";
+
+import { Unpromise } from "types";
+
+import { usdReferenceTokenState } from "state/selectors";
+
+import { amountInQuote } from "api/prices";
+
+import { useSafeInfo } from "hooks/useSafeInfo";
+
+import { Network } from "utils/constants";
 
 import { StrategyTotalValueViewer } from "./viewer";
 
@@ -40,6 +48,199 @@ function calculateRoi(
   return difference.div(initial);
 }
 
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+// a and b are javascript Date objects
+function dateDiffInDays(a: Date, b: Date): number {
+  // Discard the time and time-zone information.
+  const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+  const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+  return Math.floor((utc2 - utc1) / MS_PER_DAY);
+}
+
+function calculateApr(
+  totalValue: Decimal | undefined,
+  initialValue: Decimal | undefined,
+  startDate: Date
+): Decimal | undefined {
+  if (!totalValue || !initialValue) {
+    return undefined;
+  }
+  const difference = totalValue.minus(initialValue);
+
+  const days = dateDiffInDays(startDate, new Date());
+  const differencePerDay = difference.div(initialValue).div(days);
+
+  return differencePerDay.mul("365");
+}
+
+type Return = {
+  totalValue: Decimal | undefined;
+  holdValue: Decimal | undefined;
+  roi: Decimal | undefined;
+  apr: Decimal | undefined;
+  isLoading: boolean;
+};
+
+// TODO: Either move to another file or just use it in the body of the component
+function useCalculateAmounts(params: { strategy: Strategy }): Return {
+  const { strategy } = params;
+  const {
+    baseTokenDetails: baseToken,
+    quoteTokenDetails: quoteToken,
+    brackets,
+    created,
+  } = strategy;
+  const batchId = brackets[0]?.deposits[0]?.batchId;
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalValue, setTotalValue] = useState<Decimal | undefined>(undefined);
+  const [holdValue, setHoldValue] = useState<Decimal | undefined>(undefined);
+  const [roi, setRoi] = useState<Decimal | undefined>(undefined);
+  const [apr, setApr] = useState<Decimal | undefined>(undefined);
+
+  const baseTotalBalance = formatAmountFull({
+    amount: strategy.totalBaseBalance(),
+    precision: baseToken?.decimals || 18,
+    thousandSeparator: false,
+    isLocaleAware: false,
+  });
+  const quoteTotalBalance = formatAmountFull({
+    amount: strategy.totalQuoteBalance(),
+    precision: quoteToken?.decimals || 18,
+    thousandSeparator: false,
+    isLocaleAware: false,
+  });
+
+  const { baseTokenDeposits, quoteTokenDeposits } = strategy.totalDeposits();
+
+  const baseTotalDeposits = formatAmountFull({
+    amount: baseTokenDeposits,
+    precision: baseToken?.decimals || 18,
+    thousandSeparator: false,
+    isLocaleAware: false,
+  });
+  const quoteTotalDeposits = formatAmountFull({
+    amount: quoteTokenDeposits,
+    precision: quoteToken?.decimals || 18,
+    thousandSeparator: false,
+    isLocaleAware: false,
+  });
+
+  const usdReferenceToken = useRecoilValue(usdReferenceTokenState);
+  const { network } = useSafeInfo();
+  const networkId = Network[network];
+
+  useEffect(() => {
+    async function fetchValues(): Promise<void> {
+      setIsLoading(true);
+      try {
+        const [
+          baseAmountInUsd,
+          quoteAmountInUsd,
+          baseDepositInUsd,
+          quoteDepositInUsd,
+          baseHistoricalInUsd,
+          quoteHistoricalInUsd,
+        ] = await Promise.all([
+          safeAmount({
+            source: "GnosisProtocol",
+            baseToken,
+            quoteToken: usdReferenceToken,
+            amount: baseTotalBalance,
+            networkId,
+          }),
+          safeAmount({
+            source: "GnosisProtocol",
+            baseToken: quoteToken,
+            quoteToken: usdReferenceToken,
+            amount: quoteTotalBalance,
+            networkId,
+          }),
+          safeAmount({
+            source: "GnosisProtocol",
+            baseToken,
+            quoteToken: usdReferenceToken,
+            amount: baseTotalDeposits,
+            networkId,
+          }),
+          safeAmount({
+            source: "GnosisProtocol",
+            baseToken: quoteToken,
+            quoteToken: usdReferenceToken,
+            amount: quoteTotalDeposits,
+            networkId,
+          }),
+          safeAmount({
+            source: "GnosisProtocol",
+            baseToken,
+            quoteToken: usdReferenceToken,
+            amount: baseTotalDeposits,
+            networkId,
+            sourceOptions: { batchId },
+          }),
+          safeAmount({
+            source: "GnosisProtocol",
+            baseToken: quoteToken,
+            quoteToken: usdReferenceToken,
+            amount: quoteTotalDeposits,
+            networkId,
+            sourceOptions: { batchId },
+          }),
+        ]);
+
+        const totalValue = addTotals(baseAmountInUsd, quoteAmountInUsd);
+        const holdValue = addTotals(baseDepositInUsd, quoteDepositInUsd);
+        const roi = calculateRoi(totalValue, holdValue);
+        const apr = calculateApr(
+          totalValue,
+          addTotals(baseHistoricalInUsd, quoteHistoricalInUsd),
+          created
+        );
+
+        setTotalValue(totalValue);
+        setHoldValue(holdValue);
+        setRoi(roi);
+        setApr(apr);
+      } catch (e) {
+        const msg = `Failed to fetch values`;
+        console.error(msg, e);
+      }
+      setIsLoading(false);
+    }
+
+    fetchValues();
+  }, [
+    baseToken,
+    baseTotalBalance,
+    baseTotalDeposits,
+    batchId,
+    created,
+    networkId,
+    quoteToken,
+    quoteTotalBalance,
+    quoteTotalDeposits,
+    usdReferenceToken,
+  ]);
+
+  return { totalValue, holdValue, roi, apr, isLoading };
+}
+
+// TODO: move to utils, make it generic
+async function safeAmount(
+  ...params: Parameters<typeof amountInQuote>
+): Promise<Unpromise<ReturnType<typeof amountInQuote>> | undefined> {
+  try {
+    return await amountInQuote(...params);
+  } catch (e) {
+    console.log(`Failed to fetch amount`, e);
+    return undefined;
+  }
+}
+
+// --- Actual component ----
+
 export type Props = {
   strategy: Strategy;
 };
@@ -48,93 +249,17 @@ export const StrategyTotalValue = memo(function StrategyTotalValue(
   props: Props
 ): JSX.Element {
   const { strategy } = props;
-  const {
-    baseTokenAddress,
-    quoteTokenAddress,
-    baseTokenDetails,
-    quoteTokenDetails,
-  } = strategy;
 
-  // Fetch Total value
-  const {
-    amountInUsd: baseAmountInUsd,
-    isLoading: isBaseAmountLoading,
-  } = useAmountInUsd({
-    tokenAddress: baseTokenAddress,
-    amount: formatAmountFull({
-      amount: strategy.totalBaseBalance(),
-      precision: baseTokenDetails?.decimals || 18,
-      thousandSeparator: false,
-      isLocaleAware: false,
-    }),
-    source: "GnosisProtocol",
+  const { isLoading, totalValue, holdValue, roi, apr } = useCalculateAmounts({
+    strategy,
   });
-  const {
-    amountInUsd: quoteAmountInUsd,
-    isLoading: isQuoteAmountLoading,
-  } = useAmountInUsd({
-    tokenAddress: quoteTokenAddress,
-    amount: formatAmountFull({
-      amount: strategy.totalQuoteBalance(),
-      precision: quoteTokenDetails?.decimals || 18,
-      thousandSeparator: false,
-      isLocaleAware: false,
-    }),
-    source: "GnosisProtocol",
-  });
-
-  // Fetch Hodl value
-  const { baseTokenDeposits, quoteTokenDeposits } = strategy.totalDeposits();
-
-  const {
-    amountInUsd: baseDepositAmountInUsd,
-    isLoading: isBaseDepositAmountLoading,
-  } = useAmountInUsd({
-    tokenAddress: baseTokenAddress,
-    amount: formatAmountFull({
-      amount: baseTokenDeposits,
-      precision: baseTokenDetails?.decimals || 18,
-      thousandSeparator: false,
-      isLocaleAware: false,
-    }),
-    source: "GnosisProtocol",
-  });
-  const {
-    amountInUsd: quoteDepositAmountInUsd,
-    isLoading: isQuoteDepositAmountLoading,
-  } = useAmountInUsd({
-    tokenAddress: quoteTokenAddress,
-    amount: formatAmountFull({
-      amount: quoteTokenDeposits,
-      precision: quoteTokenDetails?.decimals || 18,
-      thousandSeparator: false,
-      isLocaleAware: false,
-    }),
-    source: "GnosisProtocol",
-  });
-
-  // TODO: calculate apy
-
-  if (
-    isBaseAmountLoading ||
-    isQuoteAmountLoading ||
-    isBaseDepositAmountLoading ||
-    isQuoteDepositAmountLoading
-  ) {
-    return <Loader size="md" />;
-  }
-
-  const totalValue = addTotals(baseAmountInUsd, quoteAmountInUsd);
-
-  const holdValue = addTotals(baseDepositAmountInUsd, quoteDepositAmountInUsd);
-
-  const roi = calculateRoi(totalValue, holdValue);
 
   return (
     <StrategyTotalValueViewer
-      totalValue={totalValue}
-      holdValue={holdValue}
-      roi={roi}
+      totalValue={{ value: totalValue, isLoading }}
+      holdValue={{ value: holdValue, isLoading }}
+      roi={{ value: roi, isLoading }}
+      apr={{ value: apr, isLoading }}
     />
   );
 });

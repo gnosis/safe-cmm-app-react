@@ -1,12 +1,14 @@
 import React, { memo } from "react";
-import Decimal from "decimal.js";
 import styled from "styled-components";
+
+import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { formatSmart } from "utils/format";
 
 import { Text } from "components/basic/display/Text";
 
 import { PercentageIndicator } from "./PercentageIndicator";
+import { LoadingValue } from "./viewer";
 
 const Wrapper = styled.div`
   display: grid;
@@ -25,31 +27,41 @@ const Wrapper = styled.div`
   }
 `;
 
-export type Props = { holdValue?: Decimal; roi?: Decimal; apy?: Decimal };
+export type Props = {
+  holdValue?: LoadingValue;
+  roi?: LoadingValue;
+  apr?: LoadingValue;
+};
 
 export const DetailsTable = memo(function DetailsTable(
   props: Props
 ): JSX.Element {
-  const { holdValue, roi, apy } = props;
+  const { holdValue, roi, apr } = props;
 
   return (
     <Wrapper>
       <Text className="title" color="textGrey" size="xs" as="span">
         HODL VALUE
       </Text>
-      <Text className="value" size="lg" as="span" strong>
-        {holdValue ? `$${formatSmart(holdValue)}` : "N/A"}
-      </Text>
+      {holdValue?.isLoading ? (
+        <Loader size="sm" />
+      ) : (
+        <Text className="value" size="lg" as="span" strong>
+          {!holdValue?.value || holdValue.value.isNaN()
+            ? "N/A"
+            : `$${formatSmart(holdValue.value)}`}
+        </Text>
+      )}
 
       <Text className="title" color="textGrey" size="xs" as="span">
         ROI
       </Text>
-      <PercentageIndicator className="value" value={roi} size="lg" />
+      <PercentageIndicator className="value" {...roi} size="lg" />
 
       <Text className="title" color="textGrey" size="xs" as="span">
-        APY
+        APR
       </Text>
-      <PercentageIndicator className="value" value={apy} size="lg" />
+      <PercentageIndicator className="value" {...apr} size="lg" />
     </Wrapper>
   );
 });
