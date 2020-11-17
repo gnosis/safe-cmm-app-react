@@ -1,11 +1,12 @@
 import Decimal from "decimal.js";
 import { useMemo, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { tokenListState, usdReferenceTokenState } from "state/selectors";
 
 import { TokenDetails } from "types";
 
 import { PriceSources, useGetPrice } from "./useGetPrice";
 import { useTokenDetails } from "./useTokenDetails";
-import { useTokenList } from "./useTokenList";
 
 type Params = {
   tokenAddress?: string;
@@ -32,13 +33,9 @@ export function useAmountInUsd(params: Params): Result {
   // to avoid fetching price when there's no amount
   const address = Number(amount) > 0 ? tokenAddress : undefined;
 
-  const {
-    tokenDetails: baseToken,
-    isLoading: isLoadingTokenDetails,
-    error: tokenDetailsError,
-  } = useTokenDetails(address);
+  const baseToken = useTokenDetails(address);
 
-  const tokenList = useTokenList();
+  const tokenList = useRecoilValue(tokenListState);
 
   // Loading USDC TokenDetails object because depending on the price source,
   // we'll need the token id on the exchange to query it
@@ -56,8 +53,8 @@ export function useAmountInUsd(params: Params): Result {
   });
 
   return {
-    isLoading: isLoadingTokenDetails || isLoadingPrice,
+    isLoading: isLoadingPrice,
     amountInUsd: address && price ? price.mul(amount) : null,
-    error: tokenDetailsError || priceError || "",
+    error: priceError || "",
   };
 }

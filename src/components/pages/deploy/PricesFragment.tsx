@@ -74,10 +74,8 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
     mutators: { setFieldValue },
   } = useForm();
 
-  const { tokenDetails: baseTokenDetails } = useTokenDetails(baseTokenAddress);
-  const { tokenDetails: quoteTokenDetails } = useTokenDetails(
-    quoteTokenAddress
-  );
+  const baseTokenDetails = useTokenDetails(baseTokenAddress);
+  const quoteTokenDetails = useTokenDetails(quoteTokenAddress);
 
   const baseTokenBalance = useTokenBalance(baseTokenAddress);
   const quoteTokenBalance = useTokenBalance(quoteTokenAddress);
