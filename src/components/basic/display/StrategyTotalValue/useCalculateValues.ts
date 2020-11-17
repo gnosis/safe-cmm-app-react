@@ -78,81 +78,82 @@ export function useCalculateValues(params: { strategy: Strategy }): Return {
 
   useEffect(() => {
     async function fetchValues(): Promise<void> {
-      setIsLoading(true);
-      try {
-        const [
-          baseAmountInUsd,
-          quoteAmountInUsd,
-          baseDepositInUsd,
-          quoteDepositInUsd,
-          baseHistoricalInUsd,
-          quoteHistoricalInUsd,
-        ] = await Promise.all([
-          safeAsyncFn(amountInQuote, undefined, {
-            source: "GnosisProtocol",
-            baseToken,
-            quoteToken: usdReferenceToken,
-            amount: baseTotalBalance,
-            networkId,
-          }),
-          safeAsyncFn(amountInQuote, undefined, {
-            source: "GnosisProtocol",
-            baseToken: quoteToken,
-            quoteToken: usdReferenceToken,
-            amount: quoteTotalBalance,
-            networkId,
-          }),
-          safeAsyncFn(amountInQuote, undefined, {
-            source: "GnosisProtocol",
-            baseToken,
-            quoteToken: usdReferenceToken,
-            amount: baseTotalDeposits,
-            networkId,
-          }),
-          safeAsyncFn(amountInQuote, undefined, {
-            source: "GnosisProtocol",
-            baseToken: quoteToken,
-            quoteToken: usdReferenceToken,
-            amount: quoteTotalDeposits,
-            networkId,
-          }),
-          safeAsyncFn(amountInQuote, undefined, {
-            source: "GnosisProtocol",
-            baseToken,
-            quoteToken: usdReferenceToken,
-            amount: baseTotalDeposits,
-            networkId,
-            sourceOptions: { batchId },
-            cacheTime: 0, // Cache historical prices forever, they won't change
-          }),
-          safeAsyncFn(amountInQuote, undefined, {
-            source: "GnosisProtocol",
-            baseToken: quoteToken,
-            quoteToken: usdReferenceToken,
-            amount: quoteTotalDeposits,
-            networkId,
-            sourceOptions: { batchId },
-            cacheTime: 0,
-          }),
-        ]);
-
-        const totalValue = safeAddDecimals(baseAmountInUsd, quoteAmountInUsd);
-        const holdValue = safeAddDecimals(baseDepositInUsd, quoteDepositInUsd);
-        const roi = calculateRoi(totalValue, holdValue);
-        const apr = calculateApr(
-          totalValue,
-          safeAddDecimals(baseHistoricalInUsd, quoteHistoricalInUsd),
-          created
-        );
-
-        setTotalValue(totalValue);
-        setHoldValue(holdValue);
-        setRoi(roi);
-        setApr(apr);
-      } catch (e) {
-        const msg = `Failed to fetch values`;
-        console.error(msg, e);
+      if (!baseToken || !quoteToken) {
+        return;
       }
+
+      setIsLoading(true);
+
+      const [
+        baseAmountInUsd,
+        quoteAmountInUsd,
+        baseDepositInUsd,
+        quoteDepositInUsd,
+        baseHistoricalInUsd,
+        quoteHistoricalInUsd,
+      ] = await Promise.all([
+        safeAsyncFn(amountInQuote, undefined, {
+          source: "GnosisProtocol",
+          baseToken,
+          quoteToken: usdReferenceToken,
+          amount: baseTotalBalance,
+          networkId,
+        }),
+        safeAsyncFn(amountInQuote, undefined, {
+          source: "GnosisProtocol",
+          baseToken: quoteToken,
+          quoteToken: usdReferenceToken,
+          amount: quoteTotalBalance,
+          networkId,
+        }),
+        safeAsyncFn(amountInQuote, undefined, {
+          source: "GnosisProtocol",
+          baseToken,
+          quoteToken: usdReferenceToken,
+          amount: baseTotalDeposits,
+          networkId,
+        }),
+        safeAsyncFn(amountInQuote, undefined, {
+          source: "GnosisProtocol",
+          baseToken: quoteToken,
+          quoteToken: usdReferenceToken,
+          amount: quoteTotalDeposits,
+          networkId,
+        }),
+        safeAsyncFn(amountInQuote, undefined, {
+          source: "GnosisProtocol",
+          baseToken,
+          quoteToken: usdReferenceToken,
+          amount: baseTotalDeposits,
+          networkId,
+          sourceOptions: { batchId },
+          cacheTime: 0, // Cache historical prices forever, they won't change
+        }),
+        safeAsyncFn(amountInQuote, undefined, {
+          source: "GnosisProtocol",
+          baseToken: quoteToken,
+          quoteToken: usdReferenceToken,
+          amount: quoteTotalDeposits,
+          networkId,
+          sourceOptions: { batchId },
+          cacheTime: 0,
+        }),
+      ]);
+
+      const totalValue = safeAddDecimals(baseAmountInUsd, quoteAmountInUsd);
+      const holdValue = safeAddDecimals(baseDepositInUsd, quoteDepositInUsd);
+      const roi = calculateRoi(totalValue, holdValue);
+      const apr = calculateApr(
+        totalValue,
+        safeAddDecimals(baseHistoricalInUsd, quoteHistoricalInUsd),
+        created
+      );
+
+      setTotalValue(totalValue);
+      setHoldValue(holdValue);
+      setRoi(roi);
+      setApr(apr);
+
       setIsLoading(false);
     }
 
