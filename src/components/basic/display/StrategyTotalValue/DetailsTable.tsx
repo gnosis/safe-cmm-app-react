@@ -6,6 +6,7 @@ import { Loader } from "@gnosis.pm/safe-react-components";
 import { formatSmart } from "utils/format";
 
 import { Text } from "components/basic/display/Text";
+import { TextWithTooltip } from "components/basic/display/TextWithTooltip";
 
 import { PercentageIndicator } from "./PercentageIndicator";
 import { LoadingValue } from "./viewer";
@@ -27,6 +28,13 @@ const Wrapper = styled.div`
   }
 `;
 
+const HOLD_VALUE_TOOLTIP =
+  "Approximate value the initial investment is worth today in USD";
+const ROI_VALUE_TOOLTIP =
+  "Percentual difference between the strategy current approximate value in USD and the Hold value in USD";
+const APR_VALUE_TOOLTIP =
+  "Annualized percentual difference between the approximate initial investment in USD (at investment date) and the approximate current strategy value in USD";
+
 export type Props = {
   holdValue?: LoadingValue;
   roi?: LoadingValue;
@@ -40,9 +48,14 @@ export const DetailsTable = memo(function DetailsTable(
 
   return (
     <Wrapper>
-      <Text className="title" color="textGrey" size="xs" as="span">
-        HODL VALUE
-      </Text>
+      <TextWithTooltip
+        className="title"
+        color="textGrey"
+        size="xs"
+        tooltip={HOLD_VALUE_TOOLTIP}
+      >
+        HOLD VALUE
+      </TextWithTooltip>
       {holdValue?.isLoading ? (
         <Loader size="sm" />
       ) : (
@@ -53,14 +66,24 @@ export const DetailsTable = memo(function DetailsTable(
         </Text>
       )}
 
-      <Text className="title" color="textGrey" size="xs" as="span">
+      <TextWithTooltip
+        className="title"
+        color="textGrey"
+        size="xs"
+        tooltip={ROI_VALUE_TOOLTIP}
+      >
         ROI
-      </Text>
+      </TextWithTooltip>
       <PercentageIndicator className="value" {...roi} size="lg" />
 
-      <Text className="title" color="textGrey" size="xs" as="span">
+      <TextWithTooltip
+        className="title"
+        color="textGrey"
+        size="xs"
+        tooltip={APR_VALUE_TOOLTIP}
+      >
         APR
-      </Text>
+      </TextWithTooltip>
       <PercentageIndicator className="value" {...apr} size="lg" />
     </Wrapper>
   );
