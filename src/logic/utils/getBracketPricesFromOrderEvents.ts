@@ -15,7 +15,6 @@ export const getBracketPricesFromOrderEvents = (
   const [baseToken, quoteToken] = tokenIdsOrNull;
 
   const bracketPrices = [];
-
   bracketOrderEvents.forEach((bracketOrder) => {
     if (bracketOrder.buyToken === baseToken) {
       bracketPrices.push(

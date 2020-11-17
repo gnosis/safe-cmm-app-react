@@ -44,4 +44,5 @@ export interface StrategyState {
   baseBalance: Decimal;
   quoteBalance: Decimal;
   brackets: Bracket[];
+  nonce?: number;
 }

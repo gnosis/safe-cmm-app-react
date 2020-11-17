@@ -1,10 +1,12 @@
 import { BaseStrategy } from "logic/IStrategy";
 import { SafeStrategy } from "logic/SafeStrategy";
+import { FakeStateManager } from "mock/stateManager";
 
 import safeTxData from "./safeTx.json";
 
 test("creates instance from valid tx log", () => {
-  const instance = new SafeStrategy(safeTxData);
+  const stateManager = new FakeStateManager();
+  const instance = new SafeStrategy(safeTxData, stateManager.makeUpdater());
 
   expect(instance).toBeInstanceOf(BaseStrategy);
 

@@ -64,7 +64,7 @@ export const StrategyLoader = (): JSX.Element => {
 
         // Kick-off Async tasks
         return Promise.all(
-          [...eventStrategies, ...safeStrategies].map(async (strategy) => {
+          [...safeStrategies, ...eventStrategies].map(async (strategy) => {
             // Testing, just fire off one async task
             // console.log(eventStrategies[0])
             // const strategy = eventStrategies[0];

@@ -14,17 +14,13 @@ export const getPriceRangeFromPrices = (
   const firstPrice = bracketPrices[0];
   const lastPrice = bracketPrices[bracketPrices.length - 1];
 
-  const lower = firstPrice.div(
-    new Decimal(
-      Math.pow(10, quoteTokenDetails.decimals - baseTokenDetails.decimals)
-    )
+  const decimalPlaces = Math.pow(
+    10,
+    quoteTokenDetails.decimals - baseTokenDetails.decimals
   );
 
-  const upper = lastPrice.div(
-    new Decimal(
-      Math.pow(10, quoteTokenDetails.decimals - baseTokenDetails.decimals)
-    )
-  );
+  const lower = firstPrice.div(new Decimal(decimalPlaces));
+  const upper = lastPrice.div(new Decimal(decimalPlaces));
 
   return {
     lower,

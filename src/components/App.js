@@ -11,7 +11,7 @@ import { ContractInteractionProvider } from "components/context/ContractInteract
 import { StrategyLoader } from "components/StrategyLoader";
 
 import GlobalStyle from "./GlobalStyle";
-import TabView from "./TabView";
+import { TabView } from "./TabView";
 import { ThemeProvider as StyledComponentThemeProvider } from "styled-components";
 
 const App = () => {

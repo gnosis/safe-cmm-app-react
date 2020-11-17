@@ -4,6 +4,7 @@ import {
 } from "components/context/ContractInteractionProvider";
 import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
 import { fromPairs } from "lodash";
+import { TokenDetails } from "types";
 const defaultSafeInfo = {
   safeAddress: "0x123456",
 } as SafeInfo;
@@ -27,6 +28,8 @@ export class ContractContextMock implements ContractInteractionContextProps {
   status: StatusEnum = "SUCCESS";
   safeInfo: SafeInfo = defaultSafeInfo;
 
+  web3Instance: Record<string, any>;
+
   // contractName: {
   //   contractAddress: {
   //      myMethodName(number, mumber): value
@@ -47,6 +50,21 @@ export class ContractContextMock implements ContractInteractionContextProps {
     if (contractMockSettings.status) this.status = contractMockSettings.status;
     if (contractMockSettings.safeInfo)
       this.safeInfo = contractMockSettings.safeInfo;
+
+    const eth: Record<string, any> = {
+      getBlock: this.getBlock,
+    };
+
+    this.web3Instance = {
+      eth,
+    };
+  }
+
+  getBlock(blockHashOrBlockNumber: string | number): Record<string, any> {
+    return {
+      number: 123,
+      timestamp: Math.round(new Date("01/01/2020 12:00:00").valueOf() / 1000), // Timestamp returned in seconds
+    };
   }
 
   mockContractMethodReturn(
@@ -67,11 +85,29 @@ export class ContractContextMock implements ContractInteractionContextProps {
       this.contractMethodMocks[contractName][contractAddress] = {};
     }
 
+    let method = (...params) => {
+      console.log(`${methodName} called with ${params.join(", ")}`);
+      return {
+        call: () => returnValues,
+        send: () => returnValues,
+      };
+    };
+
+    if (typeof returnValues === "function") {
+      method = (...params) => {
+        console.log(`${methodName} called with ${params.join(", ")}`);
+        return {
+          call: () => returnValues(...params),
+          send: () => returnValues(...params),
+        };
+      };
+    }
+
     this.contractMethodMocks[contractName][contractAddress][
       methodName
-    ] = returnValues;
+    ] = method;
   }
-  
+
   hasMockContractMethodReturn(
     contractName: string,
     methodName: string,
@@ -216,5 +252,17 @@ export class ContractContextMock implements ContractInteractionContextProps {
 
   getDeployed(contractName: string): Promise<any> {
     return this.getContract(contractName, "DEPLOYED");
+  }
+
+  getErc20Details(tokenAddress: string): Promise<TokenDetails> {
+    const returnValue: TokenDetails = {
+      symbol: "TEST",
+      name: "Test Token",
+      decimals: 18,
+      address: tokenAddress,
+      onGP: true,
+    };
+
+    return Promise.resolve(returnValue);
   }
 }

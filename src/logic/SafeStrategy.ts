@@ -14,6 +14,7 @@ import { filter } from "lodash";
 import BN from "bn.js";
 import Decimal from "decimal.js";
 import { getTokenDetailsById } from "./utils/getTokenDetailsById";
+import { getPriceRangeFromPrices } from "./utils/getPriceRangeFromPrices";
 
 const logger = getLogger("safe-strategy");
 
@@ -69,6 +70,7 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
       created: this.created,
       // Strategies found from Safe Tx are always pending transactions
       status: "PENDING",
+      nonce: this.nonce,
     });
 
     this.methodCalls = flattenMultiSend(pendingTransactionLog.dataDecoded);
@@ -80,7 +82,10 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
     const transfers = filter(this.methodCalls, { method: "transfer" });
     transfers.forEach((transferCall) => {
       const bracketAddress = transferCall.params.to;
-      const tokenAddress = transferCall.target; // This is delegateCall to a token, so the target is the token address
+
+      // This is from a delegateCall to a token "transfer" method
+      // so the target is the token address
+      const tokenAddress = transferCall.target;
 
       if (!tokenFundingPerBracket[bracketAddress]) {
         tokenFundingPerBracket[bracketAddress] = {};
@@ -115,8 +120,9 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
 
     placeOrders.forEach((placeOrderCall) => {
       const buyToken = placeOrderCall.params.buyToken;
-      const sellAmount = placeOrderCall.params.value || "0";
-      const buyAmount = placeOrderCall.params.value || "0";
+
+      const sellAmount = placeOrderCall.params.sellAmount || "0";
+      const buyAmount = placeOrderCall.params.buyAmount || "0";
 
       if (buyToken === this.baseTokenId) {
         prices.push(new Decimal(buyAmount).div(sellAmount));
@@ -128,6 +134,12 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
         sumQuoteFunding.iadd(new BN(buyAmount));
       }
     });
+
+    prices.sort((a: Decimal, b: Decimal): number => {
+      if (a.eq(b)) return 0;
+      return a.gt(b) ? 1 : -1;
+    });
+    this.prices = prices;
 
     const batchExchangeContract = await context.getDeployed("BatchExchange");
     const [baseTokenDetails, quoteTokenDetails] = await Promise.all([
@@ -173,11 +185,15 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
     this.brackets = Object.keys(tokenFundingPerBracket).map(
       (bracketAddress: string): Bracket => {
         const bracketBaseFundingWei =
-          bracketFundingByToken[this.baseTokenDetails.address][bracketAddress];
+          bracketFundingByToken[this.baseTokenDetails.address]?.[
+            bracketAddress
+          ] || new BN(0);
         totalBaseFundingWei.iadd(bracketBaseFundingWei);
 
         const bracketQuoteFundingWei =
-          bracketFundingByToken[this.quoteTokenDetails.address][bracketAddress];
+          bracketFundingByToken[this.quoteTokenDetails.address]?.[
+            bracketAddress
+          ] || new BN(0);
         totalQuoteFundingWei.iadd(bracketQuoteFundingWei);
 
         return {
@@ -193,14 +209,31 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
       }
     );
 
+    const priceRange = getPriceRangeFromPrices(
+      this.prices,
+      this.baseTokenDetails,
+      this.quoteTokenDetails
+    );
+
+    this.setState({
+      brackets: this.brackets,
+      baseToken: this.baseTokenDetails,
+      quoteToken: this.quoteTokenDetails,
+      priceRange,
+    });
+
     return null;
   }
 
   async readBalances(context: ContractInteractionContextProps): Promise<void> {
+    // No balances in pending tx
+    // no action necessary here
     return null;
   }
 
   async readStatus(context: ContractInteractionContextProps): Promise<void> {
+    // Safe strategies are always pending tx, is set in constructor
+    // no action necessary here
     return null;
   }
 }

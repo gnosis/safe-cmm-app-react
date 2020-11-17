@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, memo, useMemo, useState } from "react";
 import { Tab } from "@gnosis.pm/safe-react-components";
 
 import { TabHeaderWithCounter } from "components/navigation/tabs/TabHeaderWithCounter";
@@ -9,27 +9,14 @@ import Deploy from "routes/Deploy";
 import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
-import { totalStrategyCount } from "state/selectors/strategyCounter";
-
-const TAB_MENU_ENTRIES = [
-  {
-    id: "deployment",
-    label: "Deploy",
-    component: Deploy,
-  },
-  {
-    id: "strategies",
-    label: "Strategies",
-    component: Strategies,
-  },
-];
-
-const TAB_ENTRIES_BY_ID = {};
-TAB_MENU_ENTRIES.forEach((entry) => (TAB_ENTRIES_BY_ID[entry.id] = entry));
+import {
+  strategyCountByStatus,
+  totalStrategyCount,
+} from "state/selectors/strategyCounter";
 
 const DEFAULT_TAB = "deployment";
 
-const TabView = () => {
+export const TabView = memo(function TabView(): JSX.Element {
   const history = useHistory();
 
   const strategyCount = useRecoilValue(totalStrategyCount);
@@ -43,20 +30,38 @@ const TabView = () => {
     [history, setSelectedTab]
   );
 
-  const tabEntries = useMemo(() => {
-    const newEntries = [...TAB_MENU_ENTRIES];
-    newEntries[1].label = (
-      <TabHeaderWithCounter count={strategyCount}>
-        Strategies
-      </TabHeaderWithCounter>
-    );
-    return newEntries;
-  }, [strategyCount]);
+  // Booleans for notification dot
+  const hasTradingStopped =
+    useRecoilValue(strategyCountByStatus("TRADING_STOPPED")) > 0;
+
+  const tabs = useMemo(
+    () => [
+      {
+        id: "deployment",
+        label: "Deploy",
+        component: Deploy,
+      },
+      {
+        id: "strategies",
+        label: "Strategies",
+        customContent: (
+          <TabHeaderWithCounter
+            count={strategyCount}
+            hasDot={hasTradingStopped}
+          >
+            Strategies
+          </TabHeaderWithCounter>
+        ),
+        component: Strategies,
+      },
+    ],
+    [strategyCount, hasTradingStopped]
+  );
 
   return (
     <>
       <Tab
-        items={tabEntries}
+        items={tabs}
         selectedTab={selectedTab}
         onChange={handleChangeTab}
         variant="outlined"
@@ -68,6 +73,6 @@ const TabView = () => {
       </Switch>
     </>
   );
-};
+});
 
 export default TabView;

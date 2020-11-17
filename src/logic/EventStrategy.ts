@@ -209,6 +209,15 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
     // Update brackets to include funding of both base and quote (rarely applicable that it contains both)
     this.brackets = this.brackets.map(
       (bracket: Bracket): Bracket => {
+        if (!bracketFunding[bracket.address]) {
+          // No funding event found for the bracket, could be because of incomplete or invalid transaction
+          return {
+            ...bracket,
+            fundingBase: new Decimal(0),
+            fundingQuote: new Decimal(0),
+          };
+        }
+
         const [fundingBase, fundingQuote] = bracketFunding[bracket.address];
 
         return {
