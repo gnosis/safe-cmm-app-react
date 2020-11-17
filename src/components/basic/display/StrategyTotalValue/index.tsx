@@ -13,66 +13,12 @@ import { amountInQuote } from "api/prices";
 import { useSafeInfo } from "hooks/useSafeInfo";
 
 import { Network } from "utils/constants";
+import { addTotals, calculateApr, calculateRoi } from "utils/calculations";
 import { safeAsyncFn } from "utils/misc";
 
 import { StrategyTotalValueViewer } from "./viewer";
 
 // TODO: move to utils?
-
-function addTotals(
-  baseAmount: Decimal | null,
-  quoteAmount: Decimal | null
-): Decimal | undefined {
-  if (baseAmount && quoteAmount) {
-    return baseAmount.add(quoteAmount);
-  } else if (baseAmount) {
-    return baseAmount;
-  } else if (quoteAmount) {
-    return quoteAmount;
-  } else {
-    return undefined;
-  }
-}
-
-// TODO: move to utils?
-
-function calculateRoi(
-  current: Decimal | undefined,
-  initial: Decimal | undefined
-): Decimal | undefined {
-  if (!current || !initial) {
-    return undefined;
-  }
-  const difference = current.minus(initial);
-  return difference.div(initial);
-}
-
-const MS_PER_DAY = 1000 * 60 * 60 * 24;
-
-// a and b are javascript Date objects
-function dateDiffInDays(a: Date, b: Date): number {
-  // Discard the time and time-zone information.
-  const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-  const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-
-  return Math.floor((utc2 - utc1) / MS_PER_DAY);
-}
-
-function calculateApr(
-  totalValue: Decimal | undefined,
-  initialValue: Decimal | undefined,
-  startDate: Date
-): Decimal | undefined {
-  if (!totalValue || !initialValue) {
-    return undefined;
-  }
-  const difference = totalValue.minus(initialValue);
-
-  const days = dateDiffInDays(startDate, new Date());
-  const differencePerDay = difference.div(initialValue).div(days);
-
-  return differencePerDay.mul("365");
-}
 
 type Return = {
   totalValue: Decimal | undefined;
