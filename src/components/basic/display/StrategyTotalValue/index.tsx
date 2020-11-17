@@ -6,8 +6,6 @@ import { formatAmountFull } from "@gnosis.pm/dex-js";
 
 import Strategy from "logic/strategy";
 
-import { Unpromise } from "types";
-
 import { usdReferenceTokenState } from "state/selectors";
 
 import { amountInQuote } from "api/prices";
@@ -15,6 +13,7 @@ import { amountInQuote } from "api/prices";
 import { useSafeInfo } from "hooks/useSafeInfo";
 
 import { Network } from "utils/constants";
+import { safeAsyncFn } from "utils/misc";
 
 import { StrategyTotalValueViewer } from "./viewer";
 
@@ -144,35 +143,35 @@ function useCalculateAmounts(params: { strategy: Strategy }): Return {
           baseHistoricalInUsd,
           quoteHistoricalInUsd,
         ] = await Promise.all([
-          safeAmount({
+          safeAsyncFn(amountInQuote, undefined, {
             source: "GnosisProtocol",
             baseToken,
             quoteToken: usdReferenceToken,
             amount: baseTotalBalance,
             networkId,
           }),
-          safeAmount({
+          safeAsyncFn(amountInQuote, undefined, {
             source: "GnosisProtocol",
             baseToken: quoteToken,
             quoteToken: usdReferenceToken,
             amount: quoteTotalBalance,
             networkId,
           }),
-          safeAmount({
+          safeAsyncFn(amountInQuote, undefined, {
             source: "GnosisProtocol",
             baseToken,
             quoteToken: usdReferenceToken,
             amount: baseTotalDeposits,
             networkId,
           }),
-          safeAmount({
+          safeAsyncFn(amountInQuote, undefined, {
             source: "GnosisProtocol",
             baseToken: quoteToken,
             quoteToken: usdReferenceToken,
             amount: quoteTotalDeposits,
             networkId,
           }),
-          safeAmount({
+          safeAsyncFn(amountInQuote, undefined, {
             source: "GnosisProtocol",
             baseToken,
             quoteToken: usdReferenceToken,
@@ -180,7 +179,7 @@ function useCalculateAmounts(params: { strategy: Strategy }): Return {
             networkId,
             sourceOptions: { batchId },
           }),
-          safeAmount({
+          safeAsyncFn(amountInQuote, undefined, {
             source: "GnosisProtocol",
             baseToken: quoteToken,
             quoteToken: usdReferenceToken,
@@ -225,18 +224,6 @@ function useCalculateAmounts(params: { strategy: Strategy }): Return {
   ]);
 
   return { totalValue, holdValue, roi, apr, isLoading };
-}
-
-// TODO: move to utils, make it generic
-async function safeAmount(
-  ...params: Parameters<typeof amountInQuote>
-): Promise<Unpromise<ReturnType<typeof amountInQuote>> | undefined> {
-  try {
-    return await amountInQuote(...params);
-  } catch (e) {
-    console.log(`Failed to fetch amount`, e);
-    return undefined;
-  }
 }
 
 // --- Actual component ----
