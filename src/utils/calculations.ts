@@ -2,45 +2,71 @@ import Decimal from "decimal.js";
 
 import { dateDiffInDays } from "./time";
 
-//TODO: unit tests
-
-export function addTotals(
-  baseAmount: Decimal | null,
-  quoteAmount: Decimal | null
+/**
+ * Safely adds two decimals, accounting for the case where one or both are null
+ *
+ * @param a First decimal
+ * @param b Second decimal
+ */
+export function safeAddDecimals(
+  a: Decimal | null,
+  b: Decimal | null
 ): Decimal | undefined {
-  if (baseAmount && quoteAmount) {
-    return baseAmount.add(quoteAmount);
-  } else if (baseAmount) {
-    return baseAmount;
-  } else if (quoteAmount) {
-    return quoteAmount;
+  if (a && b) {
+    return a.add(b);
+  } else if (a) {
+    return a;
+  } else if (b) {
+    return b;
   } else {
     return undefined;
   }
 }
 
+/**
+ * Calculates ROI based on difference between current|initial values.
+ * Returns undefined when any input is invalid.
+ *
+ * @param currentValue Current strategy value
+ * @param initialValue Initial Strategy value
+ */
 export function calculateRoi(
-  current: Decimal | undefined,
-  initial: Decimal | undefined
+  currentValue: Decimal | undefined,
+  initialValue: Decimal | undefined
 ): Decimal | undefined {
-  if (!current || !initial) {
+  if (!currentValue || !initialValue) {
     return undefined;
   }
-  const difference = current.minus(initial);
-  return difference.div(initial);
+  const difference = currentValue.minus(initialValue);
+  return difference.div(initialValue);
 }
 
+/**
+ * Calculates APR based on difference between current|initial values.
+ * Uses start[|end]Date to annualize the value.
+ * If no endDate is given, uses current date as endDate.
+ * Returns undefined when any input is invalid.
+ *
+ * @param currentValue Current strategy value
+ * @param initialValue Initial strategy value
+ * @param startDate Date strategy was created
+ * @param endDate Optional date strategy was stopped
+ */
 export function calculateApr(
-  totalValue: Decimal | undefined,
+  currentValue: Decimal | undefined,
   initialValue: Decimal | undefined,
-  startDate: Date
+  startDate: Date,
+  endDate?: Date
 ): Decimal | undefined {
-  if (!totalValue || !initialValue) {
+  const _endDate = endDate || new Date();
+
+  if (!currentValue || !initialValue || startDate > _endDate) {
     return undefined;
   }
-  const difference = totalValue.minus(initialValue);
 
-  const days = dateDiffInDays(startDate, new Date());
+  const difference = currentValue.minus(initialValue);
+
+  const days = dateDiffInDays(startDate, _endDate);
   const differencePerDay = difference.div(initialValue).div(days);
 
   return differencePerDay.mul("365");

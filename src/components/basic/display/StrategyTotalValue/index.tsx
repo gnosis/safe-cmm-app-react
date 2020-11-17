@@ -13,7 +13,11 @@ import { amountInQuote } from "api/prices";
 import { useSafeInfo } from "hooks/useSafeInfo";
 
 import { Network } from "utils/constants";
-import { addTotals, calculateApr, calculateRoi } from "utils/calculations";
+import {
+  safeAddDecimals,
+  calculateApr,
+  calculateRoi,
+} from "utils/calculations";
 import { safeAsyncFn } from "utils/misc";
 
 import { StrategyTotalValueViewer } from "./viewer";
@@ -135,12 +139,12 @@ function useCalculateAmounts(params: { strategy: Strategy }): Return {
           }),
         ]);
 
-        const totalValue = addTotals(baseAmountInUsd, quoteAmountInUsd);
-        const holdValue = addTotals(baseDepositInUsd, quoteDepositInUsd);
+        const totalValue = safeAddDecimals(baseAmountInUsd, quoteAmountInUsd);
+        const holdValue = safeAddDecimals(baseDepositInUsd, quoteDepositInUsd);
         const roi = calculateRoi(totalValue, holdValue);
         const apr = calculateApr(
           totalValue,
-          addTotals(baseHistoricalInUsd, quoteHistoricalInUsd),
+          safeAddDecimals(baseHistoricalInUsd, quoteHistoricalInUsd),
           created
         );
 
