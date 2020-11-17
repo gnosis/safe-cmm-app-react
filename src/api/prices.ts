@@ -121,6 +121,7 @@ async function getGnosisProtocolPrice(
 export interface GetPriceParams {
   source?: PriceSources;
   sourceOptions?: Record<string, any>;
+  cacheTime?: number;
   baseToken: TokenDetails;
   quoteToken: TokenDetails;
   networkId: number;
@@ -138,6 +139,7 @@ export async function getPrice(
     quoteToken,
     networkId,
     sourceOptions,
+    cacheTime, // By default, results are cached for PRICE_CACHE_TIME. 0 is cache forever
   } = params;
 
   // Race condition.
@@ -154,7 +156,8 @@ export async function getPrice(
     baseToken.symbol,
     quoteToken.symbol,
     networkId,
-    sourceOptions
+    sourceOptions,
+    cacheTime
   );
 
   const cacheKey = buildCacheKey(source, baseToken, quoteToken, sourceOptions);
@@ -179,7 +182,7 @@ export async function getPrice(
     }
 
     // only store on cache if not `null`
-    price && cache.set(cacheKey, price);
+    price && cache.set(cacheKey, price, cacheTime);
   } else {
     console.log(
       `cache hit for `,
@@ -187,7 +190,8 @@ export async function getPrice(
       baseToken.symbol,
       quoteToken.symbol,
       networkId,
-      sourceOptions
+      sourceOptions,
+      cacheTime
     );
   }
 
@@ -204,26 +208,13 @@ export type AmountInUsdParams = GetPriceParams & {
 export async function amountInQuote(
   params: AmountInUsdParams
 ): Promise<Decimal | null> {
-  const {
-    baseToken,
-    quoteToken,
-    networkId,
-    amount,
-    source,
-    sourceOptions,
-  } = params;
+  const { amount, ...rest } = params;
 
   if (!amount || isNaN(+amount)) {
     return null;
   }
 
-  const price = await getPrice({
-    source,
-    baseToken,
-    quoteToken,
-    networkId,
-    sourceOptions,
-  });
+  const price = await getPrice({ ...rest });
 
   if (!price) {
     return null;

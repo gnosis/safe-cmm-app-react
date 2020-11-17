@@ -123,6 +123,7 @@ export function useCalculateValues(params: { strategy: Strategy }): Return {
             amount: baseTotalDeposits,
             networkId,
             sourceOptions: { batchId },
+            cacheTime: 0, // Cache historical prices forever, they won't change
           }),
           safeAsyncFn(amountInQuote, undefined, {
             source: "GnosisProtocol",
@@ -131,6 +132,7 @@ export function useCalculateValues(params: { strategy: Strategy }): Return {
             amount: quoteTotalDeposits,
             networkId,
             sourceOptions: { batchId },
+            cacheTime: 0,
           }),
         ]);
 
