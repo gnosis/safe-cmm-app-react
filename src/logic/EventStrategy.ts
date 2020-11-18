@@ -1,5 +1,11 @@
-import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 import Decimal from "decimal.js";
+import BN from "bn.js";
+import { SetterOrUpdater } from "recoil";
+
+import { getWithdrawableAmount } from "@gnosis.pm/dex-contracts";
+import { ZERO } from "@gnosis.pm/dex-js";
+
+import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
 
 import { BaseStrategy, Bracket, IStrategy } from "./IStrategy";
 import { DepositEvent, FleetDeployEvent } from "./types";
@@ -8,15 +14,12 @@ import getLogger from "utils/logger";
 
 import makeArtifactLoader from "utils/makeFakeArtifacts";
 
-import { SetterOrUpdater, useRecoilState } from "recoil";
 import { StrategyState } from "../types";
 import { getTokenIdsFromOrderEvents } from "./utils/getTokenIdsFromOrderEvents";
 import { getBracketPricesFromOrderEvents } from "./utils/getBracketPricesFromOrderEvents";
 import { getFundingPerBracket } from "./utils/getFundingPerBracket";
 import { getTokenDetailsById } from "./utils/getTokenDetailsById";
-import BN from "bn.js";
 import { getPriceRangeFromPrices } from "./utils/getPriceRangeFromPrices";
-import { getWithdrawableAmount } from "@gnosis.pm/dex-contracts";
 
 const logger = getLogger("event strategy");
 
@@ -264,6 +267,8 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
       baseToken: this.baseTokenDetails,
       quoteToken: this.quoteTokenDetails,
       priceRange,
+      prices: bracketPrices,
+      firstBatchId: this.depositEvents[0]?.batchId,
     });
   }
 
@@ -349,8 +354,8 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
     const batchExchangeTC = artifacts.require("BatchExchange");
     const batchExchangeDeployedWithTruffle = await batchExchangeTC.deployed();
 
-    const baseBalances = {};
-    const quoteBalances = {};
+    const baseBalances: Record<string, BN> = {};
+    const quoteBalances: Record<string, BN> = {};
     await Promise.all(
       this.brackets.map(
         async (bracket: Bracket): Promise<void> => {
@@ -403,8 +408,23 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
       ).div(Math.pow(10, this.quoteTokenDetails.decimals)),
     }));
 
+    // TODO: create utils fn for BN->Decimal conversions
+    // TODO: create utils/private method for reducing balances
+    const baseBalance = new Decimal(
+      Object.values(baseBalances)
+        .reduce((acc, balance) => acc.add(balance), ZERO)
+        .toString()
+    ).div(Math.pow(10, this.baseTokenDetails.decimals));
+    const quoteBalance = new Decimal(
+      Object.values(quoteBalances)
+        .reduce((acc, balance) => acc.add(balance), ZERO)
+        .toString()
+    ).div(Math.pow(10, this.quoteTokenDetails.decimals));
+
     this.setState({
       brackets: this.brackets,
+      baseBalance,
+      quoteBalance,
     });
   }
 }

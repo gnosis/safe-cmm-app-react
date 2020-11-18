@@ -1,7 +1,8 @@
 import { useState, useContext, useEffect } from "react";
 import { TokenDetails } from "types";
 
-import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
+import { tokenDetailsState } from "state/atoms";
+import { useRecoilValue } from "recoil";
 
 interface Return {
   tokenDetails?: TokenDetails;
@@ -9,30 +10,13 @@ interface Return {
   error: string;
 }
 
-export function useTokenDetails(token?: string): Return {
-  const [tokenDetails, setTokenDetails] = useState<TokenDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+/**
+ * Syntactic sugar to get token details for given token address
+ */
+export function useTokenDetails(
+  tokenAddress?: string
+): TokenDetails | undefined {
+  const tokenDetails = useRecoilValue(tokenDetailsState);
 
-  const { getErc20Details } = useContext(ContractInteractionContext);
-
-  useEffect(() => {
-    async function fetchTokenDetails(): Promise<void> {
-      if (token) {
-        setIsLoading(true);
-        setError("");
-        try {
-          setTokenDetails(await getErc20Details(token));
-        } catch (e) {
-          const msg = `Failed to fetch token details for address ${token}`;
-          console.error(msg, e);
-          setError(msg);
-        }
-        setIsLoading(false);
-      }
-    }
-    fetchTokenDetails();
-  }, [token, getErc20Details]);
-
-  return { tokenDetails, isLoading, error };
+  return tokenDetails[tokenAddress];
 }

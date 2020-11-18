@@ -1,7 +1,12 @@
 import { atom } from "recoil";
 import BN from "bn.js";
 
-import { LoadingState, StrategyState, WithdrawState } from "../types";
+import {
+  LoadingState,
+  StrategyState,
+  TokenDetails,
+  WithdrawState,
+} from "types";
 
 export const tokenBalancesState = atom<Record<string, BN>>({
   key: "tokenBalances",
@@ -22,4 +27,9 @@ export const strategiesState = atom<Record<string, StrategyState>>({
 export const strategiesLoadingState = atom<LoadingState>({
   key: "strategiesLoadingState",
   default: "LOADING",
+});
+
+export const tokenDetailsState = atom<Record<string, TokenDetails>>({
+  key: "tokenDetails",
+  default: {},
 });
