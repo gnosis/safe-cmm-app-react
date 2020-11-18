@@ -83,11 +83,11 @@ export const ActiveTable = memo(function ActiveTable({
                 </TableCell>
                 <TableCell>{strategy.brackets.length}</TableCell>
                 <TableCell>
-                  {strategy.baseBalance.toSD(4).toString() || "-"}{" "}
+                  {strategy.baseBalance?.toSD(4).toString() || "-"}{" "}
                   {strategy.baseToken?.symbol}
                 </TableCell>
                 <TableCell>
-                  {strategy.quoteBalance.toSD(4).toString() || "-"}{" "}
+                  {strategy.quoteBalance?.toSD(4).toString() || "-"}{" "}
                   {strategy.quoteToken?.symbol}
                 </TableCell>
                 <TableCell>TODO</TableCell>
