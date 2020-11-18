@@ -57,14 +57,6 @@ export function useCalculateValues(params: {
         return;
       }
 
-      console.log(
-        `input:`,
-        baseBalance?.toFixed(),
-        quoteBalance?.toFixed(),
-        baseFunding?.toFixed(),
-        quoteFunding?.toFixed()
-      );
-
       setIsLoading(true);
 
       const [
