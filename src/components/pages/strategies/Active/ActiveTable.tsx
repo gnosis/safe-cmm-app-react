@@ -74,8 +74,6 @@ export const ActiveTable = memo(function ActiveTable({
             <TableCell>Brackets</TableCell>
             <TableCell>Token A Balance</TableCell>
             <TableCell>Token B Balance</TableCell>
-            <TableCell>ROI</TableCell>
-            <TableCell>APY</TableCell>
             <TableCell />
             {/* status */}
             <TableCell />
@@ -107,8 +105,6 @@ export const ActiveTable = memo(function ActiveTable({
                     <Loader size="sm" />
                   )}
                 </TableCell>
-                <TableCell>TODO</TableCell>
-                <TableCell>TODO</TableCell>
                 <TableCell>
                   {strategy.hasErrored ? (
                     <Text size="sm" color="warning">
