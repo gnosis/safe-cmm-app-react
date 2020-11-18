@@ -25,12 +25,6 @@ import { StrategyState } from "types";
 import { decimalFormat } from "utils/decimalFormat";
 import { Loader, Text } from "@gnosis.pm/safe-react-components";
 
-const HideableTableRow = styled(TableRow)`
-  &.hide {
-    display: none;
-  }
-`;
-
 const StyledTableHeader = styled(TableHead)`
   th {
     text-transform: uppercase;
@@ -128,18 +122,13 @@ export const ActiveTable = memo(function ActiveTable({
                   </IconButton>
                 </TableCell>
               </TableRow>
-              <HideableTableRow
-                key={`${strategy.transactionHash}-foldout`}
-                className={
-                  foldOutStrategy !== strategy.transactionHash ? "hide" : ""
-                }
-              >
-                <TableCell colSpan={9} key={strategy.transactionHash}>
-                  {foldOutStrategy === strategy.transactionHash && (
+              {foldOutStrategy === strategy.transactionHash && (
+                <TableRow key={`${strategy.transactionHash}-foldout`}>
+                  <TableCell colSpan={9} key={strategy.transactionHash}>
                     <Details strategy={strategy} />
-                  )}
-                </TableCell>
-              </HideableTableRow>
+                  </TableCell>
+                </TableRow>
+              )}
             </>
           ))}
           {loading && (
