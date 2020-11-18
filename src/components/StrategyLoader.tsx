@@ -20,7 +20,7 @@ export const StrategyLoader = (): JSX.Element => {
   const setStrategiesState = useSetRecoilState(strategiesState);
 
   const makeStrategySetter = useCallback(
-    (transactionHash: string) => (data: Partial<StrategyState>) => {
+    (transactionHash: string) => (data: Partial<StrategyState>): void => {
       setStrategiesState((strategies: Record<string, StrategyState>) => ({
         ...strategies,
         [transactionHash]: {
