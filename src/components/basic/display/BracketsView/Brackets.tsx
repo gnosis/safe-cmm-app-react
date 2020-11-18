@@ -1,4 +1,4 @@
-import React, { memo, useContext } from "react";
+import React, { memo, useCallback, useContext } from "react";
 import styled from "styled-components";
 import { range } from "lodash";
 
@@ -35,7 +35,7 @@ const Wrapper = styled.div<{ hasLeftBrackets?: boolean; isDeploy?: boolean }>`
       isDeploy
         ? ""
         : `
-          &:hover {
+          &.hover,&:hover {
             background-color: ${theme.colors.borderLightGreen};
           }`}
   }
@@ -64,7 +64,8 @@ const Wrapper = styled.div<{ hasLeftBrackets?: boolean; isDeploy?: boolean }>`
       isDeploy
         ? ""
         : `
-          &:hover {
+          
+          &.hover,&:hover {
             background-color: ${theme.colors.borderLightPurple};
           }`}
   }
@@ -75,19 +76,36 @@ const Wrapper = styled.div<{ hasLeftBrackets?: boolean; isDeploy?: boolean }>`
 `;
 
 export const Brackets = memo(function Brackets(): JSX.Element {
-  const { totalBrackets, leftBrackets, rightBrackets, type } = useContext(
-    BracketsViewContext
-  );
+  const {
+    totalBrackets,
+    leftBrackets,
+    rightBrackets,
+    type,
+    hoverId,
+    onHover,
+  } = useContext(BracketsViewContext);
+
+  const onMouseLeave = useCallback((): void => onHover && onHover(), [onHover]);
 
   return (
     <Wrapper hasLeftBrackets={!!leftBrackets} isDeploy={type === "deploy"}>
       {range(
         !leftBrackets && !rightBrackets ? totalBrackets : leftBrackets
       ).map((id) => (
-        <div className="left" key={id} />
+        <div
+          className={`left ${hoverId === id ? "hover" : ""}`}
+          key={id}
+          onMouseEnter={() => onHover && onHover(id)}
+          onMouseLeave={onMouseLeave}
+        />
       ))}
-      {range(rightBrackets).map((id) => (
-        <div className="right" key={id + leftBrackets} />
+      {range(leftBrackets, rightBrackets + leftBrackets).map((id) => (
+        <div
+          className={`right ${hoverId === id ? "hover" : ""}`}
+          key={id}
+          onMouseEnter={() => onHover && onHover(id)}
+          onMouseLeave={onMouseLeave}
+        />
       ))}
     </Wrapper>
   );

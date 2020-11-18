@@ -1,8 +1,6 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import Decimal from "decimal.js";
-
-import { formatAmountFull } from "@gnosis.pm/dex-js";
 
 import { useGetPrice } from "hooks/useGetPrice";
 
@@ -76,6 +74,10 @@ function formatBrackets(strategy: StrategyState): BracketRowData[] {
 export const StrategyTab = memo(function StrategyTab(
   props: Props
 ): JSX.Element {
+  const [hoverBracketId, setHoverBracketId] = useState<number | undefined>(
+    undefined
+  );
+
   const { strategy } = props;
   const { baseToken, quoteToken, brackets, priceRange } = strategy;
 
@@ -105,6 +107,14 @@ export const StrategyTab = memo(function StrategyTab(
     return { leftBrackets, rightBrackets };
   }, [baseTokenBrackets, strategy]);
 
+  const rightBracketsOnHover = useCallback(
+    (bracketId?: number) =>
+      setHoverBracketId(
+        bracketId !== undefined && bracketId + leftBrackets.length
+      ),
+    [leftBrackets.length]
+  );
+
   return (
     <Wrapper>
       <BracketsViewer
@@ -117,6 +127,8 @@ export const StrategyTab = memo(function StrategyTab(
         leftBrackets={baseTokenBrackets}
         rightBrackets={quoteTokenBrackets}
         startPrice={price?.isFinite() ? price.toString() : "N/A"}
+        hoverId={hoverBracketId}
+        onHover={setHoverBracketId}
       />
       <Grid>
         <BracketsTable
@@ -124,6 +136,8 @@ export const StrategyTab = memo(function StrategyTab(
           quoteTokenAddress={quoteToken.address}
           type="left"
           brackets={leftBrackets}
+          hoverId={hoverBracketId}
+          onHover={setHoverBracketId}
         />
         <StrategyTotalValue strategy={strategy} />
         <BracketsTable
@@ -131,6 +145,10 @@ export const StrategyTab = memo(function StrategyTab(
           quoteTokenAddress={quoteToken.address}
           type="right"
           brackets={rightBrackets}
+          hoverId={
+            hoverBracketId !== undefined && hoverBracketId - leftBrackets.length
+          }
+          onHover={rightBracketsOnHover}
         />
       </Grid>
     </Wrapper>
