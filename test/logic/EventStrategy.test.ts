@@ -3,7 +3,6 @@ import { BaseStrategy } from "logic/IStrategy";
 import { FleetDeployEvent } from "logic/types";
 import { ContractContextMock } from "mock/contractInteractionContextMock";
 import { FakeStateManager } from "mock/stateManager";
-import { StrategyState } from "types";
 
 const fakeFleetEvent = {
   transactionHash: "0xdeadbeef",
