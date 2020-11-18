@@ -90,7 +90,7 @@ export const TotalBrackets = (props: Props): JSX.Element => {
           </TextWithTooltip>
         }
       />
-      <SubtextAmount subtext="Total investment:" amount={amount} />
+      <SubtextAmount subtext="Total funding:" amount={amount} />
     </Wrapper>
   );
 };

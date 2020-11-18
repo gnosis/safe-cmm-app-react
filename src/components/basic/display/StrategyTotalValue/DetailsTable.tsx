@@ -29,11 +29,11 @@ const Wrapper = styled.div`
 `;
 
 const HOLD_VALUE_TOOLTIP =
-  "Approximate value the initial investment is worth today in USD";
+  "Approximate value the initial funding is worth today in USD";
 const ROI_VALUE_TOOLTIP =
   "Percentual difference between the strategy current approximate value in USD and the Hold value in USD";
 const APR_VALUE_TOOLTIP =
-  "Annualized percentual difference between the approximate initial investment in USD (at investment date) and the approximate current strategy value in USD";
+  "Annualized percentual difference between the approximate initial funding in USD (at funding date) and the approximate current strategy value in USD";
 
 export type Props = {
   holdValue?: LoadingValue;
