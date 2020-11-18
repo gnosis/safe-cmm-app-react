@@ -20,10 +20,12 @@ const CenteredBox = styled(Box)`
 
 import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
-import { Details } from "./Details";
+
 import { StrategyState } from "types";
 import { decimalFormat } from "utils/decimalFormat";
 import { Loader, Text } from "@gnosis.pm/safe-react-components";
+
+import { Details } from "./Details";
 
 const StyledTableHeader = styled(TableHead)`
   th {

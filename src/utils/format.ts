@@ -15,10 +15,15 @@ import { TEN_DECIMAL } from "utils/constants";
  * @param precision Precision to down shift the amount. When not given,
  *  assumes values already at the correct precision.
  */
-export function formatSmart(amount: Decimal | string, precision = 0): string {
+export function formatSmart(
+  amount?: Decimal | string,
+  precision = 0
+): string | null {
   let amountDecimal: Decimal;
 
-  if (typeof amount === "string") {
+  if (amount === undefined) {
+    return null;
+  } else if (typeof amount === "string") {
     amountDecimal = new Decimal(amount);
   } else {
     amountDecimal = amount;
