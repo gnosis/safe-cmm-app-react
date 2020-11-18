@@ -83,7 +83,11 @@ export const ActiveTable = memo(function ActiveTable({
         <TableBody>
           {strategies.map((strategy) => (
             <>
-              <TableRow key={strategy.transactionHash}>
+              <TableRow
+                key={strategy.transactionHash}
+                hover
+                onClick={makeStrategyFoldoutHandler(strategy)}
+              >
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
                   {strategy.quoteToken && strategy.baseToken
