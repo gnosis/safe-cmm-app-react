@@ -65,10 +65,6 @@ export const StrategyLoader = (): JSX.Element => {
         // Kick-off Async tasks
         return Promise.all(
           [...safeStrategies, ...eventStrategies].map(async (strategy) => {
-            // Testing, just fire off one async task
-            // console.log(eventStrategies[0])
-            // const strategy = eventStrategies[0];
-            //console.log(`Load async ${strategy.transactionHash}`);
 
             try {
               await strategy.readFunding(context);
