@@ -14,10 +14,10 @@ const Template: Story<Props> = (props) => (
 );
 
 const defaultData: Props = {
-  totalValue: new Decimal("1055987"),
-  holdValue: new Decimal("1055000"),
-  roi: new Decimal("0.0134"),
-  apy: new Decimal("-0.0003"),
+  totalValue: { value: new Decimal("1055987"), isLoading: false },
+  holdValue: { value: new Decimal("1055000"), isLoading: false },
+  roi: { value: new Decimal("0.0134"), isLoading: false },
+  apr: { value: new Decimal("-0.0003"), isLoading: false },
 };
 
 export const Default = Template.bind({});
