@@ -5,17 +5,21 @@ import Decimal from "decimal.js";
 
 import { setFieldData } from "utils/finalForm";
 import {
+  Network,
   ONE_HUNDRED_DECIMAL,
   START_PRICE_WARNING_THRESHOLD_PERCENTAGE,
 } from "utils/constants";
 
 import { useGetPrice } from "hooks/useGetPrice";
 import { useTokenDetails } from "hooks/useTokenDetails";
+import { useAmountInUsd } from "hooks/useAmountInUsd";
+import { useSafeInfo } from "hooks/useSafeInfo";
 
 import { ValidationError } from "validators/types";
 
 import { warningsAtom } from "./atoms";
 import { DeployFormValues } from "./types";
+import { getBracketValue } from "./DeployForm";
 
 const TOTAL_BRACKETS_WARNING = {
   label: "Strategy with only one bracket",
@@ -87,6 +91,38 @@ function useIsStartPriceOutOfThreshold(
     : 0;
 }
 
+type UseFundingOutOfThresholdParams = {
+  fundingAmount?: string;
+  brackets?: number;
+  tokenAddress?: string;
+  threshold: number;
+};
+
+function useFundingOutOfThreshold(
+  params: UseFundingOutOfThresholdParams
+): boolean {
+  const { fundingAmount, brackets, tokenAddress, threshold } = params;
+
+  const { amountInUsd } = useAmountInUsd({
+    tokenAddress,
+    amount: fundingAmount,
+  });
+
+  const { network } = useSafeInfo();
+
+  if (
+    !fundingAmount ||
+    isNaN(+fundingAmount) ||
+    !brackets ||
+    !amountInUsd ||
+    Network[network] === Network.xdai
+  ) {
+    return false;
+  }
+
+  return !amountInUsd.div(brackets).gte(threshold);
+}
+
 export type Props = {
   mutators: { setFieldData: typeof setFieldData };
   values: DeployFormValues;
@@ -94,12 +130,24 @@ export type Props = {
 
 export const Warnings = memo(function Warnings(): JSX.Element {
   const setWarnings = useSetRecoilState(warningsAtom);
-  const { values } = useFormState({ subscription: { values: true } });
+  const { values } = useFormState<DeployFormValues>({
+    subscription: { values: true },
+  });
   const {
     mutators: { setFieldData },
   } = useForm();
 
-  const { baseTokenAddress, quoteTokenAddress, startPrice } = values;
+  const {
+    baseTokenAddress,
+    quoteTokenAddress,
+    startPrice,
+    baseTokenAmount,
+    quoteTokenAmount,
+    calculatedBrackets,
+  } = values;
+
+  const baseBrackets = getBracketValue(calculatedBrackets, "base");
+  const quoteBrackets = getBracketValue(calculatedBrackets, "quote");
 
   const startPriceOutOfThreshold = useIsStartPriceOutOfThreshold({
     baseTokenAddress,
@@ -107,13 +155,23 @@ export const Warnings = memo(function Warnings(): JSX.Element {
     startPrice,
     threshold: START_PRICE_WARNING_THRESHOLD_PERCENTAGE,
   });
-
-  const totalBracketsHasWarning = +values.totalBrackets === 1;
-  // TODO: implement
-  const baseTokenAmountHasWarning = false;
-  const quoteTokenAmountHasWarning = false;
   const startPriceHasWarning =
     startPriceOutOfThreshold > 0 || startPriceOutOfThreshold < 0;
+
+  const totalBracketsHasWarning = +values.totalBrackets === 1;
+
+  const baseTokenAmountHasWarning = useFundingOutOfThreshold({
+    fundingAmount: baseTokenAmount,
+    brackets: baseBrackets,
+    tokenAddress: baseTokenAddress,
+    threshold: 5000,
+  });
+  const quoteTokenAmountHasWarning = useFundingOutOfThreshold({
+    fundingAmount: quoteTokenAmount,
+    brackets: quoteBrackets,
+    tokenAddress: quoteTokenAddress,
+    threshold: 5000,
+  });
 
   // Split warnings into two parts, because we can't access field data state on the form
 
