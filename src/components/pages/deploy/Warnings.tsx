@@ -4,7 +4,10 @@ import { useForm, useFormState } from "react-final-form";
 import Decimal from "decimal.js";
 
 import { setFieldData } from "utils/finalForm";
-import { ONE_HUNDRED_DECIMAL } from "utils/constants";
+import {
+  ONE_HUNDRED_DECIMAL,
+  START_PRICE_WARNING_THRESHOLD_PERCENTAGE,
+} from "utils/constants";
 
 import { useGetPrice } from "hooks/useGetPrice";
 import { useTokenDetails } from "hooks/useTokenDetails";
@@ -102,7 +105,7 @@ export const Warnings = memo(function Warnings(): JSX.Element {
     baseTokenAddress,
     quoteTokenAddress,
     startPrice,
-    threshold: 2,
+    threshold: START_PRICE_WARNING_THRESHOLD_PERCENTAGE,
   });
 
   const totalBracketsHasWarning = +values.totalBrackets === 1;
