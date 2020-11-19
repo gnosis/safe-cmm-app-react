@@ -6,6 +6,7 @@ import Decimal from "decimal.js";
 import { setFieldData } from "utils/finalForm";
 import {
   Network,
+  FUNDING_PER_BRACKET_WARNING_THRESHOLD,
   ONE_HUNDRED_DECIMAL,
   START_PRICE_WARNING_THRESHOLD_PERCENTAGE,
 } from "utils/constants";
@@ -164,13 +165,13 @@ export const Warnings = memo(function Warnings(): JSX.Element {
     fundingAmount: baseTokenAmount,
     brackets: baseBrackets,
     tokenAddress: baseTokenAddress,
-    threshold: 5000,
+    threshold: FUNDING_PER_BRACKET_WARNING_THRESHOLD,
   });
   const quoteTokenAmountHasWarning = useFundingOutOfThreshold({
     fundingAmount: quoteTokenAmount,
     brackets: quoteBrackets,
     tokenAddress: quoteTokenAddress,
-    threshold: 5000,
+    threshold: FUNDING_PER_BRACKET_WARNING_THRESHOLD,
   });
 
   // Split warnings into two parts, because we can't access field data state on the form
