@@ -27,6 +27,7 @@ interface ContractMockSettings {
 export class ContractContextMock implements ContractInteractionContextProps {
   status: StatusEnum = "SUCCESS";
   safeInfo: SafeInfo = defaultSafeInfo;
+  tokenListLoaded: true;
 
   web3Instance: Record<string, any>;
 

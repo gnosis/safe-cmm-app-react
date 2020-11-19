@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 
 import { SafeInfo, SdkInstance } from "@gnosis.pm/safe-apps-sdk";
 import fromPairs from "lodash/fromPairs";
@@ -21,7 +21,7 @@ import { getImageUrl } from "utils/misc";
 
 import { getTokenAddressesForNetwork } from "api/tokenAddresses";
 import { getBalances } from "api/safe";
-import { tokenBalancesState } from "state/atoms";
+import { tokenBalancesState, tokenDetailsState } from "state/atoms";
 
 const logger = getLogger("contract-interaction-provider");
 
@@ -29,6 +29,7 @@ export type StatusEnum = "LOADING" | "SUCCESS" | "ERROR" | "NOT_IN_IFRAME";
 
 export interface ContractInteractionContextProps {
   status: StatusEnum;
+  tokenListLoaded: boolean;
   sdkInstance?: SdkInstance;
   web3Instance?: any;
   safeInfo?: SafeInfo;
@@ -37,6 +38,7 @@ export interface ContractInteractionContextProps {
   getContract?: (contractName: string, address: string) => Promise<any>; // TODO: Typing for web3.eth.Contract
   getDeployed?: (contractName: string) => Promise<any>; // TODO: Typing for web3.eth.Contract
   getErc20Details?: (tokenAddress: string) => Promise<TokenDetails>;
+  fetchTokenBalance?: (tokenAddress: string) => Promise<BN>;
 }
 
 export interface Props {
@@ -47,6 +49,7 @@ export const ContractInteractionContext = createContext<
   ContractInteractionContextProps
 >({
   status: "LOADING",
+  tokenListLoaded: false,
   sdkInstance: null,
   web3Instance: null,
 });
@@ -65,15 +68,14 @@ export const ContractInteractionProvider = ({
   children,
 }: Props): JSX.Element => {
   const [status, setStatus] = useState<StatusEnum>("LOADING");
+  const [tokenListLoaded, setTokenListLoaded] = useState(false);
   const [web3Instance, setWeb3Instance] = useState<any>(null);
   const [sdkInstance, setSdkInstance] = useState<SdkInstance>(null);
   const [safeInfo, setSafeInfo] = useState<SafeInfo>(null);
 
   const setTokenBalances = useSetRecoilState(tokenBalancesState);
 
-  const [erc20Cache, setErc20Cache] = useState<Record<string, TokenDetails>>(
-    {}
-  );
+  const [tokenDetails, setTokenDetails] = useRecoilState(tokenDetailsState);
 
   const handleInitSdk = useCallback(async (): Promise<SafeInfo> => {
     const newInstance = await initSdk();
@@ -287,16 +289,16 @@ export const ContractInteractionProvider = ({
    */
   const handleGetErc20FromCache = useCallback(
     async (address): Promise<TokenDetails> => {
-      if (erc20Cache[address]) {
-        return erc20Cache[address];
+      if (tokenDetails[address]) {
+        return tokenDetails[address];
       }
       const details = await handleGetErc20Details(address);
 
-      setErc20Cache((cache) => ({ ...cache, [address]: details }));
+      setTokenDetails((cache) => ({ ...cache, [address]: details }));
 
       return details;
     },
-    [erc20Cache, handleGetErc20Details]
+    [handleGetErc20Details, setTokenDetails, tokenDetails]
   );
 
   useEffect(() => {
@@ -399,7 +401,7 @@ export const ContractInteractionProvider = ({
         }
       });
 
-      setErc20Cache(
+      setTokenDetails(
         erc20Details.reduce((acc, tokenDetails) => {
           if (!tokenDetails.onGP) {
             // exclude tokens from hardcoded list that have not been added to GP contract
@@ -414,6 +416,7 @@ export const ContractInteractionProvider = ({
           };
         }, safeTokens)
       );
+      setTokenListLoaded(true);
     }
 
     loadErc20Details();
@@ -423,45 +426,27 @@ export const ContractInteractionProvider = ({
     web3Instance,
     safeInfo,
     setTokenBalances,
+    setTokenDetails,
   ]);
 
-  const handleUpdateBalances = useCallback(async () => {
-    if (!safeInfo?.safeAddress) {
-      return;
-    }
-
-    logger.log("---> Updating balances");
-
-    const updatedBalances = await Promise.all(
-      Object.keys(erc20Cache).map(async (address: string): Promise<
-        [string, BN]
-      > => {
-        const contract = await handleGetContract("ERC20Detailed", address);
-        const balance = await contract.methods
-          .balanceOf(safeInfo.safeAddress)
-          .call();
-
-        return [address, new BN(balance)];
-      }, {})
-    );
-
-    setTokenBalances((oldBalances) => ({
-      ...oldBalances,
-      ...fromPairs(updatedBalances),
-    }));
-  }, [erc20Cache, handleGetContract, safeInfo, setTokenBalances]);
-
-  useEffect(() => {
-    // Poor's man background token balance updates
-    // TODO: do it once a new block in mined instead, this is not nice.
-    const interval = setInterval(handleUpdateBalances, 30000);
-
-    return () => clearInterval(interval);
-  }, [handleUpdateBalances]);
+  const fetchTokenBalance = useCallback(
+    async (address: string): Promise<BN | null> => {
+      if (!safeInfo?.safeAddress) {
+        return null;
+      }
+      const contract = await handleGetContract("ERC20Detailed", address);
+      const balance = await contract.methods
+        .balanceOf(safeInfo.safeAddress)
+        .call();
+      return new BN(balance);
+    },
+    [handleGetContract, safeInfo]
+  );
 
   const contextValue = useMemo(
     (): ContractInteractionContextProps => ({
       status,
+      tokenListLoaded,
       web3Instance,
       sdkInstance,
       safeInfo,
@@ -470,9 +455,11 @@ export const ContractInteractionProvider = ({
       getDeployed: handleGetDeployed,
       getContract: handleGetContract,
       getErc20Details: handleGetErc20FromCache,
+      fetchTokenBalance,
     }),
     [
       status,
+      tokenListLoaded,
       web3Instance,
       sdkInstance,
       safeInfo,
@@ -481,6 +468,7 @@ export const ContractInteractionProvider = ({
       handleGetDeployed,
       handleGetContract,
       handleGetErc20FromCache,
+      fetchTokenBalance,
     ]
   );
 

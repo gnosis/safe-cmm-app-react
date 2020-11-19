@@ -17,25 +17,37 @@ const newColors = {
   borderDarkGreen: "#009cb4",
   borderLightPurple: "rgba(128, 94, 255, 0.2)",
   borderDarkPurple: "#805eff",
+
+  // text
+  textGrey: "#5D6D74",
+
+  // roi/apy
+  roiApyPositive: "#008D73",
+  roiApyNegative: "#F42117",
 };
 
-const xsTextSize = {
+const newTextSizes = {
   xs: {
     fontSize: "10px",
     lineHeight: "14px",
+  },
+  xxl: {
+    fontSize: "26px",
+    lineHeight: "36px",
   },
 };
 
 export interface Theme extends themeType {
   colors: colorsType & typeof newColors;
-  text: textType & { size: typeof xsTextSize };
+  text: textType & { size: typeof newTextSizes };
 }
 
 export const theme: Theme = {
   ...srcTheme,
   colors: { ...srcTheme.colors, ...newColors },
-  text: { ...srcTheme.text, size: { ...srcTheme.text.size, ...xsTextSize } },
+  text: { ...srcTheme.text, size: { ...srcTheme.text.size, ...newTextSizes } },
 };
 
 export type ThemeTextSize = keyof typeof theme["text"]["size"];
+export type ThemeLoaderSize = keyof typeof theme["loader"]["size"];
 export type ThemeColors = keyof typeof theme["colors"];

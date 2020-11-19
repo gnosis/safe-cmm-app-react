@@ -220,6 +220,7 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
       baseToken: this.baseTokenDetails,
       quoteToken: this.quoteTokenDetails,
       priceRange,
+      prices: this.prices,
     });
 
     return null;
