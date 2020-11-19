@@ -197,10 +197,10 @@ export const DeployForm = memo(function DeployForm({
       mutators={{ setFieldData, setFieldValue, swapTokens }}
       decorators={[calculateFieldsDecorator]}
       validate={validate}
-      render={({ handleSubmit, form }) => (
+      render={({ handleSubmit }) => (
         <form onSubmit={handleSubmit}>
           {children}
-          <Warnings mutators={form.mutators} />
+          <Warnings />
         </form>
       )}
     />
