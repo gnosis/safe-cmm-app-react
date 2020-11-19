@@ -2,6 +2,7 @@ import React, { memo, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import { useForm, useFormState } from "react-final-form";
 import Decimal from "decimal.js";
+import { capitalize } from "lodash";
 
 import { setFieldData } from "utils/finalForm";
 import {
@@ -40,6 +41,19 @@ function buildStartPriceWarning(threshold?: number): ValidationError {
   const label = `Detected: Start price >2% ${direction} than market price`;
   const children = `The specified Start Price is at least 2% ${direction} than the current indicated market price. If intentional continue with your strategy.`;
   return { label, children };
+}
+
+function buildPriceWarning(type: "lowest" | "highest"): ValidationError {
+  const isLowest = type === "lowest";
+
+  return {
+    label: "Strategy with only one token funded",
+    children: `Your specified ${capitalize(type)} Price is close to or ${
+      isLowest ? "above" : "below"
+    } your Start Price. This will create a strategy where only funding can be provided for the ${capitalize(
+      type
+    )} Price (Token ${isLowest ? "A" : "B"}).`,
+  };
 }
 
 type UseIsStartPriceOutOfThresholdParams = {
@@ -174,6 +188,9 @@ export const Warnings = memo(function Warnings(): JSX.Element {
     threshold: FUNDING_PER_BRACKET_WARNING_THRESHOLD,
   });
 
+  const lowestPriceHasWarning = quoteBrackets === 0 && baseBrackets !== 0;
+  const highestPriceHasWarning = baseBrackets === 0 && quoteBrackets !== 0;
+
   // Split warnings into two parts, because we can't access field data state on the form
 
   // 1. This part tells the field it has a warning
@@ -182,6 +199,8 @@ export const Warnings = memo(function Warnings(): JSX.Element {
     setFieldData("baseTokenAmount", { warn: baseTokenAmountHasWarning });
     setFieldData("quoteTokenAmount", { warn: quoteTokenAmountHasWarning });
     setFieldData("startPrice", { warn: startPriceHasWarning });
+    setFieldData("lowestPrice", { warn: lowestPriceHasWarning });
+    setFieldData("highestPrice", { warn: highestPriceHasWarning });
 
     // 2. This part aggregates all the warning messages to display them at the end of the form.
     // Since we can't easily access the field `data` state, we are using an external source
@@ -194,8 +213,10 @@ export const Warnings = memo(function Warnings(): JSX.Element {
       startPrice:
         startPriceHasWarning &&
         buildStartPriceWarning(startPriceOutOfThreshold),
+      lowestPrice: lowestPriceHasWarning && buildPriceWarning("lowest"),
+      highestPrice: highestPriceHasWarning && buildPriceWarning("highest"),
     }));
-  }, [baseTokenAmountHasWarning, quoteTokenAmountHasWarning, setFieldData, setWarnings, startPriceHasWarning, startPriceOutOfThreshold, totalBracketsHasWarning]);
+  }, [baseTokenAmountHasWarning, highestPriceHasWarning, lowestPriceHasWarning, quoteTokenAmountHasWarning, setFieldData, setWarnings, startPriceHasWarning, startPriceOutOfThreshold, totalBracketsHasWarning]);
 
   // Nothing to render here, we just wanna update the form state.
   // TODO: maybe this should be moved to <ErrorMessagesFragment/>?
