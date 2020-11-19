@@ -125,11 +125,11 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
       const buyAmount = placeOrderCall.params.buyAmount || "0";
 
       if (buyToken === this.baseTokenId) {
-        prices.push(new Decimal(buyAmount).div(sellAmount));
+        prices.push(new Decimal(sellAmount).div(new Decimal(buyAmount)));
         sumBaseFunding.iadd(new BN(buyAmount));
         sumQuoteFunding.iadd(new BN(sellAmount));
       } else {
-        prices.push(new Decimal(sellAmount).div(buyAmount));
+        prices.push(new Decimal(buyAmount).div(new Decimal(sellAmount)));
         sumBaseFunding.iadd(new BN(sellAmount));
         sumQuoteFunding.iadd(new BN(buyAmount));
       }
@@ -139,6 +139,7 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
       if (a.eq(b)) return 0;
       return a.gt(b) ? 1 : -1;
     });
+
     this.prices = prices;
 
     const batchExchangeContract = await context.getDeployed("BatchExchange");
@@ -221,6 +222,10 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
       quoteToken: this.quoteTokenDetails,
       priceRange,
       prices: this.prices,
+      // This method fetches everything anyway
+      hasFetchedBalance: true,
+      hasFetchedFunding: true,
+      hasFetchedStatus: true,
     });
 
     return null;

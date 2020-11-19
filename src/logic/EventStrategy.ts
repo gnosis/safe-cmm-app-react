@@ -268,6 +268,7 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
       quoteToken: this.quoteTokenDetails,
       priceRange,
       prices: bracketPrices,
+      hasFetchedFunding: true,
       firstBatchId: this.depositEvents[0]?.batchId,
     });
   }
@@ -337,7 +338,7 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
     }
     console.log(this);
 
-    this.setState({ status });
+    this.setState({ status, hasFetchedStatus: true });
     return null;
   }
 
@@ -425,6 +426,7 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
       brackets: this.brackets,
       baseBalance,
       quoteBalance,
+      hasFetchedBalance: true,
     });
   }
 }

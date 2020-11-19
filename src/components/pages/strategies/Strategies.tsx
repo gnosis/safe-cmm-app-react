@@ -4,8 +4,8 @@ import { Tabs, TabConfiguration } from "components/navigation/tabs/Tabs";
 
 import { Active } from "./Active";
 import { Pending } from "./Pending";
+import { Closed } from "./Closed";
 
-import Closed from "routes/Strategies/Deactivated";
 import { useRecoilValue } from "recoil";
 import { strategyCountByStatus } from "state/selectors/strategyCounter";
 

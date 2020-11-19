@@ -12,18 +12,19 @@ import {
   Box,
 } from "@material-ui/core";
 
+import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
+import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
+//import { Details } from "./Details";
+import { StrategyState } from "types";
+import { SafeStrategy } from "logic/SafeStrategy";
+import { Loader } from "@gnosis.pm/safe-react-components";
+import { decimalFormat } from "utils/decimalFormat";
+
 const CenteredBox = styled(Box)`
   display: flex;
   justify-content: center;
   align-items: center;
 `;
-
-import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
-import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
-import { Details } from "./Details";
-import { StrategyState } from "types";
-import { decimalFormat } from "utils/decimalFormat";
-import { Loader, Text } from "@gnosis.pm/safe-react-components";
 
 const HideableTableRow = styled(TableRow)`
   &.hide {
@@ -47,7 +48,7 @@ export interface Props {
   loading: boolean;
 }
 
-export const ActiveTable = memo(function ActiveTable({
+export const ClosedTable = memo(function ClosedTable({
   strategies,
   loading,
 }: Props): JSX.Element {
@@ -69,13 +70,10 @@ export const ActiveTable = memo(function ActiveTable({
       <Table>
         <StyledTableHeader>
           <TableRow>
-            <TableCell>Deployed</TableCell>
+            <TableCell>Created</TableCell>
             <TableCell>Token Pair</TableCell>
             <TableCell>Brackets</TableCell>
-            <TableCell>Token A Balance</TableCell>
-            <TableCell>Token B Balance</TableCell>
-            <TableCell>ROI</TableCell>
-            <TableCell>APY</TableCell>
+            <TableCell>Total Value Claimable</TableCell>
             <TableCell />
             {/* status */}
             <TableCell />
@@ -92,32 +90,15 @@ export const ActiveTable = memo(function ActiveTable({
                     ? `${strategy.quoteToken?.symbol} - ${strategy.baseToken?.symbol}`
                     : "Unknown"}
                 </TableCell>
-                <TableCell>{strategy.brackets.length}</TableCell>
                 <TableCell>
-                  {strategy.hasFetchedBalance ? (
-                    decimalFormat(strategy.baseBalance, strategy.baseToken)
-                  ) : (
-                    <Loader size="sm" />
-                  )}
-                </TableCell>
-                <TableCell>
-                  {strategy.hasFetchedBalance ? (
-                    decimalFormat(strategy.quoteBalance, strategy.quoteToken)
+                  {strategy.brackets ? (
+                    strategy.brackets.length
                   ) : (
                     <Loader size="sm" />
                   )}
                 </TableCell>
                 <TableCell>TODO</TableCell>
-                <TableCell>TODO</TableCell>
-                <TableCell>
-                  {strategy.hasErrored ? (
-                    <Text size="sm" color="warning">
-                      Failed to load strategy
-                    </Text>
-                  ) : (
-                    ""
-                  )}
-                </TableCell>
+                <TableCell>{/* status message */}</TableCell>
                 <TableCell>
                   <IconButton onClick={makeStrategyFoldoutHandler(strategy)}>
                     {strategy.transactionHash === foldOutStrategy ? (
@@ -134,17 +115,15 @@ export const ActiveTable = memo(function ActiveTable({
                   foldOutStrategy !== strategy.transactionHash ? "hide" : ""
                 }
               >
-                <TableCell colSpan={9} key={strategy.transactionHash}>
-                  {foldOutStrategy === strategy.transactionHash && (
-                    <Details strategy={strategy} />
-                  )}
+                <TableCell colSpan={6} key={strategy.transactionHash}>
+                  <span>TODO</span>
                 </TableCell>
               </HideableTableRow>
             </>
           ))}
           {loading && (
             <TableRow key="loading">
-              <TableCell colSpan={9}>
+              <TableCell colSpan={6}>
                 <CenteredBox>
                   <Loader size="sm" />
                 </CenteredBox>

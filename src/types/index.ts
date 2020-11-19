@@ -49,6 +49,12 @@ export interface StrategyState {
   quoteBalance: Decimal;
   brackets: Bracket[];
   nonce?: number;
+
+  hasErrored: boolean;
+
+  hasFetchedBalance: boolean;
+  hasFetchedStatus: boolean;
+  hasFetchedFunding: boolean;
 }
 
 export type Unpromise<T> = T extends Promise<infer U> ? U : T;

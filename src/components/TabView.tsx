@@ -1,8 +1,6 @@
 import React, { useCallback, memo, useMemo, useState } from "react";
 import { Tab } from "@gnosis.pm/safe-react-components";
 
-import { TabHeaderWithCounter } from "components/navigation/tabs/TabHeaderWithCounter";
-
 import Strategies from "routes/Strategies";
 import Deploy from "routes/Deploy";
 
@@ -13,6 +11,8 @@ import {
   strategyCountByStatus,
   totalStrategyCount,
 } from "state/selectors/strategyCounter";
+import { SafeStyleTabHeaderWithCounter } from "./navigation/tabs/SafeStyleTabHeaderWithCounter";
+import { Badge } from "./basic/display/Badge";
 
 const DEFAULT_TAB = "deployment";
 
@@ -45,12 +45,12 @@ export const TabView = memo(function TabView(): JSX.Element {
         id: "strategies",
         label: "Strategies",
         customContent: (
-          <TabHeaderWithCounter
+          <SafeStyleTabHeaderWithCounter
             count={strategyCount}
             hasDot={hasTradingStopped}
           >
             Strategies
-          </TabHeaderWithCounter>
+          </SafeStyleTabHeaderWithCounter>
         ),
         component: Strategies,
       },

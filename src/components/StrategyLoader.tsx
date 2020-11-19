@@ -4,20 +4,15 @@ import { EventStrategy } from "logic/EventStrategy";
 import { SafeStrategy } from "logic/SafeStrategy";
 import { useCallback, useContext, useEffect } from "react";
 import { useSetRecoilState } from "recoil";
-import { strategiesState } from "state/atoms";
+import { strategiesLoadingState, strategiesState } from "state/atoms";
 import { StrategyState } from "types";
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 type StatusEnum = "LOADING" | "ERROR" | "SUCCESS";
 
-interface StrategiesContextProps {
-  status: StatusEnum;
-  strategiesByStatus: Record<string, Array<EventStrategy | SafeStrategy>>;
-  strategies: Array<EventStrategy | SafeStrategy>;
-}
-
 export const StrategyLoader = (): JSX.Element => {
   const setStrategiesState = useSetRecoilState(strategiesState);
+  const setStrategiesLoadingState = useSetRecoilState(strategiesLoadingState);
 
   const makeStrategySetter = useCallback(
     (transactionHash: string) => (data: Partial<StrategyState>): void => {
@@ -65,15 +60,23 @@ export const StrategyLoader = (): JSX.Element => {
         // Kick-off Async tasks
         return Promise.all(
           [...safeStrategies, ...eventStrategies].map(async (strategy) => {
-
             try {
               await strategy.readFunding(context);
               await strategy.readStatus(context);
               await strategy.readBalances(context);
             } catch (err) {
+              setStrategiesState((values) => ({
+                ...values,
+                [strategy.transactionHash]: {
+                  ...values[strategy.transactionHash],
+                  hasErrored: true,
+                },
+              }));
+
               console.error(
                 `Strategy failed to load ${strategy.transactionHash}: ${err.message}`
               );
+
               console.error(err);
             }
             //console.log(`Async load ${strategy.transactionHash} finished`);
@@ -82,7 +85,11 @@ export const StrategyLoader = (): JSX.Element => {
 
         console.log(eventStrategies);
       })
+      .then(() => {
+        setStrategiesLoadingState("SUCCESS");
+      })
       .catch((err) => {
+        setStrategiesLoadingState("ERROR");
         console.error("Strategies could not be loaded", err);
       });
     // eslint-disable-next-line

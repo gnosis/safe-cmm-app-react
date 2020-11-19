@@ -25,5 +25,10 @@ export const Active = memo(function Active(): JSX.Element {
     return <Box>Sorry, something went wrong.</Box>;
   }
 
-  return <ActiveTable strategies={strategies} />;
+  return (
+    <ActiveTable
+      strategies={strategies}
+      loading={strategyLoadingState === "LOADING"}
+    />
+  );
 });
