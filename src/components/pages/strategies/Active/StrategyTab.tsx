@@ -4,7 +4,7 @@ import Decimal from "decimal.js";
 
 import { useGetPrice } from "hooks/useGetPrice";
 
-import { ZERO_DECIMAL } from "utils/constants";
+import { ZERO_DECIMAL, TEN_DECIMAL } from "utils/constants";
 import { calculateBracketsFromMarketPrice } from "utils/calculateBrackets";
 
 import { StrategyState } from "types";
@@ -27,9 +27,6 @@ const Grid = styled.div`
   grid-template-columns: repeat(3, 1fr);
   align-items: baseline;
 `;
-
-// TODO: move to constants
-const TEN_DECIMAL = new Decimal("10");
 
 // TODO: move to utils
 function calculatePriceFromPartial(
@@ -74,18 +71,28 @@ function formatBrackets(strategy: StrategyState): BracketRowData[] {
 export const StrategyTab = memo(function StrategyTab(
   props: Props
 ): JSX.Element {
-  const [hoverBracketId, setHoverBracketId] = useState<number | undefined>(
-    undefined
-  );
-
   const { strategy } = props;
-  const { baseToken, quoteToken, brackets, priceRange } = strategy;
+  const { baseToken, quoteToken } = strategy;
 
   const { price } = useGetPrice({
     source: "GnosisProtocol",
     baseToken,
     quoteToken,
   });
+
+  // Split component in 2 to avoid re-fetching the price when hovering over brackets
+  return <StrategyTabView price={price} {...props} />;
+});
+
+const StrategyTabView = memo(function StrategyTabView(
+  props: Props & { price?: Decimal | null }
+): JSX.Element {
+  const [hoverBracketId, setHoverBracketId] = useState<number | undefined>(
+    undefined
+  );
+
+  const { strategy, price } = props;
+  const { baseToken, quoteToken, brackets, priceRange } = strategy;
 
   const { baseTokenBrackets, quoteTokenBrackets } = useMemo(
     () =>
