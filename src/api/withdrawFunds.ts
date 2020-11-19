@@ -13,10 +13,8 @@ import { getWithdrawableAmount } from "@gnosis.pm/dex-contracts";
 
 import getLogger from "utils/logger";
 
-import Strategy from "logic/strategy";
-
 import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
-import { TokenDetails } from "types";
+import { StrategyState, TokenDetails } from "types";
 
 const logger = getLogger("withdraw");
 
@@ -39,7 +37,7 @@ type AmountFunction = (
 
 export async function buildWithdrawRequestTxs(
   context: ContractInteractionContextProps,
-  strategy: Strategy
+  strategy: StrategyState
 ): Promise<Transaction[]> {
   const {
     safeInfo: { network },
@@ -65,7 +63,7 @@ export async function buildWithdrawRequestTxs(
 
 export async function buildWithdrawClaimTxs(
   context: ContractInteractionContextProps,
-  strategy: Strategy
+  strategy: StrategyState
 ): Promise<Transaction[]> {
   const withdrawals = await buildWithdrawals(
     context,
@@ -88,7 +86,7 @@ export async function buildWithdrawClaimTxs(
 
 async function buildWithdrawals(
   context: ContractInteractionContextProps,
-  strategy: Strategy,
+  strategy: StrategyState,
   amountFunction: AmountFunction,
   type: "request" | "claim"
 ): Promise<Withdrawal[]> {
@@ -108,8 +106,8 @@ async function buildWithdrawals(
     amountFunction,
     undefined,
     strategy.brackets.map((bracket) => bracket.address),
-    [strategy.baseTokenAddress, strategy.quoteTokenAddress],
-    [strategy.baseTokenId, strategy.quoteTokenId],
+    [strategy.baseToken.address, strategy.quoteToken.address],
+    [strategy.baseToken.id, strategy.quoteToken.id],
     true
   );
 

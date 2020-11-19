@@ -1,12 +1,12 @@
 import React, { memo } from "react";
 
-import Strategy from "logic/strategy";
+import { StrategyState } from "types";
 
 import { StrategyTotalValueViewer } from "./viewer";
 import { useCalculateValues } from "./useCalculateValues";
 
 export type Props = {
-  strategy: Strategy;
+  strategy: StrategyState;
 };
 
 export const StrategyTotalValue = memo(function StrategyTotalValue(

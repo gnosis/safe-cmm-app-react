@@ -7,7 +7,7 @@ import { Button, Loader } from "@gnosis.pm/safe-react-components";
 
 import { withdrawStatesState } from "state/atoms";
 
-import { WithdrawState } from "types";
+import { StrategyState, WithdrawState } from "types";
 
 import {
   buildWithdrawClaimTxs,
@@ -21,10 +21,8 @@ import {
   ContractInteractionContextProps,
 } from "components/context/ContractInteractionProvider";
 
-import Strategy from "logic/strategy";
-
 export type Props = {
-  strategy: Strategy;
+  strategy: StrategyState;
 };
 
 type ButtonStatus =
@@ -38,7 +36,7 @@ const withdrawFactory = (
   context: ContractInteractionContextProps,
   setWithdrawStates: SetterOrUpdater<Record<string, WithdrawState>>,
   setButtonState: React.Dispatch<React.SetStateAction<ButtonStatus>>,
-  strategy: Strategy,
+  strategy: StrategyState,
   type: "request" | "claim"
 ) => async (): Promise<void> => {
   setWithdrawStates((states) => ({
@@ -84,11 +82,11 @@ const withdrawFactory = (
 export function WithdrawButton(props: Props): React.ReactElement {
   const { strategy } = props;
   // don't think this is being updated. maybe we need to get rid of the memo
-  const { lastWithdrawRequestEvent, lastWithdrawClaimEvent } = strategy;
+  const { status, withdrawRequestDate } = strategy;
 
   const context = useContext(ContractInteractionContext);
 
-  const [status, setStatus] = useState<ButtonStatus>("unknown");
+  const [btnStatus, setStatus] = useState<ButtonStatus>("unknown");
 
   const [withdrawStates, setWithdrawStates] = useRecoilState(
     withdrawStatesState
@@ -97,8 +95,8 @@ export function WithdrawButton(props: Props): React.ReactElement {
   const [countdown, setCountdown] = useState("");
 
   const updateTimer = useCallback((): void => {
-    if (!lastWithdrawRequestEvent) {
-      if (status !== "wait_tx_execution") {
+    if (status) {
+      if (btnStatus !== "wait_tx_execution") {
         // Update state only if not just sent a tx.
         // Otherwise user will be able to send another tx right away.
         setStatus("request_ready");
@@ -107,11 +105,11 @@ export function WithdrawButton(props: Props): React.ReactElement {
     }
 
     const timeSinceWithdrawRequestBlock = moment.duration(
-      moment(lastWithdrawRequestEvent.created).add(5, "minutes").diff(moment())
+      moment(withdrawRequestDate).add(5, "minutes").diff(moment())
     );
 
     if (timeSinceWithdrawRequestBlock.as("seconds") < 0) {
-      if (status !== "wait_tx_execution") {
+      if (btnStatus !== "wait_tx_execution") {
         // Update state only if not just sent a tx.
         // Otherwise user will be able to send another tx right away.
         setStatus("claim_ready");
@@ -128,11 +126,11 @@ export function WithdrawButton(props: Props): React.ReactElement {
           .padStart(2, "0")}`
       );
     }
-  }, [lastWithdrawRequestEvent, status]);
+  }, [status, btnStatus]);
 
   useInterval(updateTimer, 1000);
 
-  if (lastWithdrawRequestEvent && lastWithdrawClaimEvent) {
+  if (status !== "ACTIVE" && status !== "TRADING_STOPPED") {
     // Existing claim event means the market was closed.
     // TODO: Move this to a status variable with more thorough checks for actual "deactivated" markets
     return null;
@@ -152,7 +150,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
     );
   }
 
-  if (status === "unknown") {
+  if (btnStatus === "unknown") {
     // Status not yet known, timer didn't run yet, show loader with no action on click
     return (
       <Button size="md" color="primary" variant="contained" disabled>
@@ -161,7 +159,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
     );
   }
 
-  if (status === "wait_tx_execution") {
+  if (btnStatus === "wait_tx_execution") {
     // Request/Claim created, pending safe execution
     return (
       <Button size="md" color="primary" variant="contained" disabled>
@@ -170,7 +168,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
     );
   }
 
-  if (status === "wait_claim") {
+  if (btnStatus === "wait_claim") {
     // Waiting the 5min period to claim the withdraw
     return (
       <Button size="md" color="primary" variant="contained" disabled>
@@ -179,7 +177,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
     );
   }
 
-  if (status === "claim_ready") {
+  if (btnStatus === "claim_ready") {
     // Withdraw can now be claimed
     return (
       <Button
@@ -199,7 +197,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
     );
   }
 
-  if (status === "request_ready") {
+  if (btnStatus === "request_ready") {
     // No withdraw event found, can be requested
     return (
       <Button

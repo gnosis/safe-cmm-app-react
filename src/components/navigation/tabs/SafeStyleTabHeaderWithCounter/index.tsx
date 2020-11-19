@@ -1,21 +1,9 @@
-import React, { memo, useCallback } from "react";
-
+import React, { useCallback } from "react";
 import styled from "styled-components";
 
+import { theme } from "theme";
 import { ButtonLink } from "@gnosis.pm/safe-react-components";
 import { Badge } from "components/basic/display/Badge";
-
-interface TabHeaderButtonProps {
-  active?: boolean;
-}
-
-const TabHeaderButton = styled(ButtonLink)<TabHeaderButtonProps>`
-  text-decoration: none;
-
-  .button-text {
-    font-weight: ${({ active }) => (active ? 600 : 400)};
-  }
-`;
 
 export interface Props {
   children?: React.ReactNode;
@@ -30,7 +18,22 @@ export interface Props {
   inactiveTextColor?: string;
 }
 
-export const TabHeaderWithCounter = memo(function TabHeader({
+interface TabHeaderButtonProps {
+  active?: boolean;
+}
+
+const TabHeaderButton = styled(ButtonLink)<TabHeaderButtonProps>`
+  text-decoration: none;
+
+  .button-text {
+    font-weight: ${({ active }) => (active ? 600 : 400)};
+    text-transform: uppercase;
+    font-family: ${theme.fonts.fontFamily};
+    font-size: 11px;
+  }
+`;
+
+export const SafeStyleTabHeaderWithCounter = ({
   children,
   active,
   name,
@@ -41,7 +44,7 @@ export const TabHeaderWithCounter = memo(function TabHeader({
   inactiveBgColor,
   activeTextColor,
   inactiveTextColor,
-}: Props): JSX.Element {
+}: Props): JSX.Element => {
   const handleClick = useCallback(() => {
     if (onClick) onClick(name);
   }, [onClick, name]);
@@ -64,4 +67,4 @@ export const TabHeaderWithCounter = memo(function TabHeader({
       </Badge>
     </TabHeaderButton>
   );
-});
+};

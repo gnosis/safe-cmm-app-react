@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import Decimal from "decimal.js";
 
-import { formatAmountFull } from "@gnosis.pm/dex-js";
-
-import Strategy from "logic/strategy";
+import { StrategyState } from "types";
 
 import { usdReferenceTokenState } from "state/selectors";
 
@@ -28,49 +26,26 @@ type Return = {
   isLoading: boolean;
 };
 
-export function useCalculateValues(params: { strategy: Strategy }): Return {
+export function useCalculateValues(params: {
+  strategy: StrategyState;
+}): Return {
   const { strategy } = params;
   const {
-    baseTokenDetails: baseToken,
-    quoteTokenDetails: quoteToken,
-    brackets,
+    baseToken,
+    quoteToken,
+    baseBalance,
+    quoteBalance,
+    baseFunding,
+    quoteFunding,
     created,
+    firstBatchId: batchId,
   } = strategy;
-  const batchId = brackets[0]?.deposits[0]?.batchId;
 
   const [isLoading, setIsLoading] = useState(false);
   const [totalValue, setTotalValue] = useState<Decimal | undefined>(undefined);
   const [holdValue, setHoldValue] = useState<Decimal | undefined>(undefined);
   const [roi, setRoi] = useState<Decimal | undefined>(undefined);
   const [apr, setApr] = useState<Decimal | undefined>(undefined);
-
-  const baseTotalBalance = formatAmountFull({
-    amount: strategy.totalBaseBalance(),
-    precision: baseToken?.decimals || 18,
-    thousandSeparator: false,
-    isLocaleAware: false,
-  });
-  const quoteTotalBalance = formatAmountFull({
-    amount: strategy.totalQuoteBalance(),
-    precision: quoteToken?.decimals || 18,
-    thousandSeparator: false,
-    isLocaleAware: false,
-  });
-
-  const { baseTokenDeposits, quoteTokenDeposits } = strategy.totalDeposits();
-
-  const baseTotalDeposits = formatAmountFull({
-    amount: baseTokenDeposits,
-    precision: baseToken?.decimals || 18,
-    thousandSeparator: false,
-    isLocaleAware: false,
-  });
-  const quoteTotalDeposits = formatAmountFull({
-    amount: quoteTokenDeposits,
-    precision: quoteToken?.decimals || 18,
-    thousandSeparator: false,
-    isLocaleAware: false,
-  });
 
   const usdReferenceToken = useRecoilValue(usdReferenceTokenState);
   const { network } = useSafeInfo();
@@ -96,35 +71,35 @@ export function useCalculateValues(params: { strategy: Strategy }): Return {
           source: "GnosisProtocol",
           baseToken,
           quoteToken: usdReferenceToken,
-          amount: baseTotalBalance,
+          amount: baseBalance?.toFixed(),
           networkId,
         }),
         safeAsyncFn(amountInQuote, undefined, {
           source: "GnosisProtocol",
           baseToken: quoteToken,
           quoteToken: usdReferenceToken,
-          amount: quoteTotalBalance,
+          amount: quoteBalance?.toFixed(),
           networkId,
         }),
         safeAsyncFn(amountInQuote, undefined, {
           source: "GnosisProtocol",
           baseToken,
           quoteToken: usdReferenceToken,
-          amount: baseTotalDeposits,
+          amount: baseFunding?.toFixed(),
           networkId,
         }),
         safeAsyncFn(amountInQuote, undefined, {
           source: "GnosisProtocol",
           baseToken: quoteToken,
           quoteToken: usdReferenceToken,
-          amount: quoteTotalDeposits,
+          amount: quoteFunding?.toFixed(),
           networkId,
         }),
         safeAsyncFn(amountInQuote, undefined, {
           source: "GnosisProtocol",
           baseToken,
           quoteToken: usdReferenceToken,
-          amount: baseTotalDeposits,
+          amount: baseFunding?.toFixed(),
           networkId,
           sourceOptions: { batchId },
           cacheTime: 0, // Cache historical prices forever, they won't change
@@ -133,7 +108,7 @@ export function useCalculateValues(params: { strategy: Strategy }): Return {
           source: "GnosisProtocol",
           baseToken: quoteToken,
           quoteToken: usdReferenceToken,
-          amount: quoteTotalDeposits,
+          amount: quoteFunding?.toFixed(),
           networkId,
           sourceOptions: { batchId },
           cacheTime: 0,
@@ -160,14 +135,14 @@ export function useCalculateValues(params: { strategy: Strategy }): Return {
     fetchValues();
   }, [
     baseToken,
-    baseTotalBalance,
-    baseTotalDeposits,
+    baseBalance,
+    baseFunding,
     batchId,
     created,
     networkId,
     quoteToken,
-    quoteTotalBalance,
-    quoteTotalDeposits,
+    quoteBalance,
+    quoteFunding,
     usdReferenceToken,
   ]);
 

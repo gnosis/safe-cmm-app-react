@@ -9,7 +9,7 @@ import { useGetPrice } from "hooks/useGetPrice";
 import { ZERO_DECIMAL } from "utils/constants";
 import { calculateBracketsFromMarketPrice } from "utils/calculateBrackets";
 
-import Strategy from "logic/strategy";
+import { StrategyState } from "types";
 
 import { BracketsViewer } from "components/basic/display/BracketsView";
 import {
@@ -19,7 +19,7 @@ import {
 import { StrategyTotalValue } from "components/basic/display/StrategyTotalValue";
 
 export type Props = {
-  strategy: Strategy;
+  strategy: StrategyState;
 };
 
 const Wrapper = styled.div``;
@@ -42,23 +42,22 @@ function calculatePriceFromPartial(
   return price.mul(TEN_DECIMAL.pow(denominatorDecimals - numeratorDecimals));
 }
 
-function formatBrackets(strategy: Strategy): BracketRowData[] {
+function formatBrackets(strategy: StrategyState): BracketRowData[] {
   // Edge case when strategy was not properly deployed
   // Most likely the first strategies deployed during development
-  if (!strategy.baseTokenDetails || !strategy.quoteTokenDetails) {
+  if (!strategy.baseToken || !strategy.quoteToken) {
     return [];
   }
 
   const {
-    baseTokenDetails: { decimals: baseTokenDecimals },
-    quoteTokenDetails: { decimals: quoteTokenDecimals },
+    baseToken: { decimals: baseTokenDecimals },
+    quoteToken: { decimals: quoteTokenDecimals },
     brackets,
     prices,
-    tokenBaseBalances,
-    tokenQuoteBalances,
   } = strategy;
 
   return brackets.map((bracket, index) => ({
+    // TODO: maybe formatting no longer needed?
     lowPrice: calculatePriceFromPartial(
       prices[index * 2],
       baseTokenDecimals,
@@ -69,22 +68,8 @@ function formatBrackets(strategy: Strategy): BracketRowData[] {
       baseTokenDecimals,
       quoteTokenDecimals
     ),
-    balanceBase: new Decimal(
-      formatAmountFull({
-        amount: tokenBaseBalances[bracket.address],
-        precision: baseTokenDecimals,
-        thousandSeparator: false,
-        isLocaleAware: false,
-      })
-    ),
-    balanceQuote: new Decimal(
-      formatAmountFull({
-        amount: tokenQuoteBalances[bracket.address],
-        precision: quoteTokenDecimals,
-        thousandSeparator: false,
-        isLocaleAware: false,
-      })
-    ),
+    balanceBase: bracket.balanceBase || ZERO_DECIMAL,
+    balanceQuote: bracket.balanceQuote || ZERO_DECIMAL,
   }));
 }
 
@@ -92,19 +77,12 @@ export const StrategyTab = memo(function StrategyTab(
   props: Props
 ): JSX.Element {
   const { strategy } = props;
-  const {
-    baseTokenDetails,
-    baseTokenAddress,
-    quoteTokenDetails,
-    quoteTokenAddress,
-    brackets,
-    priceRange,
-  } = strategy;
+  const { baseToken, quoteToken, brackets, priceRange } = strategy;
 
   const { price } = useGetPrice({
     source: "GnosisProtocol",
-    baseToken: baseTokenDetails,
-    quoteToken: quoteTokenDetails,
+    baseToken,
+    quoteToken,
   });
 
   const { baseTokenBrackets, quoteTokenBrackets } = useMemo(
@@ -131,26 +109,26 @@ export const StrategyTab = memo(function StrategyTab(
     <Wrapper>
       <BracketsViewer
         type="strategy"
-        baseTokenAddress={baseTokenAddress}
-        quoteTokenAddress={quoteTokenAddress}
+        baseTokenAddress={baseToken.address}
+        quoteTokenAddress={quoteToken.address}
         lowestPrice={priceRange?.lower.toString()}
         highestPrice={priceRange?.upper.toString()}
-        totalBrackets={brackets.length}
+        totalBrackets={brackets?.length}
         leftBrackets={baseTokenBrackets}
         rightBrackets={quoteTokenBrackets}
         startPrice={price?.isFinite() ? price.toString() : "N/A"}
       />
       <Grid>
         <BracketsTable
-          baseTokenAddress={baseTokenAddress}
-          quoteTokenAddress={quoteTokenAddress}
+          baseTokenAddress={baseToken.address}
+          quoteTokenAddress={quoteToken.address}
           type="left"
           brackets={leftBrackets}
         />
         <StrategyTotalValue strategy={strategy} />
         <BracketsTable
-          baseTokenAddress={baseTokenAddress}
-          quoteTokenAddress={quoteTokenAddress}
+          baseTokenAddress={baseToken.address}
+          quoteTokenAddress={quoteToken.address}
           type="right"
           brackets={rightBrackets}
         />

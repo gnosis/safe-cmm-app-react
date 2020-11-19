@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useCallback, useState } from "react";
 
-import findPendingStrategiesForOwner from "api/safe/findPendingStrategiesForOwner";
+// import findPendingStrategiesForOwner from "api/safe/findPendingStrategiesForOwner";
 
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
@@ -16,6 +16,9 @@ import {
 } from "@material-ui/core";
 
 const Pending = () => {
+  return null;
+
+  /*
   const context = useContext(ContractInteractionContext);
   const [strategies, setStrategies] = useState(null);
   const handleLoadPending = useCallback(async () => {
@@ -85,6 +88,7 @@ const Pending = () => {
       </Table>
     </TableContainer>
   );
+  */
 };
 
 export default Pending;
