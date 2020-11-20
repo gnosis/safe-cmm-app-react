@@ -1,11 +1,11 @@
 import React, { memo } from "react";
-import { useRecoilValue } from "recoil";
 import { useFormState } from "react-final-form";
 import styled from "styled-components";
 
 import { Message } from "components/basic/display/Message";
 
-import { warningsAtom } from "./atoms";
+import { DeployFormValues } from "./types";
+import { useWarnings } from "./useWarnings";
 
 const Wrapper = styled.div`
   & > :not(:last-child) {
@@ -15,11 +15,21 @@ const Wrapper = styled.div`
 
 export const ErrorMessagesFragment = memo(
   function ErrorMessageFragment(): JSX.Element {
-    const { errors = {}, touched = {}, submitErrors = {} } = useFormState({
-      subscription: { errors: true, touched: true, submitErrors: true },
+    const {
+      errors = {},
+      touched = {},
+      submitErrors = {},
+      values,
+    } = useFormState<DeployFormValues>({
+      subscription: {
+        errors: true,
+        touched: true,
+        submitErrors: true,
+        values: true,
+      },
     });
 
-    const warnings = useRecoilValue(warningsAtom);
+    const warnings = useWarnings(values);
 
     if (
       (!errors || !Object.values(touched).some(Boolean)) &&

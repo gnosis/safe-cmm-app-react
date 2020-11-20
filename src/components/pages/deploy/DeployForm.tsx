@@ -22,8 +22,6 @@ import { composeValidators } from "validators/misc";
 
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
-import { Warnings } from "./Warnings";
-
 import { DeployFormValues, FormFields } from "./types";
 
 // Syntactic sugar to extract bracket value from stored input field value
@@ -198,10 +196,7 @@ export const DeployForm = memo(function DeployForm({
       decorators={[calculateFieldsDecorator]}
       validate={validate}
       render={({ handleSubmit }) => (
-        <form onSubmit={handleSubmit}>
-          {children}
-          <Warnings />
-        </form>
+        <form onSubmit={handleSubmit}>{children}</form>
       )}
     />
   );
