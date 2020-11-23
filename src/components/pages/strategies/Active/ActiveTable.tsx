@@ -20,16 +20,12 @@ const CenteredBox = styled(Box)`
 
 import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
-import { Details } from "./Details";
+
 import { StrategyState } from "types";
 import { decimalFormat } from "utils/decimalFormat";
 import { Loader, Text } from "@gnosis.pm/safe-react-components";
 
-const HideableTableRow = styled(TableRow)`
-  &.hide {
-    display: none;
-  }
-`;
+import { Details } from "./Details";
 
 const StyledTableHeader = styled(TableHead)`
   th {
@@ -74,8 +70,6 @@ export const ActiveTable = memo(function ActiveTable({
             <TableCell>Brackets</TableCell>
             <TableCell>Token A Balance</TableCell>
             <TableCell>Token B Balance</TableCell>
-            <TableCell>ROI</TableCell>
-            <TableCell>APY</TableCell>
             <TableCell />
             {/* status */}
             <TableCell />
@@ -85,7 +79,11 @@ export const ActiveTable = memo(function ActiveTable({
         <TableBody>
           {strategies.map((strategy) => (
             <>
-              <TableRow key={strategy.transactionHash}>
+              <TableRow
+                key={strategy.transactionHash}
+                hover
+                onClick={makeStrategyFoldoutHandler(strategy)}
+              >
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
                   {strategy.quoteToken && strategy.baseToken
@@ -107,8 +105,6 @@ export const ActiveTable = memo(function ActiveTable({
                     <Loader size="sm" />
                   )}
                 </TableCell>
-                <TableCell>TODO</TableCell>
-                <TableCell>TODO</TableCell>
                 <TableCell>
                   {strategy.hasErrored ? (
                     <Text size="sm" color="warning">
@@ -128,18 +124,13 @@ export const ActiveTable = memo(function ActiveTable({
                   </IconButton>
                 </TableCell>
               </TableRow>
-              <HideableTableRow
-                key={`${strategy.transactionHash}-foldout`}
-                className={
-                  foldOutStrategy !== strategy.transactionHash ? "hide" : ""
-                }
-              >
-                <TableCell colSpan={9} key={strategy.transactionHash}>
-                  {foldOutStrategy === strategy.transactionHash && (
+              {foldOutStrategy === strategy.transactionHash && (
+                <TableRow key={`${strategy.transactionHash}-foldout`}>
+                  <TableCell colSpan={9} key={strategy.transactionHash}>
                     <Details strategy={strategy} />
-                  )}
-                </TableCell>
-              </HideableTableRow>
+                  </TableCell>
+                </TableRow>
+              )}
             </>
           ))}
           {loading && (
