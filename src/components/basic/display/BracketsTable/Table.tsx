@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useCallback } from "react";
 
 import {
   Table as MUITable,
@@ -17,7 +17,7 @@ import { formatSmart } from "utils/format";
 
 import { TokenDisplay } from "components/basic/display/TokenDisplay";
 
-import { BracketRowData } from ".";
+import { Props as ParentProps } from ".";
 
 const StyledTable = withStyles({
   root: { borderCollapse: "separate", borderSpacing: "0 2px" },
@@ -82,14 +82,17 @@ const StyledRow = withStyles({
   },
 })(TableRow);
 
-export type Props = {
-  baseTokenAddress: string;
-  quoteTokenAddress: string;
-  brackets: BracketRowData[];
-} & RowProps;
+export type Props = ParentProps & RowProps;
 
 export const Table = memo(function Table(props: Props): JSX.Element {
-  const { baseTokenAddress, quoteTokenAddress, brackets, type } = props;
+  const {
+    baseTokenAddress,
+    quoteTokenAddress,
+    brackets,
+    type,
+    hoverId,
+    onHover,
+  } = props;
 
   // Token components are repeated often, reusing same instance
   const priceTokenDisplay = (
@@ -110,6 +113,8 @@ export const Table = memo(function Table(props: Props): JSX.Element {
     [ZERO_DECIMAL, ZERO_DECIMAL]
   );
 
+  const onMouseLeave = useCallback((): void => onHover && onHover(), [onHover]);
+
   return (
     <StyledTable>
       <TableHead>
@@ -122,7 +127,13 @@ export const Table = memo(function Table(props: Props): JSX.Element {
       </TableHead>
       <TableBody>
         {brackets.map((bracket, id) => (
-          <StyledRow key={id} type={type}>
+          <StyledRow
+            key={id}
+            type={type}
+            onMouseEnter={() => onHover && onHover(id)}
+            onMouseLeave={onMouseLeave}
+            hover={hoverId === id}
+          >
             <StyledCell grey>
               {formatSmart(bracket.lowPrice)} {priceTokenDisplay} <br />
               {formatSmart(bracket.highPrice)} {priceTokenDisplay}

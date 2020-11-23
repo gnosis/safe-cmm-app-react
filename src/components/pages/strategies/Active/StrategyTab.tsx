@@ -1,12 +1,10 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import Decimal from "decimal.js";
 
-import { formatAmountFull } from "@gnosis.pm/dex-js";
-
 import { useGetPrice } from "hooks/useGetPrice";
 
-import { ZERO_DECIMAL } from "utils/constants";
+import { ZERO_DECIMAL, TEN_DECIMAL } from "utils/constants";
 import { calculateBracketsFromMarketPrice } from "utils/calculateBrackets";
 
 import { StrategyState } from "types";
@@ -29,9 +27,6 @@ const Grid = styled.div`
   grid-template-columns: repeat(3, 1fr);
   align-items: baseline;
 `;
-
-// TODO: move to constants
-const TEN_DECIMAL = new Decimal("10");
 
 // TODO: move to utils
 function calculatePriceFromPartial(
@@ -77,13 +72,27 @@ export const StrategyTab = memo(function StrategyTab(
   props: Props
 ): JSX.Element {
   const { strategy } = props;
-  const { baseToken, quoteToken, brackets, priceRange } = strategy;
+  const { baseToken, quoteToken } = strategy;
 
   const { price } = useGetPrice({
     source: "GnosisProtocol",
     baseToken,
     quoteToken,
   });
+
+  // Split component in 2 to avoid re-fetching the price when hovering over brackets
+  return <StrategyTabView price={price} {...props} />;
+});
+
+const StrategyTabView = memo(function StrategyTabView(
+  props: Props & { price?: Decimal | null }
+): JSX.Element {
+  const [hoverBracketId, setHoverBracketId] = useState<number | undefined>(
+    undefined
+  );
+
+  const { strategy, price } = props;
+  const { baseToken, quoteToken, brackets, priceRange } = strategy;
 
   const { baseTokenBrackets, quoteTokenBrackets } = useMemo(
     () =>
@@ -105,6 +114,14 @@ export const StrategyTab = memo(function StrategyTab(
     return { leftBrackets, rightBrackets };
   }, [baseTokenBrackets, strategy]);
 
+  const rightBracketsOnHover = useCallback(
+    (bracketId?: number) =>
+      setHoverBracketId(
+        bracketId !== undefined && bracketId + leftBrackets.length
+      ),
+    [leftBrackets.length]
+  );
+
   return (
     <Wrapper>
       <BracketsViewer
@@ -117,6 +134,8 @@ export const StrategyTab = memo(function StrategyTab(
         leftBrackets={baseTokenBrackets}
         rightBrackets={quoteTokenBrackets}
         startPrice={price?.isFinite() ? price.toString() : "N/A"}
+        hoverId={hoverBracketId}
+        onHover={setHoverBracketId}
       />
       <Grid>
         <BracketsTable
@@ -124,6 +143,8 @@ export const StrategyTab = memo(function StrategyTab(
           quoteTokenAddress={quoteToken.address}
           type="left"
           brackets={leftBrackets}
+          hoverId={hoverBracketId}
+          onHover={setHoverBracketId}
         />
         <StrategyTotalValue strategy={strategy} />
         <BracketsTable
@@ -131,6 +152,10 @@ export const StrategyTab = memo(function StrategyTab(
           quoteTokenAddress={quoteToken.address}
           type="right"
           brackets={rightBrackets}
+          hoverId={
+            hoverBracketId !== undefined && hoverBracketId - leftBrackets.length
+          }
+          onHover={rightBracketsOnHover}
         />
       </Grid>
     </Wrapper>

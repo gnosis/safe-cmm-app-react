@@ -20,6 +20,8 @@ export type Props = {
   quoteTokenAddress: string;
   brackets: BracketRowData[];
   type: "left" | "right";
+  hoverId?: number;
+  onHover?: (bracketId?: number) => void;
 };
 
 export const BracketsTable = memo(function BracketsTable(
