@@ -127,7 +127,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
           render={({ input, meta }) => (
             <PriceInput
               {...input}
-              warn={meta.touched && !!meta.data?.warn}
+              warn={meta.touched && meta.data?.warn}
               error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Lowest price"
@@ -145,7 +145,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
               render={({ input, meta }) => (
                 <FundingInput
                   {...input}
-                  warn={meta.touched && !!meta.data?.warn}
+                  warn={meta.touched && meta.data?.warn}
                   error={meta.touched && meta.error}
                   brackets={getBracketValue(value, "base")}
                   tokenAddress={baseTokenAddress}
@@ -167,7 +167,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
           render={({ input, meta }) => (
             <PriceInput
               {...input}
-              warn={meta.touched && !!meta.data?.warn}
+              warn={meta.touched && meta.data?.warn}
               error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Start Price"
@@ -187,7 +187,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
           render={({ input, meta }) => (
             <TotalBrackets
               {...input}
-              warn={meta.touched && !!meta.data?.warn}
+              warn={meta.touched && meta.data?.warn}
               error={meta.touched && meta.error}
               baseTokenAddress={baseTokenAddress}
               baseTokenAmount={baseTokenAmount}
@@ -208,7 +208,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
           render={({ input, meta }) => (
             <PriceInput
               {...input}
-              warn={meta.touched && !!meta.data?.warn}
+              warn={meta.touched && meta.data?.warn}
               error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Highest price"
@@ -226,7 +226,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
               render={({ input, meta }) => (
                 <FundingInput
                   {...input}
-                  warn={meta.touched && !!meta.data?.warn}
+                  warn={meta.touched && meta.data?.warn}
                   error={meta.touched && meta.error}
                   brackets={getBracketValue(value, "quote")}
                   tokenAddress={quoteTokenAddress}

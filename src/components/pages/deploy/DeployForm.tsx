@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useContext } from "react";
 import { useRecoilValue } from "recoil";
-import { FormApi, FormState, MutableState, Mutator, Tools } from "final-form";
-import { Form, FormSpy } from "react-final-form";
+import { MutableState, Mutator, Tools } from "final-form";
+import { Form } from "react-final-form";
 import createCalculatedFieldsDecorator, {
   Calculation,
 } from "final-form-calculate";
@@ -20,23 +20,9 @@ import { isRequired } from "validators/isRequired";
 import { hasBalanceFactory } from "validators/hasBalance";
 import { composeValidators } from "validators/misc";
 
-import { DeployFormValues, FormFields } from "./types";
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
-function Warnings({
-  mutators: { setFieldData },
-}: Pick<FormApi, "mutators">): JSX.Element {
-  const handleWarnings = useCallback(
-    ({ values }: FormState<DeployFormValues>) => {
-      setFieldData("lowestPrice", {
-        warn: +values.lowestPrice < 1 ? "More than 1, please" : undefined,
-      });
-    },
-    [setFieldData]
-  );
-
-  return <FormSpy subscription={{ values: true }} onChange={handleWarnings} />;
-}
+import { DeployFormValues, FormFields } from "./types";
 
 // Syntactic sugar to extract bracket value from stored input field value
 export function getBracketValue(
@@ -209,11 +195,8 @@ export const DeployForm = memo(function DeployForm({
       mutators={{ setFieldData, setFieldValue, swapTokens }}
       decorators={[calculateFieldsDecorator]}
       validate={validate}
-      render={({ handleSubmit, form }) => (
-        <form onSubmit={handleSubmit}>
-          {children}
-          <Warnings mutators={form.mutators} />
-        </form>
+      render={({ handleSubmit }) => (
+        <form onSubmit={handleSubmit}>{children}</form>
       )}
     />
   );
