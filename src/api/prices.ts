@@ -7,7 +7,7 @@ import { getBestAsk } from "api/dexPriceEstimator";
 
 import { TokenDetails } from "types";
 
-import { ONE_DECIMAL, PRICE_CACHE_TIME } from "utils/constants";
+import { Network, ONE_DECIMAL, PRICE_CACHE_TIME } from "utils/constants";
 
 export type PriceSources = "1inch" | "GnosisProtocol";
 
@@ -150,9 +150,15 @@ export async function getPrice(
     return null;
   }
 
+  // On xDai network, 1inch will not work properly without token mapping.
+  // Force it to always use GP instead
+  const overwrittenSource: PriceSources =
+    networkId === Network.xdai ? "GnosisProtocol" : source;
+
   console.log(
     `trying to fetch price for`,
     source,
+    overwrittenSource,
     baseToken.symbol,
     quoteToken.symbol,
     networkId,
@@ -160,12 +166,17 @@ export async function getPrice(
     cacheTime
   );
 
-  const cacheKey = buildCacheKey(source, baseToken, quoteToken, sourceOptions);
+  const cacheKey = buildCacheKey(
+    overwrittenSource,
+    baseToken,
+    quoteToken,
+    sourceOptions
+  );
 
   let price: Decimal | null = fetchPriceFromCache(cacheKey);
 
   if (!price) {
-    switch (source) {
+    switch (overwrittenSource) {
       case "1inch": {
         price = await get1InchPrice(baseToken, quoteToken);
         break;
@@ -187,6 +198,7 @@ export async function getPrice(
     console.log(
       `cache hit for `,
       source,
+      overwrittenSource,
       baseToken.symbol,
       quoteToken.symbol,
       networkId,
