@@ -115,7 +115,7 @@ export const ActiveTable = memo(function ActiveTable({
                   )}
                 </TableCell>
                 <TableCell>
-                  <IconButton onClick={makeStrategyFoldoutHandler(strategy)}>
+                  <IconButton>
                     {strategy.transactionHash === foldOutStrategy ? (
                       <ChevronUp />
                     ) : (
