@@ -7,19 +7,15 @@ import Deploy from "routes/Deploy";
 import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 
-import {
-  strategyCountByStatus,
-  totalStrategyCount,
-} from "state/selectors/strategyCounter";
+import { strategyCountByStatus } from "state/selectors/strategyCounter";
 import { SafeStyleTabHeaderWithCounter } from "./navigation/tabs/SafeStyleTabHeaderWithCounter";
-import { Badge } from "./basic/display/Badge";
 
 const DEFAULT_TAB = "deployment";
 
 export const TabView = memo(function TabView(): JSX.Element {
   const history = useHistory();
 
-  const strategyCount = useRecoilValue(totalStrategyCount);
+  const strategyCount = useRecoilValue(strategyCountByStatus("ACTIVE"));
 
   const [selectedTab, setSelectedTab] = useState(DEFAULT_TAB);
   const handleChangeTab = useCallback(
