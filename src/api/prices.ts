@@ -27,12 +27,6 @@ function buildCacheKey(
 ): string {
   const parts = [source, baseToken.address, quoteToken.address];
 
-  if (source === "GnosisProtocol") {
-    // GP prices use average of both sides to account for potentially high spreads
-    // Thus, sorting parts make the key the same doesn't matter the token order
-    parts.sort();
-  }
-
   const options = sourceOptions
     ? Object.keys(sourceOptions)
         .sort()
