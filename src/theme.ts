@@ -31,7 +31,11 @@ const newTextSizes = {
     fontSize: "10px",
     lineHeight: "14px",
   },
-  xxl: {
+  "2xl": {
+    fontSize: "20px",
+    lineHeight: "26px",
+  },
+  "3xl": {
     fontSize: "26px",
     lineHeight: "36px",
   },
