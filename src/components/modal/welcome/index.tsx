@@ -7,6 +7,7 @@ import { First } from "./First";
 import { Second } from "./Second";
 import { Third } from "./Third";
 import { Last } from "./Last";
+import { Stepper } from "./Stepper";
 import { Footer } from "./Footer";
 
 const Wrapper = styled.div`
@@ -82,7 +83,12 @@ export const Welcome = memo(function Welcome(props: Props): JSX.Element {
   return (
     <GenericModal
       title="Welcome"
-      body={<Wrapper>{body}</Wrapper>}
+      body={
+        <Wrapper>
+          {body}
+          <Stepper totalSteps={4} currentStep={currentStep} />
+        </Wrapper>
+      }
       footer={footer}
       onClose={closeModal}
     />
