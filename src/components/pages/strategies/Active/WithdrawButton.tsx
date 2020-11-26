@@ -8,6 +8,7 @@ import { Button, Loader } from "@gnosis.pm/safe-react-components";
 import { withdrawStatesState } from "state/atoms";
 
 import { StrategyState, WithdrawState } from "types";
+import storage from "api/storage";
 
 import {
   buildWithdrawClaimTxs,
@@ -20,6 +21,7 @@ import {
   ContractInteractionContext,
   ContractInteractionContextProps,
 } from "components/context/ContractInteractionProvider";
+import { ModalContext } from "components/context/ModalProvider";
 
 export type Props = {
   strategy: StrategyState;
@@ -43,7 +45,6 @@ const withdrawFactory = (
     ...states,
     [strategy.transactionHash]: { status: "loading" },
   }));
-
   const buildTxsFn =
     type === "request" ? buildWithdrawRequestTxs : buildWithdrawClaimTxs;
 
@@ -56,6 +57,7 @@ const withdrawFactory = (
       );
     }
 
+    /*
     console.log(`About to send the txs`, txs);
 
     const message = context.sdkInstance.sendTransactions(txs);
@@ -66,6 +68,7 @@ const withdrawFactory = (
       ...states,
       [strategy.transactionHash]: { status: "success" },
     }));
+    */
     setButtonState("wait_tx_execution");
   } catch (e) {
     console.error(e);
@@ -92,10 +95,12 @@ export function WithdrawButton(props: Props): React.ReactElement {
     withdrawStatesState
   );
 
+  const { openModal } = useContext(ModalContext);
+
   const [countdown, setCountdown] = useState("");
 
   const updateTimer = useCallback((): void => {
-    if (status) {
+    if (status === "ACTIVE") {
       if (btnStatus !== "wait_tx_execution") {
         // Update state only if not just sent a tx.
         // Otherwise user will be able to send another tx right away.
@@ -104,41 +109,73 @@ export function WithdrawButton(props: Props): React.ReactElement {
       return;
     }
 
-    const timeSinceWithdrawRequestBlock = moment.duration(
-      moment(withdrawRequestDate).add(5, "minutes").diff(moment())
-    );
-
-    if (timeSinceWithdrawRequestBlock.as("seconds") < 0) {
-      if (btnStatus !== "wait_tx_execution") {
-        // Update state only if not just sent a tx.
-        // Otherwise user will be able to send another tx right away.
-        setStatus("claim_ready");
-      }
-    } else {
-      setStatus("wait_claim");
-      setCountdown(
-        `${timeSinceWithdrawRequestBlock
-          .get("minutes")
-          .toString()
-          .padStart(2, "0")}:${timeSinceWithdrawRequestBlock
-          .get("seconds")
-          .toString()
-          .padStart(2, "0")}`
+    if (status === "TRADING_STOPPED") {
+      const timeSinceWithdrawRequestBlock = moment.duration(
+        moment(withdrawRequestDate).add(5, "minutes").diff(moment())
       );
+
+      if (timeSinceWithdrawRequestBlock.as("seconds") < 0) {
+        if (btnStatus !== "wait_tx_execution") {
+          // Update state only if not just sent a tx.
+          // Otherwise user will be able to send another tx right away.
+          setStatus("claim_ready");
+        }
+      } else {
+        setStatus("wait_claim");
+        setCountdown(
+          `${timeSinceWithdrawRequestBlock
+            .get("minutes")
+            .toString()
+            .padStart(2, "0")}:${timeSinceWithdrawRequestBlock
+            .get("seconds")
+            .toString()
+            .padStart(2, "0")}`
+        );
+      }
     }
   }, [status, btnStatus]);
 
   useInterval(updateTimer, 1000);
 
+  const openModalOrWithdrawRequest = useCallback(async () => {
+    const shouldSkipModal = !!storage.getItem("withdrawFlowSkip");
+
+    const withdrawRequestHandler = withdrawFactory(
+      context,
+      setWithdrawStates,
+      setStatus,
+      strategy,
+      "request"
+    );
+
+    if (shouldSkipModal) {
+      return withdrawRequestHandler();
+    } else {
+      openModal("WithdrawLiquidity", {
+        strategy,
+        title: "Remove All Liquidity",
+        onConfirm: withdrawRequestHandler,
+      });
+    }
+  }, [strategy, context, openModal, setWithdrawStates]);
+
+  if (status === "CLOSED") {
+    return <Text size="md">Strategy closed</Text>;
+  }
+
   if (status !== "ACTIVE" && status !== "TRADING_STOPPED") {
     // Existing claim event means the market was closed.
     // TODO: Move this to a status variable with more thorough checks for actual "deactivated" markets
-    return null;
+    return (
+      <Text size="md" color="error">
+        Invalid Strategy Status: {status}
+      </Text>
+    );
   }
 
   if (withdrawStates[strategy.transactionHash]?.status === "loading") {
     // Transaction is pending
-    return <Loader size="sm" />;
+    return <Loader size="sm" color="primary" />;
   }
 
   if (withdrawStates[strategy.transactionHash]?.status === "error") {
@@ -192,7 +229,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
           "claim"
         )}
       >
-        Claim Withdraw
+        Claim all balances
       </Button>
     );
   }
@@ -204,13 +241,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
         size="md"
         color="primary"
         variant="contained"
-        onClick={withdrawFactory(
-          context,
-          setWithdrawStates,
-          setStatus,
-          strategy,
-          "request"
-        )}
+        onClick={openModalOrWithdrawRequest}
       >
         Request Withdraw (5min)
       </Button>

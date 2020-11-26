@@ -1,13 +1,19 @@
 import { GenericModal, Loader } from "@gnosis.pm/safe-react-components";
 import { Box, Typography } from "@material-ui/core";
+import { noop } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
+import { promisify } from "util";
+import { asPromise } from "utils/asPromise";
 
 export interface ModalContextProps {
   openModal: (modalName: string, props: any) => Promise<void>;
 }
 
 export const ModalContext = React.createContext<ModalContextProps>({
-  openModal: () => Promise.resolve(),
+  openModal: () =>
+    Promise.reject(
+      "Provider not loaded. Did you forget to include the Provider?"
+    ),
 });
 
 interface ProviderProps {
@@ -19,11 +25,21 @@ type StatusEnum = "LOADING" | "ERROR" | "SUCCESS";
 const globalModalModules = {};
 const loadCachedModalModule = async (modalName): Promise<any> => {
   if (!globalModalModules[modalName]) {
-    globalModalModules[modalName] = (
-      await import("components/modals/" + modalName)
-    )
+    globalModalModules[modalName] = import(`../modal/${modalName}`).then(
       // Modals export ModalName named export
-      .then((modalModule) => modalModule[modalName]);
+      (modalModule) => {
+        if (modalModule[modalName]) {
+          // TODO: Add default footer
+          return { Body: modalModule[modalName] };
+        }
+
+        return {
+          Body: modalModule["Body"],
+          Footer: modalModule["Footer"],
+        };
+      }
+    );
+    console.log(globalModalModules[modalName]);
   }
   return globalModalModules[modalName];
 };
@@ -35,10 +51,13 @@ export const ModalProvider = ({ children }: ProviderProps): JSX.Element => {
   >({});
 
   const [status, setStatus] = useState<StatusEnum>("LOADING");
-  const [ModalComponent, setModalComponent] = useState(null);
+  const [modalComponents, setModalComponents] = useState(null);
+  const [confirmHandler, setConfirmHandler] = useState<
+    () => Promise<boolean> | boolean
+  >(null);
 
   const handleOnClose = useCallback(() => {
-    setActiveModal(null);
+    handleTriggerReject();
   }, []);
 
   const handleOpenModal = useCallback(async (modalName, props): Promise<
@@ -48,10 +67,10 @@ export const ModalProvider = ({ children }: ProviderProps): JSX.Element => {
 
     try {
       setStatus("LOADING");
-      const newModalComponent = await loadCachedModalModule(modalName);
+      const newModalComponents = await loadCachedModalModule(modalName);
       setStatus("SUCCESS");
       setModalSettingProps(props);
-      setModalComponent(newModalComponent);
+      setModalComponents(newModalComponents);
     } catch (err) {
       setStatus("ERROR");
       setModalSettingProps({});
@@ -65,15 +84,68 @@ export const ModalProvider = ({ children }: ProviderProps): JSX.Element => {
     [handleOpenModal]
   );
 
+  const handleSetConfirmHandler = useCallback(
+    (cb: () => Promise<boolean> | boolean) => {
+      setConfirmHandler(cb);
+    },
+    []
+  );
+
+  const handleTriggerConfirm = useCallback(async () => {
+    if (typeof modalSettingProps.onConfirm === "function") {
+      if (typeof confirmHandler === "function") {
+        const stopSubmit: boolean = await asPromise(confirmHandler());
+
+        if (stopSubmit) return;
+      }
+
+      modalSettingProps.onConfirm();
+    }
+
+    setActiveModal(null);
+    setModalSettingProps({});
+    setModalComponents(null);
+  }, [confirmHandler, modalSettingProps]);
+  const handleTriggerReject = useCallback(async () => {
+    if (typeof modalSettingProps.onReject === "function") {
+      if (typeof confirmHandler === "function") {
+        const stopSubmit: boolean = await asPromise(confirmHandler());
+
+        if (stopSubmit) return;
+      }
+
+      modalSettingProps.onReject();
+    }
+
+    setActiveModal(null);
+    setModalSettingProps({});
+    setModalComponents(null);
+  }, [confirmHandler, modalSettingProps]);
+
   let modalBody = (
     <Box>
       <Loader size="lg" />
     </Box>
   );
+  let modalFooter = null;
 
   const { title, ...componentProps } = modalSettingProps;
-  if (status === "LOADING") {
-    modalBody = <ModalComponent {...componentProps} />;
+  if (status === "SUCCESS" && modalComponents) {
+    modalBody = (
+      <modalComponents.Body
+        {...componentProps}
+        setConfirmHandler={handleSetConfirmHandler}
+      />
+    );
+    if (modalComponents.Footer) {
+      modalFooter = (
+        <modalComponents.Footer
+          {...componentProps}
+          triggerConfirm={handleTriggerConfirm}
+          triggerReject={handleTriggerReject}
+        />
+      );
+    }
   }
   if (status === "ERROR") {
     modalBody = (
@@ -87,11 +159,12 @@ export const ModalProvider = ({ children }: ProviderProps): JSX.Element => {
 
   return (
     <ModalContext.Provider value={value}>
-      {activeModal && (
+      {activeModal != null && (
         <GenericModal
           onClose={handleOnClose}
           title={title || "Welcome"}
           body={modalBody}
+          footer={modalFooter}
         />
       )}
       {children}
