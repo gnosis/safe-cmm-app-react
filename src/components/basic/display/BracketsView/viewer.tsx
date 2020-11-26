@@ -31,6 +31,9 @@ export type Props = {
   lowestPrice?: string;
   startPrice?: string;
   highestPrice?: string;
+
+  hoverId?: number;
+  onHover?: (bracketId?: number) => void;
 };
 
 type ExtraContextProps = {

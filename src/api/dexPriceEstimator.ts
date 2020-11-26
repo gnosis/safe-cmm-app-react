@@ -8,15 +8,18 @@ type GetBestAskParams = {
   networkId: number;
   baseTokenId: number;
   quoteTokenId: number;
+  batchId?: number;
 };
 
 export async function getBestAsk(
   params: GetBestAskParams
 ): Promise<Decimal | null> {
-  const { networkId, baseTokenId, quoteTokenId } = params;
+  const { networkId, baseTokenId, quoteTokenId, batchId } = params;
 
-  // Query format: markets/7-1/estimated-best-ask-price?unit=baseunits&roundingBuffer=enabled
-  const queryString = `markets/${baseTokenId}-${quoteTokenId}/estimated-best-ask-price`;
+  // Query format: markets/7-1/estimated-best-ask-price?unit=baseunits&roundingBuffer=enabled&batchId=5350588
+  const queryString = `markets/${baseTokenId}-${quoteTokenId}/estimated-best-ask-price${
+    batchId !== undefined ? `?batchId=${batchId}` : ""
+  }`;
 
   try {
     const response = await query<number>(networkId, queryString);

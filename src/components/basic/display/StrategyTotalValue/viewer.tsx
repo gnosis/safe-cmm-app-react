@@ -11,11 +11,16 @@ const Wrapper = styled.div`
   margin-top: 35px;
 `;
 
+export type LoadingValue = {
+  value?: Decimal;
+  isLoading?: boolean;
+};
+
 export type Props = {
-  totalValue?: Decimal;
-  holdValue?: Decimal;
-  roi?: Decimal;
-  apy?: Decimal;
+  totalValue?: LoadingValue;
+  holdValue?: LoadingValue;
+  roi?: LoadingValue;
+  apr?: LoadingValue;
 };
 
 export const StrategyTotalValueViewer = memo(function StrategyTotalValueViewer(
@@ -25,7 +30,7 @@ export const StrategyTotalValueViewer = memo(function StrategyTotalValueViewer(
 
   return (
     <Wrapper>
-      <TotalValue value={totalValue} />
+      <TotalValue {...totalValue} />
       <DetailsTable {...rest} />
     </Wrapper>
   );

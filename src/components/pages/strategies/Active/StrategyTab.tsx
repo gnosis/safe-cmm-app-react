@@ -1,15 +1,13 @@
-import React, { memo, useMemo } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import Decimal from "decimal.js";
 
-import { formatAmountFull } from "@gnosis.pm/dex-js";
-
 import { useGetPrice } from "hooks/useGetPrice";
 
-import { ZERO_DECIMAL } from "utils/constants";
+import { ZERO_DECIMAL, TEN_DECIMAL } from "utils/constants";
 import { calculateBracketsFromMarketPrice } from "utils/calculateBrackets";
 
-import Strategy from "logic/strategy";
+import { StrategyState } from "types";
 
 import { BracketsViewer } from "components/basic/display/BracketsView";
 import {
@@ -19,7 +17,7 @@ import {
 import { StrategyTotalValue } from "components/basic/display/StrategyTotalValue";
 
 export type Props = {
-  strategy: Strategy;
+  strategy: StrategyState;
 };
 
 const Wrapper = styled.div``;
@@ -30,9 +28,6 @@ const Grid = styled.div`
   align-items: baseline;
 `;
 
-// TODO: move to constants
-const TEN_DECIMAL = new Decimal("10");
-
 // TODO: move to utils
 function calculatePriceFromPartial(
   price: Decimal,
@@ -42,23 +37,22 @@ function calculatePriceFromPartial(
   return price.mul(TEN_DECIMAL.pow(denominatorDecimals - numeratorDecimals));
 }
 
-function formatBrackets(strategy: Strategy): BracketRowData[] {
+function formatBrackets(strategy: StrategyState): BracketRowData[] {
   // Edge case when strategy was not properly deployed
   // Most likely the first strategies deployed during development
-  if (!strategy.baseTokenDetails || !strategy.quoteTokenDetails) {
+  if (!strategy.baseToken || !strategy.quoteToken) {
     return [];
   }
 
   const {
-    baseTokenDetails: { decimals: baseTokenDecimals },
-    quoteTokenDetails: { decimals: quoteTokenDecimals },
+    baseToken: { decimals: baseTokenDecimals },
+    quoteToken: { decimals: quoteTokenDecimals },
     brackets,
     prices,
-    tokenBaseBalances,
-    tokenQuoteBalances,
   } = strategy;
 
   return brackets.map((bracket, index) => ({
+    // TODO: maybe formatting no longer needed?
     lowPrice: calculatePriceFromPartial(
       prices[index * 2],
       baseTokenDecimals,
@@ -69,22 +63,8 @@ function formatBrackets(strategy: Strategy): BracketRowData[] {
       baseTokenDecimals,
       quoteTokenDecimals
     ),
-    balanceBase: new Decimal(
-      formatAmountFull({
-        amount: tokenBaseBalances[bracket.address],
-        precision: baseTokenDecimals,
-        thousandSeparator: false,
-        isLocaleAware: false,
-      })
-    ),
-    balanceQuote: new Decimal(
-      formatAmountFull({
-        amount: tokenQuoteBalances[bracket.address],
-        precision: quoteTokenDecimals,
-        thousandSeparator: false,
-        isLocaleAware: false,
-      })
-    ),
+    balanceBase: bracket.balanceBase || ZERO_DECIMAL,
+    balanceQuote: bracket.balanceQuote || ZERO_DECIMAL,
   }));
 }
 
@@ -92,20 +72,27 @@ export const StrategyTab = memo(function StrategyTab(
   props: Props
 ): JSX.Element {
   const { strategy } = props;
-  const {
-    baseTokenDetails,
-    baseTokenAddress,
-    quoteTokenDetails,
-    quoteTokenAddress,
-    brackets,
-    priceRange,
-  } = strategy;
+  const { baseToken, quoteToken } = strategy;
 
   const { price } = useGetPrice({
     source: "GnosisProtocol",
-    baseToken: baseTokenDetails,
-    quoteToken: quoteTokenDetails,
+    baseToken,
+    quoteToken,
   });
+
+  // Split component in 2 to avoid re-fetching the price when hovering over brackets
+  return <StrategyTabView price={price} {...props} />;
+});
+
+const StrategyTabView = memo(function StrategyTabView(
+  props: Props & { price?: Decimal | null }
+): JSX.Element {
+  const [hoverBracketId, setHoverBracketId] = useState<number | undefined>(
+    undefined
+  );
+
+  const { strategy, price } = props;
+  const { baseToken, quoteToken, brackets, priceRange } = strategy;
 
   const { baseTokenBrackets, quoteTokenBrackets } = useMemo(
     () =>
@@ -127,32 +114,48 @@ export const StrategyTab = memo(function StrategyTab(
     return { leftBrackets, rightBrackets };
   }, [baseTokenBrackets, strategy]);
 
+  const rightBracketsOnHover = useCallback(
+    (bracketId?: number) =>
+      setHoverBracketId(
+        bracketId !== undefined && bracketId + leftBrackets.length
+      ),
+    [leftBrackets.length]
+  );
+
   return (
     <Wrapper>
       <BracketsViewer
         type="strategy"
-        baseTokenAddress={baseTokenAddress}
-        quoteTokenAddress={quoteTokenAddress}
+        baseTokenAddress={baseToken.address}
+        quoteTokenAddress={quoteToken.address}
         lowestPrice={priceRange?.lower.toString()}
         highestPrice={priceRange?.upper.toString()}
-        totalBrackets={brackets.length}
+        totalBrackets={brackets?.length}
         leftBrackets={baseTokenBrackets}
         rightBrackets={quoteTokenBrackets}
         startPrice={price?.isFinite() ? price.toString() : "N/A"}
+        hoverId={hoverBracketId}
+        onHover={setHoverBracketId}
       />
       <Grid>
         <BracketsTable
-          baseTokenAddress={baseTokenAddress}
-          quoteTokenAddress={quoteTokenAddress}
+          baseTokenAddress={baseToken.address}
+          quoteTokenAddress={quoteToken.address}
           type="left"
           brackets={leftBrackets}
+          hoverId={hoverBracketId}
+          onHover={setHoverBracketId}
         />
         <StrategyTotalValue strategy={strategy} />
         <BracketsTable
-          baseTokenAddress={baseTokenAddress}
-          quoteTokenAddress={quoteTokenAddress}
+          baseTokenAddress={baseToken.address}
+          quoteTokenAddress={quoteToken.address}
           type="right"
           brackets={rightBrackets}
+          hoverId={
+            hoverBracketId !== undefined && hoverBracketId - leftBrackets.length
+          }
+          onHover={rightBracketsOnHover}
         />
       </Grid>
     </Wrapper>

@@ -20,5 +20,5 @@ export const useTokenDetails: typeof hook = (
   } else {
     tokenDetails = token;
   }
-  return { tokenDetails, isLoading: false, error: "" };
+  return tokenDetails;
 };

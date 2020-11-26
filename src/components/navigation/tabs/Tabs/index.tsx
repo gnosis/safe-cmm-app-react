@@ -35,7 +35,7 @@ export interface TabConfiguration {
   name: string;
   label: string;
   tabHeaderProps: TabHeaderProps;
-  component: () => JSX.Element;
+  component: (...props) => JSX.Element;
 }
 
 export interface Props {

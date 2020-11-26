@@ -8,9 +8,12 @@ import { theme } from "theme";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import { ContractInteractionProvider } from "components/context/ContractInteractionProvider";
+import { ModalProvider } from "components/context/ModalProvider";
+
+import { StrategyLoader } from "components/StrategyLoader";
 
 import GlobalStyle from "./GlobalStyle";
-import TabView from "./TabView";
+import { TabView } from "./TabView";
 import { ThemeProvider as StyledComponentThemeProvider } from "styled-components";
 
 const App = () => {
@@ -22,9 +25,12 @@ const App = () => {
       <GlobalStyle />
       <RecoilRoot>
         <ContractInteractionProvider>
-          <Router>
-            <TabView />
-          </Router>
+          <ModalProvider>
+            <StrategyLoader />
+            <Router>
+              <TabView />
+            </Router>
+          </ModalProvider>
         </ContractInteractionProvider>
       </RecoilRoot>
     </StyledComponentThemeProvider>

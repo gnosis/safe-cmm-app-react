@@ -3,36 +3,20 @@ import BN from "bn.js";
 import Decimal from "decimal.js";
 import { Meta } from "@storybook/react";
 
-import {
-  // Params as UseDeployStrategyParams,
-  Return as UseDeployStrategyReturn,
-} from "hooks/useDeployStrategy";
-
 import { DeployPageViewer } from "./viewer";
 import { DeployPage } from ".";
-import {
-  baseTokenAddressAtom,
-  baseTokenAmountAtom,
-  errorAtom,
-  highestPriceAtom,
-  isSubmittingAtom,
-  lowestPriceAtom,
-  quoteTokenAddressAtom,
-  quoteTokenAmountAtom,
-  startPriceAtom,
-  totalBracketsAtom,
-} from "./atoms";
 
-const defaultStates = [
-  [baseTokenAddressAtom, "0x6B175474E89094C44Da98b954EedeAC495271d0F"],
-  [quoteTokenAddressAtom, "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
-  [lowestPriceAtom, "300"],
-  [startPriceAtom, "323"],
-  [highestPriceAtom, "350"],
-  [baseTokenAmountAtom, "1000"],
-  [quoteTokenAmountAtom, "1000"],
-  [totalBracketsAtom, "10"],
-];
+// TODO: refactor, removing unused states
+// const defaultStates = [
+//   [baseTokenAddressAtom, "0x6B175474E89094C44Da98b954EedeAC495271d0F"],
+//   [quoteTokenAddressAtom, "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
+//   [lowestPriceAtom, "300"],
+//   [startPriceAtom, "323"],
+//   [highestPriceAtom, "350"],
+//   [baseTokenAmountAtom, "1000"],
+//   [quoteTokenAmountAtom, "1000"],
+//   [totalBracketsAtom, "10"],
+// ];
 
 export default {
   component: DeployPageViewer,
@@ -52,7 +36,7 @@ export default {
           ? new BN("0")
           : null,
     }),
-    recoilStates: defaultStates,
+    // recoilStates: defaultStates,
   },
 } as Meta;
 
@@ -70,15 +54,15 @@ export const Default = Template.bind({});
 
 export const Submitting = Template.bind({});
 Submitting.parameters = {
-  recoilStates: [...defaultStates, [isSubmittingAtom, "true"]],
+  // recoilStates: [...defaultStates, [isSubmittingAtom, "true"]],
 };
 
 export const WithError = Template.bind({});
 WithError.parameters = {
-  recoilStates: [
-    ...defaultStates,
-    [errorAtom, { label: "Insufficient DAI balance" }],
-  ],
+  // recoilStates: [
+  //   ...defaultStates,
+  //   [warningsAtom, { label: "Insufficient DAI balance" }],
+  // ],
 };
 
 // Container
@@ -87,12 +71,12 @@ const TemplateContainer = (): JSX.Element => <DeployPage />;
 
 export const DefaultContainer = TemplateContainer.bind({});
 DefaultContainer.parameters = {
-  useDeployStrategy: (): // params: UseDeployStrategyParams
-  UseDeployStrategyReturn => {
-    return async (): Promise<void> => {
-      return;
-    };
-  },
+  // useDeployStrategy: (): // params: UseDeployStrategyParams
+  // UseDeployStrategyReturn => {
+  //   return async (): Promise<void> => {
+  //     return;
+  //   };
+  // },
 };
 
 export const ErrorOnDeployContainer = TemplateContainer.bind({});
