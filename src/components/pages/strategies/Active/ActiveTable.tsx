@@ -1,8 +1,6 @@
 import React, { memo, useState, useCallback } from "react";
 import styled from "styled-components";
 
-import { formatSmart } from "@gnosis.pm/dex-js";
-
 import {
   TableContainer,
   Table,
@@ -11,18 +9,23 @@ import {
   TableCell,
   TableBody,
   IconButton,
+  Box,
 } from "@material-ui/core";
-import Strategy from "logic/strategy";
+
+const CenteredBox = styled(Box)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
-import { Details } from "./Details";
 
-const HideableTableRow = styled(TableRow)`
-  &.hide {
-    display: none;
-  }
-`;
+import { StrategyState } from "types";
+import { decimalFormat } from "utils/decimalFormat";
+import { Loader, Text } from "@gnosis.pm/safe-react-components";
+
+import { Details } from "./Details";
 
 const StyledTableHeader = styled(TableHead)`
   th {
@@ -36,15 +39,17 @@ const StyledTableContainer = styled(TableContainer)`
 `;
 
 export interface Props {
-  strategies: Strategy[];
+  strategies: StrategyState[];
+  loading: boolean;
 }
 
 export const ActiveTable = memo(function ActiveTable({
   strategies,
+  loading,
 }: Props): JSX.Element {
   const [foldOutStrategy, setFoldOutStrategy] = useState(null);
 
-  const makeStrategyFoldoutHandler = useCallback((strategy: Strategy) => {
+  const makeStrategyFoldoutHandler = useCallback((strategy: StrategyState) => {
     return () => {
       setFoldOutStrategy((currFoldoutTxHash: string) => {
         if (currFoldoutTxHash === strategy.transactionHash) {
@@ -65,8 +70,6 @@ export const ActiveTable = memo(function ActiveTable({
             <TableCell>Brackets</TableCell>
             <TableCell>Token A Balance</TableCell>
             <TableCell>Token B Balance</TableCell>
-            <TableCell>ROI</TableCell>
-            <TableCell>APY</TableCell>
             <TableCell />
             {/* status */}
             <TableCell />
@@ -76,33 +79,43 @@ export const ActiveTable = memo(function ActiveTable({
         <TableBody>
           {strategies.map((strategy) => (
             <>
-              <TableRow key={strategy.transactionHash}>
+              <TableRow
+                key={strategy.transactionHash}
+                hover
+                onClick={makeStrategyFoldoutHandler(strategy)}
+              >
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
-                  {strategy.quoteTokenDetails && strategy.baseTokenDetails
-                    ? `${strategy.quoteTokenDetails?.symbol} - ${strategy.baseTokenDetails?.symbol}`
+                  {strategy.quoteToken && strategy.baseToken
+                    ? `${strategy.quoteToken?.symbol} - ${strategy.baseToken?.symbol}`
                     : "Unknown"}
                 </TableCell>
                 <TableCell>{strategy.brackets.length}</TableCell>
                 <TableCell>
-                  {formatSmart(
-                    strategy.totalBaseBalance(),
-                    strategy.baseTokenDetails?.decimals || 18
-                  ) || "-"}{" "}
-                  {strategy.baseTokenDetails?.symbol}
+                  {strategy.hasFetchedBalance ? (
+                    decimalFormat(strategy.baseBalance, strategy.baseToken)
+                  ) : (
+                    <Loader size="sm" />
+                  )}
                 </TableCell>
                 <TableCell>
-                  {formatSmart(
-                    strategy.totalQuoteBalance(),
-                    strategy.quoteTokenDetails?.decimals || 18
-                  ) || "-"}{" "}
-                  {strategy.quoteTokenDetails?.symbol}
+                  {strategy.hasFetchedBalance ? (
+                    decimalFormat(strategy.quoteBalance, strategy.quoteToken)
+                  ) : (
+                    <Loader size="sm" />
+                  )}
                 </TableCell>
-                <TableCell>TODO</TableCell>
-                <TableCell>TODO</TableCell>
-                <TableCell>{/* status message */}</TableCell>
                 <TableCell>
-                  <IconButton onClick={makeStrategyFoldoutHandler(strategy)}>
+                  {strategy.hasErrored ? (
+                    <Text size="sm" color="warning">
+                      Failed to load strategy
+                    </Text>
+                  ) : (
+                    ""
+                  )}
+                </TableCell>
+                <TableCell>
+                  <IconButton>
                     {strategy.transactionHash === foldOutStrategy ? (
                       <ChevronUp />
                     ) : (
@@ -111,20 +124,24 @@ export const ActiveTable = memo(function ActiveTable({
                   </IconButton>
                 </TableCell>
               </TableRow>
-              <HideableTableRow
-                key={`${strategy.transactionHash}-foldout`}
-                className={
-                  foldOutStrategy !== strategy.transactionHash ? "hide" : ""
-                }
-              >
-                <TableCell colSpan={9} key={strategy.transactionHash}>
-                  {foldOutStrategy === strategy.transactionHash && (
+              {foldOutStrategy === strategy.transactionHash && (
+                <TableRow key={`${strategy.transactionHash}-foldout`}>
+                  <TableCell colSpan={9} key={strategy.transactionHash}>
                     <Details strategy={strategy} />
-                  )}
-                </TableCell>
-              </HideableTableRow>
+                  </TableCell>
+                </TableRow>
+              )}
             </>
           ))}
+          {loading && (
+            <TableRow key="loading">
+              <TableCell colSpan={9}>
+                <CenteredBox>
+                  <Loader size="sm" />
+                </CenteredBox>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </StyledTableContainer>

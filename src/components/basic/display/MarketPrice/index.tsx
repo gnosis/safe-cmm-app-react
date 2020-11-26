@@ -22,8 +22,8 @@ export const MarketPrice = memo(
     } = props;
 
     // TODO: handle error
-    const { tokenDetails: baseToken } = useTokenDetails(baseTokenAddress);
-    const { tokenDetails: quoteToken } = useTokenDetails(quoteTokenAddress);
+    const baseToken = useTokenDetails(baseTokenAddress);
+    const quoteToken = useTokenDetails(quoteTokenAddress);
 
     // TODO: propagate error up to parent when dealing with validation
     const { price, isLoading, error } = useGetPrice({

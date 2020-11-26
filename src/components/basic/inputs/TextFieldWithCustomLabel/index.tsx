@@ -88,10 +88,10 @@ export interface Props
 }
 
 export const TextFieldWithCustomLabel = (props: Props): JSX.Element => {
-  const { customLabel, inputWidth, center, ...rest } = props;
+  const { customLabel, inputWidth, center, warn, ...rest } = props;
 
   return (
-    <Wrapper {...rest} inputWidth={inputWidth} center={center}>
+    <Wrapper {...rest} inputWidth={inputWidth} center={center} warn={warn}>
       <InputLabel htmlFor={rest.id}>{customLabel}</InputLabel>
       <TextField {...rest} label={null} />
     </Wrapper>

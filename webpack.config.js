@@ -164,6 +164,7 @@ module.exports = {
       NODE_ENV: "development",
       NETWORK: "local",
       INFURA_API_KEY: null,
+      PKG_VERSION: pkg.version,
       CONTINUOUS_INTEGRATION: null,
       TRAVIS_BRANCH: "unknown branch",
       TRAVIS_BUILD_ID: "unknown build",
