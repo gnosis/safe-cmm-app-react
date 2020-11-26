@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useContext } from "react";
 import { useRecoilValue } from "recoil";
 import { MutableState, Mutator, Tools } from "final-form";
-import { Form } from "react-final-form";
+import { Form, FormRenderProps } from "react-final-form";
 import createCalculatedFieldsDecorator, {
   Calculation,
 } from "final-form-calculate";
@@ -177,14 +177,32 @@ export const DeployForm = memo(function DeployForm({
   const deployStrategy = useDeployStrategy();
 
   const onSubmit = useCallback(
-    async (values: DeployFormValues): Promise<undefined | ValidationErrors> => {
-      const result = await deployStrategy(values);
+    async (values: DeployFormValues): Promise<undefined | ValidationErrors> =>
+      deployStrategy(values),
+    [deployStrategy]
+  );
 
-      // TODO: when result === `undefined`, deploy succeeded.
-      // TODO: do something like reset form, redirect to pending strategies, etc
+  const afterFormSubmitFactory = useCallback(
+    (
+      handleSubmit: FormRenderProps["handleSubmit"],
+      // form: FormRenderProps["form"]  // this is the proper type, but it doesn't contain `restart`
+      // -> https://final-form.org/docs/final-form/types/FormApi
+      form: any
+    ) => async (
+      ...params: Parameters<FormRenderProps["handleSubmit"]>
+    ): Promise<ReturnType<FormRenderProps["handleSubmit"]>> => {
+      const result = await handleSubmit(...params);
+
+      // When result === `undefined`, deploy succeeded.
+      // That is, all the data is correct and tx was submitted to the Safe.
+      // From them on, up to the user to confirm/cancel the submission
+      if (result === undefined) {
+        console.log("Clearing the form");
+        form.restart();
+      }
       return result;
     },
-    [deployStrategy]
+    []
   );
 
   return (
@@ -195,8 +213,10 @@ export const DeployForm = memo(function DeployForm({
       mutators={{ setFieldData, setFieldValue, swapTokens }}
       decorators={[calculateFieldsDecorator]}
       validate={validate}
-      render={({ handleSubmit }) => (
-        <form onSubmit={handleSubmit}>{children}</form>
+      render={({ handleSubmit, form }) => (
+        <form onSubmit={afterFormSubmitFactory(handleSubmit, form)}>
+          {children}
+        </form>
       )}
     />
   );
