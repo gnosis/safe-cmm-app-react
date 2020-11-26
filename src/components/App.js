@@ -8,6 +8,8 @@ import { theme } from "theme";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import { ContractInteractionProvider } from "components/context/ContractInteractionProvider";
+import { ModalProvider } from "components/context/ModalProvider";
+
 import { StrategyLoader } from "components/StrategyLoader";
 
 import GlobalStyle from "./GlobalStyle";
@@ -23,10 +25,12 @@ const App = () => {
       <GlobalStyle />
       <RecoilRoot>
         <ContractInteractionProvider>
-          <StrategyLoader />
-          <Router>
-            <TabView />
-          </Router>
+          <ModalProvider>
+            <StrategyLoader />
+            <Router>
+              <TabView />
+            </Router>
+          </ModalProvider>
         </ContractInteractionProvider>
       </RecoilRoot>
     </StyledComponentThemeProvider>

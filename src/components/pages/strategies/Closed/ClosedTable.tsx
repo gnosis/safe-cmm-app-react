@@ -16,9 +16,8 @@ import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
 //import { Details } from "./Details";
 import { StrategyState } from "types";
-import { SafeStrategy } from "logic/SafeStrategy";
 import { Loader } from "@gnosis.pm/safe-react-components";
-import { decimalFormat } from "utils/decimalFormat";
+import { Details } from "./Details";
 
 const CenteredBox = styled(Box)`
   display: flex;
@@ -116,7 +115,7 @@ export const ClosedTable = memo(function ClosedTable({
                 }
               >
                 <TableCell colSpan={6} key={strategy.transactionHash}>
-                  <span>TODO</span>
+                  <Details strategy={strategy} />
                 </TableCell>
               </HideableTableRow>
             </>

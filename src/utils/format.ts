@@ -24,8 +24,16 @@ export function formatSmart(
   if (amount === undefined) {
     return null;
   } else if (typeof amount === "string") {
+    if (isNaN(+amount)) {
+      return null;
+    }
+
     amountDecimal = new Decimal(amount);
   } else {
+    if (amount.isNaN()) {
+      return null;
+    }
+
     amountDecimal = amount;
   }
 
