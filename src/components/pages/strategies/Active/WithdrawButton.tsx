@@ -57,7 +57,6 @@ const withdrawFactory = (
       );
     }
 
-    /*
     console.log(`About to send the txs`, txs);
 
     const message = context.sdkInstance.sendTransactions(txs);
@@ -68,7 +67,7 @@ const withdrawFactory = (
       ...states,
       [strategy.transactionHash]: { status: "success" },
     }));
-    */
+
     setButtonState("wait_tx_execution");
   } catch (e) {
     console.error(e);
@@ -140,22 +139,27 @@ export function WithdrawButton(props: Props): React.ReactElement {
   const openModalOrWithdrawRequest = useCallback(async () => {
     const shouldSkipModal = !!(await storage.getItem("withdrawFlowSkip"));
 
-    const withdrawRequestHandler = withdrawFactory(
-      context,
-      setWithdrawStates,
-      setStatus,
-      strategy,
-      "request"
-    );
-
-    if (shouldSkipModal) {
-      return withdrawRequestHandler();
-    } else {
-      openModal("WithdrawLiquidity", {
+    try {
+      const withdrawRequestHandler = withdrawFactory(
+        context,
+        setWithdrawStates,
+        setStatus,
         strategy,
-        title: "Remove All Liquidity",
-        onConfirm: withdrawRequestHandler,
-      });
+        "request"
+      );
+
+      if (shouldSkipModal) {
+        return withdrawRequestHandler();
+      } else {
+        openModal("WithdrawLiquidity", {
+          strategy,
+          title: "Remove All Liquidity",
+          onConfirm: withdrawRequestHandler,
+        });
+      }
+    } catch (err) {
+      console.error("Withdraw Button failed");
+      console.error(err);
     }
   }, [strategy, context, openModal, setWithdrawStates]);
 

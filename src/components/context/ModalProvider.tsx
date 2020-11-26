@@ -39,7 +39,6 @@ const loadCachedModalModule = async (modalName): Promise<any> => {
         };
       }
     );
-    console.log(globalModalModules[modalName]);
   }
   return globalModalModules[modalName];
 };
@@ -98,7 +97,7 @@ export const ModalProvider = ({ children }: ProviderProps): JSX.Element => {
 
         if (stopSubmit) return;
       }
-
+      console.log("Calling confirm method");
       modalSettingProps.onConfirm();
     }
 
