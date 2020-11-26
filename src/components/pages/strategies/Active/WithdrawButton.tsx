@@ -138,7 +138,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
   useInterval(updateTimer, 1000);
 
   const openModalOrWithdrawRequest = useCallback(async () => {
-    const shouldSkipModal = !!storage.getItem("withdrawFlowSkip");
+    const shouldSkipModal = !!(await storage.getItem("withdrawFlowSkip"));
 
     const withdrawRequestHandler = withdrawFactory(
       context,
