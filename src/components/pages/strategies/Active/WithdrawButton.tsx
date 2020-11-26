@@ -133,7 +133,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
         );
       }
     }
-  }, [status, btnStatus]);
+  }, [status, btnStatus, withdrawRequestDate]);
 
   useInterval(updateTimer, 1000);
 
