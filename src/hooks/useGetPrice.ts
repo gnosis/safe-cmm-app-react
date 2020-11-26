@@ -55,18 +55,7 @@ export function useGetPrice(params: Params): Result {
       }
       setIsLoading(false);
 
-      // TODO: maybe unnecessary
-      setPrice((curr) => {
-        console.log(
-          `is price different? does this change anything?`,
-          curr?.toString(),
-          newPrice?.toString()
-        );
-        if (curr && newPrice && curr.eq(newPrice)) {
-          return curr;
-        }
-        return newPrice;
-      });
+      setPrice(newPrice);
     }
 
     updatePrice();
