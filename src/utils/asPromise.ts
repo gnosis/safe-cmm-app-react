@@ -1,4 +1,4 @@
-export const asPromise = (val: any): Promise<any> => {
+export const asPromise = <T>(val: T): Promise<T> => {
   if (val instanceof Promise) {
     return val;
   } else {
