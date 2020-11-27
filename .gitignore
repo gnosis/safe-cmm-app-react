@@ -5,3 +5,4 @@ node_modules/
 ngrok.yml
 storybook-static/
 private.*
+old.**.ts

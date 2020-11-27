@@ -13,7 +13,7 @@ const Dot = styled.div<{ active?: boolean }>`
   width: 10px;
   border-radius: 5px;
   background-color: ${({ active }) =>
-    theme.colors[active ? "primary" : "backgroundGrey"]};
+    theme.colors[active ? "primary" : "backgroundBadgeGray"]};
   margin: 0 7px;
 `;
 

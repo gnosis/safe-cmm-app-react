@@ -48,7 +48,7 @@ const Wrapper = styled.div`
 
   .middle {
     padding-top: 13px;
-    border: 1px solid ${theme.colors.backgroundGrey};
+    border: 1px solid ${theme.colors.backgroundBadgeGray};
     border-radius: 16px;
   }
 `;

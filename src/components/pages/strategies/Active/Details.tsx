@@ -8,7 +8,7 @@ import { StrategyTab } from "./StrategyTab";
 import { WithdrawButton } from "./WithdrawButton";
 import { DeployedParamsTab } from "./DeployedParamsTab";
 
-import { StrategyState } from 'types';
+import { StrategyState } from "types";
 
 const Header = styled.div`
   display: flex;

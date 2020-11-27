@@ -10,6 +10,8 @@ import { Last } from "./Last";
 import { Stepper } from "./Stepper";
 import { Footer } from "./Footer";
 
+import storage from "api/storage";
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -28,15 +30,16 @@ export type Props = {
   initialStep?: number;
 };
 
-export const Welcome = memo(function Welcome(props: Props): JSX.Element {
+export const Onboarding = memo(function Onboarding(props: Props): JSX.Element {
   const { closeModal, initialStep } = props;
   const [currentStep, setCurrentStep] = useState(initialStep || 1);
 
   const onNextStepFactory = useCallback(
-    (step: number) => (): void => {
+    (step: number) => async (): Promise<void> => {
       if (step < 4) {
         setCurrentStep(step + 1);
       } else {
+        await storage.setItem("skipOnboardingFlow", true);
         closeModal();
       }
     },

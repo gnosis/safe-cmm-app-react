@@ -8,7 +8,8 @@ const newColors = {
   backgroundError: "#FFE6EA",
   backgroundWarning: "#FFF3E2",
   backgroundSideBar: "#F7F5F5",
-  backgroundGrey: "#E8E7E6",
+  backgroundBadgeGray: "#e8e7e6",
+  backgroundBadgeDarkGray: "#b2b5b2",
 
   // brackets view colors
   backgroundLightGreen: "rgba(0, 156, 180, 0.1)",
