@@ -1,7 +1,7 @@
 import BN from "bn.js";
 import Decimal from "decimal.js";
 
-import { TokenDetails } from "types";
+import { TokenDetails, Unpromise } from "types";
 import { SelectItem } from "@gnosis.pm/safe-react-components/dist/inputs/Select";
 
 /**
@@ -30,4 +30,27 @@ export function tokenDetailsToSelectItem(
 
 export function priceToBn(price: string): BN {
   return new BN(new Decimal(price).mul(1e18).toString());
+}
+
+/**
+ * Wrapper for async functions, try/catching errors and returning default value on failure
+ *
+ * @param fn Async function to be executed
+ * @param defaultOnFailure Default value to return in case of failure
+ * @param params Async function params
+ */
+export async function safeAsyncFn<
+  Fn extends (...args: any[]) => Promise<any>,
+  D
+>(
+  fn: Fn,
+  defaultOnFailure: D,
+  ...params: Parameters<Fn>
+): Promise<Unpromise<ReturnType<Fn>> | D> {
+  try {
+    return await fn(...params);
+  } catch (e) {
+    console.log(`Failed to execute fn`, e);
+    return defaultOnFailure;
+  }
 }

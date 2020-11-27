@@ -2,6 +2,8 @@ import React, { memo } from "react";
 import Decimal from "decimal.js";
 import styled from "styled-components";
 
+import { Loader } from "@gnosis.pm/safe-react-components";
+
 import { ThemeTextSize } from "theme";
 
 import { ONE_HUNDRED_DECIMAL, ZERO_DECIMAL } from "utils/constants";
@@ -20,6 +22,7 @@ const Wrapper = styled.div<{ isPositive: boolean }>`
 
 export type Props = {
   value?: Decimal;
+  isLoading?: boolean;
   className?: string;
   size?: ThemeTextSize;
 };
@@ -31,9 +34,12 @@ function formatValue(value: Decimal): string {
 export const PercentageIndicator = memo(function PercentageIndicator(
   props: Props
 ): JSX.Element {
-  const { value, size, className } = props;
+  const { value, isLoading, size, className } = props;
 
-  if (!value) {
+  if (isLoading) {
+    return <Loader size="sm" />;
+  }
+  if (!value || value.isNaN()) {
     return <Text>N/A</Text>;
   }
 

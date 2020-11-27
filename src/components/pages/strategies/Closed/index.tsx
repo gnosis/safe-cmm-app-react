@@ -1,5 +1,35 @@
-import React from "react";
+import React, { memo } from "react";
+import { Box } from "@material-ui/core";
 
-export const Closed = function Closed(): JSX.Element {
-  return <p>Closed</p>;
-};
+import { Loader } from "@gnosis.pm/safe-react-components";
+
+import { ClosedTable } from "./ClosedTable";
+import { useRecoilValue } from "recoil";
+import { strategiesOfStatusSelector } from "state/selectors/strategiesOfStatus";
+import { strategiesLoadingState } from "state/atoms";
+
+export const Closed = memo(function Closed(): JSX.Element {
+  const strategies = useRecoilValue(
+    strategiesOfStatusSelector(["CLOSED", "TRADING_STOPPED"])
+  );
+  const strategyLoadingState = useRecoilValue(strategiesLoadingState);
+
+  if (strategyLoadingState === "LOADING" && strategies.length === 0) {
+    return (
+      <Box>
+        <Loader size="lg" />
+      </Box>
+    );
+  }
+
+  if (status === "ERROR") {
+    return <Box>Sorry, something went wrong.</Box>;
+  }
+
+  return (
+    <ClosedTable
+      strategies={strategies}
+      loading={strategyLoadingState === "LOADING"}
+    />
+  );
+});

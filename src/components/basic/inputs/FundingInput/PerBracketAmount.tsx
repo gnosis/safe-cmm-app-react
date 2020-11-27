@@ -17,7 +17,7 @@ export interface Props {
 function UPerBracketAmount(props: Props): JSX.Element {
   const { totalAmount, brackets = 0, tokenAddress } = props;
 
-  const { tokenDetails } = useTokenDetails(tokenAddress);
+  const tokenDetails = useTokenDetails(tokenAddress);
 
   const amountPerBracket = useMemo((): string => {
     if (!tokenDetails || !totalAmount || !brackets || +totalAmount <= 0) {

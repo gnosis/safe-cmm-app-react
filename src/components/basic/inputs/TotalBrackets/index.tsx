@@ -3,7 +3,9 @@ import styled from "styled-components";
 
 import { Loader } from "@gnosis.pm/safe-react-components";
 
-import { DEFAULT_INPUT_WIDTH, ZERO_DECIMAL } from "utils/constants";
+import { DEFAULT_INPUT_WIDTH } from "utils/constants";
+import { safeAddDecimals } from "utils/calculations";
+import { formatSmart } from "utils/format";
 
 import { useAmountInUsd } from "hooks/useAmountInUsd";
 
@@ -13,7 +15,6 @@ import {
 } from "components/basic/inputs/BracketsInput";
 import { TextWithTooltip } from "components/basic/display/TextWithTooltip";
 import { SubtextAmount } from "components/basic/display/SubtextAmount";
-import { formatSmart, parseAmount } from "@gnosis.pm/dex-js";
 
 const Wrapper = styled.div`
   display: flex;
@@ -58,12 +59,10 @@ export const TotalBrackets = (props: Props): JSX.Element => {
       return <Loader size="xs" />;
     }
 
-    const totalAmount = (baseAmountInUsd || ZERO_DECIMAL).plus(
-      quoteAmountInUsd || ZERO_DECIMAL
-    );
+    const totalAmount = safeAddDecimals(baseAmountInUsd, quoteAmountInUsd);
 
     if (baseAmountInUsd || quoteAmountInUsd) {
-      return `~ $${formatSmart(parseAmount(totalAmount.toString(), 18), 18)}`;
+      return `~ $${formatSmart(totalAmount || "", 0)}`;
     } else {
       return "-";
     }
@@ -90,7 +89,7 @@ export const TotalBrackets = (props: Props): JSX.Element => {
           </TextWithTooltip>
         }
       />
-      <SubtextAmount subtext="Total investment:" amount={amount} />
+      <SubtextAmount subtext="Total funding:" amount={amount} />
     </Wrapper>
   );
 };

@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 const HiddenBox = styled.div`
   color: white;
-  position: absolute;
-  bottom: 0;
+  position: fixed;
+  top: 0;
   right: 0;
 `;
 

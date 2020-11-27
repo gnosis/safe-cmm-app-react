@@ -1,7 +1,5 @@
 import React, { memo } from "react";
 
-import { Loader } from "@gnosis.pm/safe-react-components";
-
 import { useTokenDetails } from "hooks/useTokenDetails";
 
 import { ThemeColors, ThemeLoaderSize } from "theme";
@@ -28,15 +26,12 @@ export const TokenDisplay = memo(function TokenDisplay(
 ): JSX.Element {
   const { token, size, color, className } = props;
 
-  // TODO: handle error
-  const { tokenDetails, isLoading } = useTokenDetails(token);
+  const tokenDetails = useTokenDetails(token);
 
   return tokenDetails ? (
     <Text size={size} color={color} strong as="span" className={className}>
       {tokenDetails.symbol}
     </Text>
-  ) : isLoading ? (
-    <Loader size={size} className={className} />
   ) : (
     <Text size={size} color={color} strong as="span" className={className}>
       -

@@ -1,9 +1,11 @@
 import React, { memo } from "react";
+import { useFormState } from "react-final-form";
 import styled from "styled-components";
 
 import { Message } from "components/basic/display/Message";
 
-import { useFormState } from "react-final-form";
+import { DeployFormValues } from "./types";
+import { useWarnings } from "./useWarnings";
 
 const Wrapper = styled.div`
   & > :not(:last-child) {
@@ -13,11 +15,27 @@ const Wrapper = styled.div`
 
 export const ErrorMessagesFragment = memo(
   function ErrorMessageFragment(): JSX.Element {
-    const { errors = {}, touched = {}, submitErrors = {} } = useFormState({
-      subscription: { errors: true, touched: true, submitErrors: true },
+    const {
+      errors = {},
+      touched = {},
+      submitErrors = {},
+      values,
+    } = useFormState<DeployFormValues>({
+      subscription: {
+        errors: true,
+        touched: true,
+        submitErrors: true,
+        values: true,
+      },
     });
 
-    if ((!errors || !Object.values(touched).some(Boolean)) && !submitErrors) {
+    const warnings = useWarnings(values);
+
+    if (
+      (!errors || !Object.values(touched).some(Boolean)) &&
+      !submitErrors &&
+      !Object.values(warnings).some(Boolean)
+    ) {
       return null;
     }
 
@@ -40,6 +58,21 @@ export const ErrorMessagesFragment = memo(
           .map((fieldName, id) => (
             <Message {...allErrors[fieldName]} type="error" key={id} />
           ))}
+        {Object.values(warnings)
+          .filter((warning) => !!warning)
+          .map((warning, id) => {
+            // Casting needed because warning can be either the obj below or false.
+            // Even though we are filtering the only case where a boolean is possible, TS doesn't know that.
+            const { label, children } = warning as {
+              label: string;
+              children?: React.ReactNode;
+            };
+            return (
+              <Message label={label} type="warning" key={id}>
+                {children}
+              </Message>
+            );
+          })}
       </Wrapper>
     );
   }
