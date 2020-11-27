@@ -1,17 +1,27 @@
 import { findSafeTransactionsForPendingStrategies } from "api/safe/findSafeTransactionsForPendingStrategies";
 import { findFleetDeployEvents } from "api/web3/findFleetDeployEvents";
 import { EventStrategy } from "logic/EventStrategy";
-import { SafeStrategy } from "logic/SafeStrategy";
+import {
+  PendingStrategySafeTransaction,
+  SafeStrategy,
+} from "logic/SafeStrategy";
 import { useCallback, useContext, useEffect } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { strategiesLoadingState, strategiesState } from "state/atoms";
 import { StrategyState } from "types";
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
+import getLogger from "utils/logger";
+import { debounce } from "lodash";
+
+const logger = getLogger("strategy-loader");
+
 type StatusEnum = "LOADING" | "ERROR" | "SUCCESS";
 
+const addedListeners = false;
+let activeStrategyLoadPromise;
 export const StrategyLoader = (): JSX.Element => {
-  const setStrategiesState = useSetRecoilState(strategiesState);
+  const [strategies, setStrategiesState] = useRecoilState(strategiesState);
   const setStrategiesLoadingState = useSetRecoilState(strategiesLoadingState);
 
   const makeStrategySetter = useCallback(
@@ -32,7 +42,13 @@ export const StrategyLoader = (): JSX.Element => {
   const loadEventStrategies = useCallback(async () => {
     const events = await findFleetDeployEvents(context);
 
-    const newStrategies = events.map(
+    // Only find strategies not yet discovered.
+    const newEvents = events.filter(
+      (fleetDeployEvent: Record<string, any>) =>
+        !strategies[fleetDeployEvent.transactionHash]
+    );
+
+    const newStrategies = newEvents.map(
       (fleetDeployEvent) =>
         new EventStrategy(
           fleetDeployEvent,
@@ -40,22 +56,34 @@ export const StrategyLoader = (): JSX.Element => {
         )
     );
     return newStrategies;
-  }, [context, makeStrategySetter]);
+  }, [context, strategies, makeStrategySetter]);
 
   const loadSafeStrategies = useCallback(async () => {
     const txLogs = await findSafeTransactionsForPendingStrategies(context);
 
-    const newStrategies = txLogs.map(
-      (txLog) => new SafeStrategy(txLog, makeStrategySetter(txLog.safeTxHash))
+    // Only find strategies not yet discovered.
+    const newTxLogs = txLogs.filter(
+      (txLog: PendingStrategySafeTransaction) => !strategies[txLog.safeTxHash]
+    );
+
+    const newStrategies = newTxLogs.map(
+      (txLog: PendingStrategySafeTransaction) =>
+        new SafeStrategy(txLog, makeStrategySetter(txLog.safeTxHash))
     );
     return newStrategies;
-  }, [context, makeStrategySetter]);
+  }, [context, strategies, makeStrategySetter]);
 
-  useEffect(() => {
-    // TODO: Only loads once for now. Logic to determine which strategies updated neeeded
-    Promise.all([loadEventStrategies(), loadSafeStrategies()])
+  const loadAllStrategies = useCallback(async () => {
+    return Promise.all([loadEventStrategies(), loadSafeStrategies()])
       .then(([eventStrategies, safeStrategies]) => {
-        console.log("loaded strategies");
+        if (eventStrategies.length === 0 && safeStrategies.length === 0) {
+          // No new strategies found
+          return Promise.resolve([]);
+        }
+
+        logger.log(
+          `New strategies discovered: Active/Closed: ${eventStrategies.length} - Pending: ${safeStrategies.length}`
+        );
 
         // Kick-off Async tasks
         return Promise.all(
@@ -73,17 +101,15 @@ export const StrategyLoader = (): JSX.Element => {
                 },
               }));
 
-              console.error(
+              logger.error(
                 `Strategy failed to load ${strategy.transactionHash}: ${err.message}`
               );
 
-              console.error(err);
+              logger.error(err);
             }
             //console.log(`Async load ${strategy.transactionHash} finished`);
           })
         );
-
-        console.log(eventStrategies);
       })
       .then(() => {
         setStrategiesLoadingState("SUCCESS");
@@ -92,8 +118,44 @@ export const StrategyLoader = (): JSX.Element => {
         setStrategiesLoadingState("ERROR");
         console.error("Strategies could not be loaded", err);
       });
+  }, [
+    context,
+    loadEventStrategies,
+    loadSafeStrategies,
+    setStrategiesState,
+    setStrategiesLoadingState,
+  ]);
+
+  useEffect(() => {
+    const updater = debounce(() => {
+      if (!activeStrategyLoadPromise) {
+        logger.log(
+          "New block and discovery queue finished, checking for new strategies"
+        );
+        activeStrategyLoadPromise = loadAllStrategies()
+          .then(() => {
+            activeStrategyLoadPromise = null;
+          })
+          .catch((err) => {
+            logger.error(err);
+            activeStrategyLoadPromise = null;
+          });
+      }
+    }, 1000);
+    // Add listener to new block events
+    const subscription = context.web3Instance.eth
+      .subscribe("newBlockHeaders", (error) => {
+        if (error) {
+          logger.error(error);
+        }
+      })
+      .on("data", updater);
+
+    return () => {
+      subscription.unsubscribe();
+    };
     // eslint-disable-next-line
-  }, [/* purposefully left empty, as to only load once */, "hot"]);
+  }, [loadAllStrategies, "hot"]);
 
   return null;
 };

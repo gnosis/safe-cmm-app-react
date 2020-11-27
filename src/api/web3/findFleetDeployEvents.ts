@@ -5,8 +5,6 @@ const findFleetEventsFrom = async (
   owner: string,
   getDeployed: (contractName: string) => Promise<any>
 ) => {
-  const profileLbl = `Event Discovery for ${factoryName}`;
-  console.time(profileLbl);
   const factory = await getDeployed(factoryName);
   const events = await factory.getPastEvents("FleetDeployed", {
     fromBlock: 0,
@@ -14,7 +12,6 @@ const findFleetEventsFrom = async (
     filter: { owner },
   });
 
-  console.timeEnd(profileLbl);
   return events;
 };
 
