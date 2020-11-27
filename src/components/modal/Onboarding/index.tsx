@@ -89,7 +89,11 @@ export const Onboarding = memo(function Onboarding(props: Props): JSX.Element {
       body={
         <Wrapper>
           {body}
-          <Stepper totalSteps={4} currentStep={currentStep} />
+          <Stepper
+            totalSteps={4}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+          />
         </Wrapper>
       }
       footer={footer}
