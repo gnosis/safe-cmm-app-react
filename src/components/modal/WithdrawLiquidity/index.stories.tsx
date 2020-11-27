@@ -6,7 +6,6 @@ import { StrategyState } from "types";
 import { GenericModal } from "@gnosis.pm/safe-react-components";
 import { noop } from "lodash";
 
-
 export default {
   component: Body,
   title: "modals/WithdrawLiquiduity",

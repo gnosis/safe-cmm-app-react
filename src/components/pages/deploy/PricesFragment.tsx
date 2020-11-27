@@ -1,12 +1,15 @@
 import React, { memo, useCallback } from "react";
 import { Field, useField, useForm } from "react-final-form";
 import styled from "styled-components";
+import BN from "bn.js";
 
 import { formatAmountFull, ZERO } from "@gnosis.pm/dex-js";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
 
 import { TokenDetails } from "types";
+
+import { theme } from "theme";
 
 import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
 
@@ -23,8 +26,6 @@ import { isSmallerThan } from "validators/isSmallerThan";
 import { getBracketValue } from "./DeployForm";
 import { FormFields } from "./types";
 import { useTokenBalance } from "hooks/useTokenBalance";
-
-import BN from "bn.js";
 
 const Wrapper = styled.div`
   display: flex;
@@ -47,7 +48,7 @@ const Wrapper = styled.div`
 
   .middle {
     padding-top: 13px;
-    border: 1px solid #e8e7e6;
+    border: 1px solid ${theme.colors.backgroundBadgeGray};
     border-radius: 16px;
   }
 `;

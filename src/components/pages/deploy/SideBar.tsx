@@ -78,7 +78,7 @@ const StyledAccordion = withStyles({
 
 const StyledAccordionSummary = withStyles({
   root: {
-    backgroundColor: "#E8E7E6",
+    backgroundColor: theme.colors.backgroundBadgeGray,
     border: "none",
     minHeight: "46px",
     // Also preventing Summary from expanding
