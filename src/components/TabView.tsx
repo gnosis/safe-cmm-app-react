@@ -22,6 +22,7 @@ import storage from "api/storage";
 
 const DEFAULT_TAB = "deployment";
 
+let hasDoneModalCheck = false;
 export const TabView = memo(function TabView(): JSX.Element {
   const history = useHistory();
 
@@ -49,7 +50,10 @@ export const TabView = memo(function TabView(): JSX.Element {
   }, [openModal]);
 
   useEffect(() => {
-    checkForOnboarding();
+    if (!hasDoneModalCheck) {
+      hasDoneModalCheck = true;
+      checkForOnboarding();
+    }
   }, [checkForOnboarding]);
 
   // Booleans for notification dot
