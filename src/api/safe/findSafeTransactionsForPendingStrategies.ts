@@ -7,7 +7,6 @@ export const findSafeTransactionsForPendingStrategies = async (
   const {
     safeInfo: { safeAddress: owner, network },
   } = context;
-  console.time("Safe Transaction Pending Strategy Discovery")
   const pendingSafeTransactions = await getPendingTransactions(network, owner);
 
   const strategies: any[] = await Promise.all(
@@ -25,6 +24,5 @@ export const findSafeTransactionsForPendingStrategies = async (
     })
   );
 
-  console.timeEnd("Safe Transaction Pending Strategy Discovery")
   return strategies;
 };

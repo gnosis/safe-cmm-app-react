@@ -33,7 +33,7 @@ export const TotalValue = memo(function TotalValue(props: Props): JSX.Element {
       {isLoading ? (
         <Loader size="sm" />
       ) : (
-        <Text size="xxl" strong>
+        <Text size="3xl" strong>
           {!value || value.isNaN() ? "N/A" : `$${formatSmart(value)}`}
         </Text>
       )}

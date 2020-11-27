@@ -29,7 +29,7 @@ export function tokenDetailsToSelectItem(
 }
 
 export function priceToBn(price: string): BN {
-  return new BN(new Decimal(price).mul(1e18).toString());
+  return new BN(new Decimal(price).mul(1e18).toFixed(0));
 }
 
 /**

@@ -1,4 +1,11 @@
-import React, { useCallback, memo, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  memo,
+  useMemo,
+  useState,
+  useContext,
+  useEffect,
+} from "react";
 import { Tab } from "@gnosis.pm/safe-react-components";
 
 import Strategies from "routes/Strategies";
@@ -9,9 +16,13 @@ import { useRecoilValue } from "recoil";
 
 import { strategyCountByStatus } from "state/selectors/strategyCounter";
 import { SafeStyleTabHeaderWithCounter } from "./navigation/tabs/SafeStyleTabHeaderWithCounter";
+import { ModalContext } from "./context/ModalProvider";
+
+import storage from "api/storage";
 
 const DEFAULT_TAB = "deployment";
 
+let hasDoneModalCheck = false;
 export const TabView = memo(function TabView(): JSX.Element {
   const history = useHistory();
 
@@ -25,6 +36,25 @@ export const TabView = memo(function TabView(): JSX.Element {
     },
     [history, setSelectedTab]
   );
+
+  const { openModal } = useContext(ModalContext);
+
+  const checkForOnboarding = useCallback(async () => {
+    const shouldSkipOnboarding = !!(await storage.getItem(
+      "skipOnboardingFlow"
+    ));
+
+    if (!shouldSkipOnboarding) {
+      openModal("Onboarding", { title: "Welcome" });
+    }
+  }, [openModal]);
+
+  useEffect(() => {
+    if (!hasDoneModalCheck) {
+      hasDoneModalCheck = true;
+      checkForOnboarding();
+    }
+  }, [checkForOnboarding]);
 
   // Booleans for notification dot
   const hasTradingStopped =

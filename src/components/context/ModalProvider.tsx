@@ -25,12 +25,14 @@ type StatusEnum = "LOADING" | "ERROR" | "SUCCESS";
 const globalModalModules = {};
 const loadCachedModalModule = async (modalName): Promise<any> => {
   if (!globalModalModules[modalName]) {
-    globalModalModules[modalName] = import(`../modal/${modalName}`).then(
+    globalModalModules[modalName] = import(
+      `../modal/${modalName}/index.tsx`
+    ).then(
       // Modals export ModalName named export
       (modalModule) => {
         if (modalModule[modalName]) {
           // TODO: Add default footer
-          return { Body: modalModule[modalName] };
+          return { Modal: modalModule[modalName] };
         }
 
         return {
@@ -71,6 +73,7 @@ export const ModalProvider = ({ children }: ProviderProps): JSX.Element => {
       setModalSettingProps(props);
       setModalComponents(newModalComponents);
     } catch (err) {
+      console.error(err);
       setStatus("ERROR");
       setModalSettingProps({});
     }
@@ -130,6 +133,21 @@ export const ModalProvider = ({ children }: ProviderProps): JSX.Element => {
 
   const { title, ...componentProps } = modalSettingProps;
   if (status === "SUCCESS" && modalComponents) {
+    if (modalComponents.Modal) {
+      // Loaded module supplies its own Modal Window
+      return (
+        <ModalContext.Provider value={value}>
+          {activeModal != null && (
+            <modalComponents.Modal
+              {...componentProps}
+              closeModal={handleTriggerConfirm}
+            />
+          )}
+        </ModalContext.Provider>
+      );
+    }
+
+    // Loaded module supplies body/footer seperately
     modalBody = (
       <modalComponents.Body
         {...componentProps}
