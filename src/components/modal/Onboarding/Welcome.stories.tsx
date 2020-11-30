@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Meta, Story } from "@storybook/react/types-6-0";
 
-import { Welcome, Props } from ".";
+import { Onboarding, Props } from ".";
 
 export default {
-  component: Welcome,
-  title: "modal/Welcome",
+  component: Onboarding,
+  title: "modals/Onboarding",
 } as Meta;
 
 const Template: Story = ({
@@ -17,7 +17,7 @@ const Template: Story = ({
     <div>
       <button onClick={() => setIsOpen((open) => !open)}>toggle modal</button>
       {isOpen && (
-        <Welcome
+        <Onboarding
           closeModal={() => setIsOpen(false)}
           initialStep={initialStep}
         />

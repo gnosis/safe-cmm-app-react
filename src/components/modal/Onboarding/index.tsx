@@ -69,7 +69,7 @@ export const Onboarding = memo(function Onboarding(props: Props): JSX.Element {
         return {
           body: <Last />,
           footer: (
-            <Footer buttonText="Finish" onNextClick={onNextStepFactory(4)} />
+            <Footer buttonText="Start" onNextClick={onNextStepFactory(4)} />
           ),
         };
       case 1:
@@ -77,7 +77,7 @@ export const Onboarding = memo(function Onboarding(props: Props): JSX.Element {
         return {
           body: <First />,
           footer: (
-            <Footer buttonText="Start" onNextClick={onNextStepFactory(1)} />
+            <Footer buttonText="Next" onNextClick={onNextStepFactory(1)} />
           ),
         };
     }
@@ -89,7 +89,11 @@ export const Onboarding = memo(function Onboarding(props: Props): JSX.Element {
       body={
         <Wrapper>
           {body}
-          <Stepper totalSteps={4} currentStep={currentStep} />
+          <Stepper
+            totalSteps={4}
+            currentStep={currentStep}
+            setCurrentStep={setCurrentStep}
+          />
         </Wrapper>
       }
       footer={footer}
