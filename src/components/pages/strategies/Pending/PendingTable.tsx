@@ -63,7 +63,7 @@ export const PendingTable = memo(function PendingTable({
           <TableRow>
             <TableCell>Created</TableCell>
             <TableCell>Token Pair</TableCell>
-            <TableCell>Nonce</TableCell>
+            <TableCell>Safe Nonce</TableCell>
             <TableCell>Price Range</TableCell>
             <TableCell>Brackets</TableCell>
             <TableCell />
