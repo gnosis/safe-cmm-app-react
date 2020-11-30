@@ -172,7 +172,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
               error={meta.touched && meta.error}
               tokenAddress={baseTokenAddress}
               labelText="Start Price"
-              labelTooltip="Bellow the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
+              labelTooltip="Below the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
               labelSize="xl"
             />
           )}
