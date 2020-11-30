@@ -45,7 +45,7 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
       ],
       null, // separator
       [
-        "Funding per bracket > TOKEN A",
+        `Funding per bracket > ${strategy.baseToken.symbol}`,
         `${decimalTruncatedString(
           strategy.baseFunding
             .div(Math.pow(10, strategy.baseToken.decimals))
@@ -53,7 +53,7 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
         )}`,
       ],
       [
-        "Funding per bracket > TOKEN B",
+        `Funding per bracket > ${strategy.quoteToken.symbol}`,
         `${decimalTruncatedString(
           strategy.quoteFunding
             .div(Math.pow(10, strategy.baseToken.decimals))
