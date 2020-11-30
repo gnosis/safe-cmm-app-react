@@ -18,6 +18,8 @@ import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
 import { StrategyState } from "types";
 import { Loader } from "@gnosis.pm/safe-react-components";
 import { Details } from "./Details";
+import { Text } from "components/basic/display/Text";
+import { formatSmart } from "utils/format";
 
 const CenteredBox = styled(Box)`
   display: flex;
@@ -41,6 +43,14 @@ const StyledTableHeader = styled(TableHead)`
 const StyledTableContainer = styled(TableContainer)`
   width: 100%;
 `;
+
+function totalClaimable(strategy: StrategyState): string {
+  const { baseToken, baseBalance, quoteToken, quoteBalance } = strategy;
+
+  return `${formatSmart(baseBalance)} ${baseToken?.symbol} | ${formatSmart(
+    quoteBalance
+  )} ${quoteToken?.symbol}`;
+}
 
 export interface Props {
   strategies: StrategyState[];
@@ -72,7 +82,7 @@ export const ClosedTable = memo(function ClosedTable({
             <TableCell>Created</TableCell>
             <TableCell>Token Pair</TableCell>
             <TableCell>Brackets</TableCell>
-            {/* <TableCell>Total Value Claimable</TableCell> */}
+            <TableCell>Total Value Claimable</TableCell>
             <TableCell />
             {/* status */}
             <TableCell />
@@ -96,7 +106,13 @@ export const ClosedTable = memo(function ClosedTable({
                     <Loader size="sm" />
                   )}
                 </TableCell>
-                {/* <TableCell>TODO</TableCell> */}
+                <TableCell>
+                  {strategy.hasFetchedBalance ? (
+                    <Text>{totalClaimable(strategy)}</Text>
+                  ) : (
+                    <Loader size="xs" />
+                  )}
+                </TableCell>
                 <TableCell>{/* status message */}</TableCell>
                 <TableCell>
                   <IconButton onClick={makeStrategyFoldoutHandler(strategy)}>
