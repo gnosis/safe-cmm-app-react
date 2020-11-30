@@ -62,7 +62,7 @@ export const Body = memo(function WithdrawLiquidity({
   const steps = [
     <Typography key="step1">
       Click on <strong>Withdraw liquidity</strong>. Then sign the transaction
-      with all Safe owners and wait atleast 5 minutes for a confirmation.
+      with all Safe owners and wait 5 minutes for a confirmation.
     </Typography>,
     <Typography key="step2">
       After the withdraw transaction is confirmed find the, now deactivated
@@ -70,7 +70,7 @@ export const Body = memo(function WithdrawLiquidity({
       strategy and then click on <strong>Claim All Balances</strong>.<br />
       <br />
       Sign the claim Transaction with all Safe owners. After the confirmation
-      the balanaces are withdrawn to the Safe.
+      the balances are withdrawn to the Safe.
     </Typography>,
   ];
 
