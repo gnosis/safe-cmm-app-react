@@ -20,7 +20,7 @@
   "dependencies": {
     "@gnosis.pm/dex-contracts": "^0.4.1",
     "@gnosis.pm/dex-js": "^0.4.1",
-    "@gnosis.pm/dex-liquidity-provision": "github:gnosis/dex-liquidity-provision#fix/add-withdraw-helper-to-wrapper",
+    "@gnosis.pm/dex-liquidity-provision": "github:gnosis/dex-liquidity-provision#8ec9ba3c7a9b17ec743b7e983ff8a0b46d2d509d",
     "@gnosis.pm/safe-apps-sdk": "^0.3.1",
     "@gnosis.pm/safe-react-components": "gnosis/safe-react-components#development",
     "@hot-loader/react-dom": "^16.13.0",
