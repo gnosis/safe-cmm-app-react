@@ -1,10 +1,15 @@
 import React, { memo, useMemo } from "react";
-import Decimal from "decimal.js";
 import { Box } from "@material-ui/core";
+
+import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { StrategyState } from "types";
 
-import { decimalFormat, decimalTruncatedString } from "utils/decimalFormat";
+import { useAmountInUsd } from "hooks/useAmountInUsd";
+
+import { decimalFormat } from "utils/decimalFormat";
+import { safeAddDecimals } from "utils/calculations";
+import { formatSmart } from "utils/format";
 
 import { Text } from "components/basic/display/Text";
 
@@ -16,6 +21,47 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
   props: Props
 ): JSX.Element {
   const { strategy } = props;
+  const { baseToken, quoteToken, baseFunding, quoteFunding } = strategy;
+
+  const {
+    amountInUsd: baseAmountInUsd,
+    isLoading: isBaseAmountLoading,
+  } = useAmountInUsd({
+    tokenAddress: baseToken.address,
+    amount: baseFunding?.toFixed(),
+    source: "GnosisProtocol",
+  });
+  const {
+    amountInUsd: quoteAmountInUsd,
+    isLoading: isQuoteAmountLoading,
+  } = useAmountInUsd({
+    tokenAddress: quoteToken.address,
+    amount: quoteFunding?.toFixed(),
+    source: "GnosisProtocol",
+  });
+
+  const totalFunding = useMemo((): React.ReactNode => {
+    if (isBaseAmountLoading || isQuoteAmountLoading) {
+      return <Loader size="xs" />;
+    }
+
+    try {
+      const amountString = formatSmart(
+        safeAddDecimals(baseAmountInUsd, quoteAmountInUsd)
+      );
+      return amountString ? `~$${amountString}` : "N/A";
+    } catch (e) {
+      console.error(`Failed to format total funding`, e);
+      return "N/A";
+    }
+  }, [
+    baseAmountInUsd,
+    isBaseAmountLoading,
+    isQuoteAmountLoading,
+    quoteAmountInUsd,
+  ]);
+
+  const totalFundingTuple = ["Total funding", totalFunding];
 
   const params = useMemo((): Array<any> => {
     return [
@@ -45,27 +91,19 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
       ],
       null, // separator
       [
-        `Funding per bracket > ${strategy.baseToken.symbol}`,
-        `${decimalTruncatedString(
-          strategy.baseFunding
-            .div(Math.pow(10, strategy.baseToken.decimals))
-            .div(strategy.brackets.length)
-        )}`,
+        `Total ${strategy.baseToken.symbol} deposited`,
+        `${formatSmart(strategy.baseFunding)}`,
       ],
       [
-        `Funding per bracket > ${strategy.quoteToken.symbol}`,
-        `${decimalTruncatedString(
-          strategy.quoteFunding
-            .div(Math.pow(10, strategy.baseToken.decimals))
-            .div(strategy.brackets.length)
-        )}`,
+        `Total ${strategy.quoteToken.symbol} deposited`,
+        `${formatSmart(strategy.quoteFunding)}`,
       ],
     ];
   }, [strategy]);
 
   return (
     <Box>
-      {params.map(
+      {params.concat([totalFundingTuple]).map(
         (labelValuePairOrNull: string[] | null): JSX.Element => {
           if (labelValuePairOrNull === null) return <br />;
           const [label, value] = labelValuePairOrNull;
