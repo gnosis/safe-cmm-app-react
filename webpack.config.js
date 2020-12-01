@@ -26,7 +26,7 @@ if (process.env.NETWORK != null) {
 }
 
 const MANIFEST_JSON = {
-  name: "GP Market Maker",
+  name: "Gnosis Custom Market Maker",
   description:
     "Allows you to deploy, withdraw and manage your custom market maker strategies",
   iconPath: "img/appIcon.svg",
@@ -34,15 +34,7 @@ const MANIFEST_JSON = {
 
 if (isDevelopment) {
   if (isDeployed) {
-    // For development versions, always add network
     const verString = [
-      process.env.TRAVIS_BRANCH
-        ? truncate(process.env.TRAVIS_BRANCH, {
-            length: 15,
-            omission: "",
-          })
-        : "unknown branch",
-      process.env.TRAVIS_BUILD_ID || "unknown build",
       process.env.TRAVIS_COMMIT
         ? truncate(process.env.TRAVIS_COMMIT, {
             length: 6,
