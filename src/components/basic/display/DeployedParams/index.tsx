@@ -64,6 +64,8 @@ export const DeployedParams = memo(function DeployedParams(
   const totalFundingTuple = ["Total funding", totalFunding];
 
   const params = useMemo((): Array<any> => {
+    const pendingAppendix = strategy.status === "PENDING" ? " to be" : "";
+
     return [
       [
         "Lowest Price",
@@ -91,12 +93,12 @@ export const DeployedParams = memo(function DeployedParams(
       ],
       null, // separator
       [
-        `Total ${strategy.baseToken.symbol} deposited`,
         `${formatSmart(strategy.baseFunding)}`,
+        `Total ${strategy.baseToken.symbol}${pendingAppendix} deposited`,
       ],
       [
-        `Total ${strategy.quoteToken.symbol} deposited`,
         `${formatSmart(strategy.quoteFunding)}`,
+        `Total ${strategy.quoteToken.symbol}${pendingAppendix} deposited`,
       ],
     ];
   }, [strategy]);
