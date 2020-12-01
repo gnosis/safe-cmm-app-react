@@ -116,16 +116,13 @@ export const PendingTable = memo(function PendingTable({
                   </IconButton>
                 </TableCell>
               </TableRow>
-              <HideableTableRow
-                key={`${strategy.transactionHash}-foldout`}
-                className={
-                  foldOutStrategy !== strategy.transactionHash ? "hide" : ""
-                }
-              >
-                <TableCell colSpan={7} key={strategy.transactionHash}>
-                  <DeployedParams strategy={strategy} />
-                </TableCell>
-              </HideableTableRow>
+              {foldOutStrategy === strategy.transactionHash && (
+                <HideableTableRow key={`${strategy.transactionHash}-foldout`}>
+                  <TableCell colSpan={7} key={strategy.transactionHash}>
+                    <DeployedParams strategy={strategy} />
+                  </TableCell>
+                </HideableTableRow>
+              )}
             </>
           ))}
         </TableBody>
