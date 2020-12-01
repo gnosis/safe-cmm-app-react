@@ -2,7 +2,6 @@ import React, { memo } from "react";
 import styled from "styled-components";
 
 import { Text } from "components/basic/display/Text";
-import { TokenDisplay } from "components/basic/display/TokenDisplay";
 
 const Wrapper = styled.div`
   display: flex;
@@ -24,20 +23,18 @@ const Dot = styled.div<{ isLeft: boolean }>`
 `;
 
 type Props = {
-  tokenAddress: string;
   bracketsCount: number;
   isLeft: boolean;
 };
 
 export const Title = memo(function Title(props: Props): JSX.Element {
-  const { tokenAddress, bracketsCount, isLeft } = props;
+  const { bracketsCount, isLeft } = props;
 
   return (
     <Wrapper>
       <Dot isLeft={isLeft} />
-      <TokenDisplay token={tokenAddress} size="md" />
       <Text size="md" as="span">
-        - {bracketsCount} bracket{bracketsCount > 1 ? "s" : ""}
+        {bracketsCount} bracket{bracketsCount > 1 || !bracketsCount ? "s" : ""}
       </Text>
     </Wrapper>
   );

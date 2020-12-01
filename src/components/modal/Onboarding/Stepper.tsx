@@ -15,17 +15,29 @@ const Dot = styled.div<{ active?: boolean }>`
   background-color: ${({ active }) =>
     theme.colors[active ? "primary" : "backgroundBadgeGray"]};
   margin: 0 7px;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
-export type Props = { totalSteps: number; currentStep: number };
+export type Props = {
+  totalSteps: number;
+  currentStep: number;
+  setCurrentStep: (stepId: number) => void;
+};
 
 export const Stepper = memo(function Stepper(props: Props): JSX.Element {
-  const { totalSteps, currentStep } = props;
+  const { totalSteps, currentStep, setCurrentStep } = props;
 
   return (
     <Wrapper>
-      {range(totalSteps).map((id) => (
-        <Dot key={id} active={id + 1 === currentStep} />
+      {range(1, totalSteps + 1).map((id) => (
+        <Dot
+          key={id}
+          active={id === currentStep}
+          onClick={() => setCurrentStep(id)}
+        />
       ))}
     </Wrapper>
   );

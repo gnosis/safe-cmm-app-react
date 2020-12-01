@@ -90,7 +90,7 @@ export type FromMarketPriceParams = {
 /**
  * Calculates brackets based on Market price
  *
- * Brackets bellow market price are set on the left
+ * Brackets below market price are set on the left
  * Bracket above market price are set on the right
  *
  * Middle bracket is assigned one of the sides according to the rule:

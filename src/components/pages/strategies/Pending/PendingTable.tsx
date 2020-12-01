@@ -15,9 +15,11 @@ import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
 //import { Details } from "./Details";
 import { StrategyState } from "types";
-import { SafeStrategy } from "logic/SafeStrategy";
 import { Loader } from "@gnosis.pm/safe-react-components";
-import { decimalFormat, decimalTruncatedString } from "utils/decimalFormat";
+import { decimalTruncatedString } from "utils/decimalFormat";
+
+import { Text } from "components/basic/display/Text";
+import { DeployedParams } from "components/basic/display/DeployedParams";
 
 const HideableTableRow = styled(TableRow)`
   &.hide {
@@ -63,7 +65,7 @@ export const PendingTable = memo(function PendingTable({
           <TableRow>
             <TableCell>Created</TableCell>
             <TableCell>Token Pair</TableCell>
-            <TableCell>Nonce</TableCell>
+            <TableCell>Safe Nonce</TableCell>
             <TableCell>Price Range</TableCell>
             <TableCell>Brackets</TableCell>
             <TableCell />
@@ -75,7 +77,11 @@ export const PendingTable = memo(function PendingTable({
         <TableBody>
           {strategies.map((strategy) => (
             <>
-              <TableRow key={strategy.transactionHash}>
+              <TableRow
+                key={strategy.transactionHash}
+                hover
+                onClick={makeStrategyFoldoutHandler(strategy)}
+              >
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
                   {strategy.quoteToken && strategy.baseToken
@@ -98,7 +104,7 @@ export const PendingTable = memo(function PendingTable({
                 </TableCell>
                 <TableCell>{/* status message */}</TableCell>
                 <TableCell>
-                  <IconButton onClick={makeStrategyFoldoutHandler(strategy)}>
+                  <IconButton>
                     {strategy.transactionHash === foldOutStrategy ? (
                       <ChevronUp />
                     ) : (
@@ -114,7 +120,7 @@ export const PendingTable = memo(function PendingTable({
                 }
               >
                 <TableCell colSpan={7} key={strategy.transactionHash}>
-                  <span>TODO</span>
+                  <DeployedParams strategy={strategy} />
                 </TableCell>
               </HideableTableRow>
             </>
