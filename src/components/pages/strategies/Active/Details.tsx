@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import styled from "styled-components";
 import { ButtonGroup } from "@material-ui/core";
 
@@ -9,6 +9,7 @@ import { WithdrawButton } from "./WithdrawButton";
 import { DeployedParamsTab } from "./DeployedParamsTab";
 
 import { StrategyState } from "types";
+import { Text } from "components/basic/display/Text";
 
 const Header = styled.div`
   display: flex;
@@ -38,6 +39,17 @@ export const Details = function Details({ strategy }: Props): JSX.Element {
     },
     []
   );
+
+  const contents = useMemo(() => {
+    switch (activeDetailScreen) {
+      case "strategy":
+        return <StrategyTab strategy={strategy} />;
+      case "params":
+        return <DeployedParamsTab strategy={strategy} />;
+      case "trades":
+        return <Text>Feature not yet available.</Text>;
+    }
+  }, [activeDetailScreen, strategy]);
 
   return (
     <>
@@ -70,14 +82,7 @@ export const Details = function Details({ strategy }: Props): JSX.Element {
         </ButtonGroup>
         <WithdrawButton strategy={strategy} />
       </Header>
-      <TabContents>
-        {activeDetailScreen === "strategy" && (
-          <StrategyTab strategy={strategy} />
-        )}
-        {activeDetailScreen === "params" && (
-          <DeployedParamsTab strategy={strategy} />
-        )}
-      </TabContents>
+      <TabContents>{contents}</TabContents>
     </>
   );
 };

@@ -36,7 +36,7 @@ export const First = memo(function First(): JSX.Element {
         The Custom Market Maker (CMM) enables users to provide liquidity without
         maintenance, similar to automated market makers (AMM) like Uniswap and
         Balancer. It is based on the{" "}
-        <Link textSize="lg" href="#todo" color="primary">
+        <Link textSize="lg" href="https://gnosis.io/protocol/" color="primary">
           Gnosis Protocol DEX.
         </Link>
       </Text>

@@ -1,10 +1,15 @@
-import { Button, Checkbox } from "@gnosis.pm/safe-react-components";
-import { Box, Paper, Typography } from "@material-ui/core";
-import { Steps } from "components/basic/display/Steps";
 import React, { memo, useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
+import { Box } from "@material-ui/core";
+
+import { Button, Checkbox } from "@gnosis.pm/safe-react-components";
 
 import storage from "api/storage";
+
+import { theme } from "theme";
+
+import { Text, Props as TextProps } from "components/basic/display/Text";
+import { Steps } from "components/basic/display/Steps";
 
 const BodyWrapper = styled(Box)`
   max-width: 480px;
@@ -16,12 +21,16 @@ const FooterWrapper = styled(Box)`
   width: 100%;
 `;
 
-const Emphasis = styled(Typography)`
+const SpanText = (props: Omit<TextProps, "as">) => (
+  <Text as="span" {...props} />
+);
+
+const Emphasis = styled(SpanText)`
   text-decoration: underline;
   display: inline;
 `;
 
-const Header = styled(Typography)`
+const Header = styled(Text)`
   text-align: justify;
   padding: 16px 0;
 `;
@@ -36,6 +45,12 @@ const Well = styled(Box)`
 const CheckboxRow = styled(Box)`
   padding-top: 16px;
   text-align: center;
+
+  .MuiTypography-root.MuiFormControlLabel-label.MuiTypography-body1 {
+    font-family: ${theme.fonts.fontFamily};
+    font-size: ${theme.text.size.lg.fontSize};
+    line-height: ${theme.text.size.lg.lineHeight};
+  }
 `;
 
 interface ModalBodyProps {
@@ -60,25 +75,26 @@ export const Body = memo(function WithdrawLiquidity({
   }, [isChecked, setConfirmHandler]);
 
   const steps = [
-    <Typography key="step1">
+    <SpanText key="step1" size="lg">
       Click on <strong>Withdraw liquidity</strong>. Then sign the transaction
-      with all Safe owners and wait atleast 5 minutes for a confirmation.
-    </Typography>,
-    <Typography key="step2">
+      with all Safe owners and wait 5 minutes for a confirmation.
+    </SpanText>,
+    <SpanText key="step2" size="lg">
       After the withdraw transaction is confirmed find the, now deactivated
       strategy, under the <strong>Closed</strong> tab. Click to expand the
       strategy and then click on <strong>Claim All Balances</strong>.<br />
       <br />
       Sign the claim Transaction with all Safe owners. After the confirmation
-      the balanaces are withdrawn to the Safe.
-    </Typography>,
+      the balances are withdrawn to the Safe.
+    </SpanText>,
   ];
 
   return (
     <BodyWrapper key="body">
-      <Header variant="body1">
+      <Header size="lg">
         This action will remove all liquidity from your strategy and effectively{" "}
-        <Emphasis>stop it</Emphasis>. Two actions and transactions are required:
+        <Emphasis size="lg">stop it</Emphasis>. Two actions and transactions are
+        required:
       </Header>
       <Well>
         <Steps steps={steps} />

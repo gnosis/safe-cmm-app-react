@@ -1,10 +1,12 @@
-import React from "react";
-
-import { Box, Typography } from "@material-ui/core";
-import { memo, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import Decimal from "decimal.js";
+import { Box } from "@material-ui/core";
+
 import { StrategyState } from "types";
+
 import { decimalFormat, decimalTruncatedString } from "utils/decimalFormat";
+
+import { Text } from "components/basic/display/Text";
 
 export type Props = {
   strategy: StrategyState;
@@ -43,7 +45,7 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
       ],
       null, // separator
       [
-        "Funding per bracket > TOKEN A",
+        `Funding per bracket > ${strategy.baseToken.symbol}`,
         `${decimalTruncatedString(
           strategy.baseFunding
             .div(Math.pow(10, strategy.baseToken.decimals))
@@ -51,7 +53,7 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
         )}`,
       ],
       [
-        "Funding per bracket > TOKEN B",
+        `Funding per bracket > ${strategy.quoteToken.symbol}`,
         `${decimalTruncatedString(
           strategy.quoteFunding
             .div(Math.pow(10, strategy.baseToken.decimals))
@@ -68,9 +70,9 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
           if (labelValuePairOrNull === null) return <br />;
           const [label, value] = labelValuePairOrNull;
           return (
-            <Typography key={label}>
+            <Text key={label} size="lg">
               <strong>{label}:</strong> {value}
-            </Typography>
+            </Text>
           );
         }
       )}

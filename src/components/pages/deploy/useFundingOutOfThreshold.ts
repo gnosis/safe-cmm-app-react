@@ -12,7 +12,7 @@ type UseFundingOutOfThresholdParams = {
 
 /**
  * Checks whether given `fundingAmount` has at least `threshold` in USD per bracket.
- * Returns true when amount per bracket is bellow the threshold.
+ * Returns true when amount per bracket is below the threshold.
  * Skips check on xdai.
  */
 export function useFundingOutOfThreshold(

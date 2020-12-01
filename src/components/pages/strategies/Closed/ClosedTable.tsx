@@ -72,7 +72,7 @@ export const ClosedTable = memo(function ClosedTable({
             <TableCell>Created</TableCell>
             <TableCell>Token Pair</TableCell>
             <TableCell>Brackets</TableCell>
-            <TableCell>Total Value Claimable</TableCell>
+            {/* <TableCell>Total Value Claimable</TableCell> */}
             <TableCell />
             {/* status */}
             <TableCell />
@@ -96,7 +96,7 @@ export const ClosedTable = memo(function ClosedTable({
                     <Loader size="sm" />
                   )}
                 </TableCell>
-                <TableCell>TODO</TableCell>
+                {/* <TableCell>TODO</TableCell> */}
                 <TableCell>{/* status message */}</TableCell>
                 <TableCell>
                   <IconButton onClick={makeStrategyFoldoutHandler(strategy)}>

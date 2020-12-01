@@ -15,9 +15,10 @@ import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
 //import { Details } from "./Details";
 import { StrategyState } from "types";
-import { SafeStrategy } from "logic/SafeStrategy";
 import { Loader } from "@gnosis.pm/safe-react-components";
-import { decimalFormat, decimalTruncatedString } from "utils/decimalFormat";
+import { decimalTruncatedString } from "utils/decimalFormat";
+
+import { Text } from "components/basic/display/Text";
 
 const HideableTableRow = styled(TableRow)`
   &.hide {
@@ -63,7 +64,7 @@ export const PendingTable = memo(function PendingTable({
           <TableRow>
             <TableCell>Created</TableCell>
             <TableCell>Token Pair</TableCell>
-            <TableCell>Nonce</TableCell>
+            <TableCell>Safe Nonce</TableCell>
             <TableCell>Price Range</TableCell>
             <TableCell>Brackets</TableCell>
             <TableCell />
@@ -114,7 +115,7 @@ export const PendingTable = memo(function PendingTable({
                 }
               >
                 <TableCell colSpan={7} key={strategy.transactionHash}>
-                  <span>TODO</span>
+                  <Text>Feature not yet available.</Text>
                 </TableCell>
               </HideableTableRow>
             </>
