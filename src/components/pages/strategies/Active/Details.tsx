@@ -6,10 +6,10 @@ import { Button } from "components/basic/inputs/Button";
 
 import { StrategyTab } from "./StrategyTab";
 import { WithdrawButton } from "./WithdrawButton";
-import { DeployedParamsTab } from "./DeployedParamsTab";
 
 import { StrategyState } from "types";
 import { Text } from "components/basic/display/Text";
+import { DeployedParams } from "components/basic/display/DeployedParams";
 
 const Header = styled.div`
   display: flex;
@@ -45,7 +45,7 @@ export const Details = function Details({ strategy }: Props): JSX.Element {
       case "strategy":
         return <StrategyTab strategy={strategy} />;
       case "params":
-        return <DeployedParamsTab strategy={strategy} />;
+        return <DeployedParams strategy={strategy} />;
       case "trades":
         return <Text>Feature not yet available.</Text>;
     }

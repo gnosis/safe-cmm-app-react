@@ -19,6 +19,7 @@ import { Loader } from "@gnosis.pm/safe-react-components";
 import { decimalTruncatedString } from "utils/decimalFormat";
 
 import { Text } from "components/basic/display/Text";
+import { DeployedParams } from "components/basic/display/DeployedParams";
 
 const HideableTableRow = styled(TableRow)`
   &.hide {
@@ -115,7 +116,7 @@ export const PendingTable = memo(function PendingTable({
                 }
               >
                 <TableCell colSpan={7} key={strategy.transactionHash}>
-                  <Text>Feature not yet available.</Text>
+                  <DeployedParams strategy={strategy} />
                 </TableCell>
               </HideableTableRow>
             </>
