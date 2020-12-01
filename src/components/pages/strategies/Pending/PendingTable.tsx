@@ -77,7 +77,11 @@ export const PendingTable = memo(function PendingTable({
         <TableBody>
           {strategies.map((strategy) => (
             <>
-              <TableRow key={strategy.transactionHash}>
+              <TableRow
+                key={strategy.transactionHash}
+                hover
+                onClick={makeStrategyFoldoutHandler(strategy)}
+              >
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
                   {strategy.quoteToken && strategy.baseToken
@@ -100,7 +104,7 @@ export const PendingTable = memo(function PendingTable({
                 </TableCell>
                 <TableCell>{/* status message */}</TableCell>
                 <TableCell>
-                  <IconButton onClick={makeStrategyFoldoutHandler(strategy)}>
+                  <IconButton>
                     {strategy.transactionHash === foldOutStrategy ? (
                       <ChevronUp />
                     ) : (
