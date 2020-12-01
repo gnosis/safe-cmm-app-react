@@ -93,12 +93,12 @@ export const DeployedParams = memo(function DeployedParams(
       ],
       null, // separator
       [
-        `${formatSmart(strategy.baseFunding)}`,
         `Total ${strategy.baseToken.symbol}${pendingAppendix} deposited`,
+        `${formatSmart(strategy.baseFunding)}`,
       ],
       [
-        `${formatSmart(strategy.quoteFunding)}`,
         `Total ${strategy.quoteToken.symbol}${pendingAppendix} deposited`,
+        `${formatSmart(strategy.quoteFunding)}`,
       ],
     ];
   }, [strategy]);
