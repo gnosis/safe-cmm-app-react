@@ -17,7 +17,7 @@ export type Props = {
   strategy: StrategyState;
 };
 
-export const DeployedParamsTab = memo(function DeployedParamsTab(
+export const DeployedParams = memo(function DeployedParams(
   props: Props
 ): JSX.Element {
   const { strategy } = props;
@@ -64,6 +64,8 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
   const totalFundingTuple = ["Total funding", totalFunding];
 
   const params = useMemo((): Array<any> => {
+    const pendingAppendix = strategy.status === "PENDING" ? " to be" : "";
+
     return [
       [
         "Lowest Price",
@@ -91,11 +93,11 @@ export const DeployedParamsTab = memo(function DeployedParamsTab(
       ],
       null, // separator
       [
-        `Total ${strategy.baseToken.symbol} deposited`,
+        `Total ${strategy.baseToken.symbol}${pendingAppendix} deposited`,
         `${formatSmart(strategy.baseFunding)}`,
       ],
       [
-        `Total ${strategy.quoteToken.symbol} deposited`,
+        `Total ${strategy.quoteToken.symbol}${pendingAppendix} deposited`,
         `${formatSmart(strategy.quoteFunding)}`,
       ],
     ];

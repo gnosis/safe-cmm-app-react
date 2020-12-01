@@ -220,6 +220,12 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
       brackets: this.brackets,
       baseToken: this.baseTokenDetails,
       quoteToken: this.quoteTokenDetails,
+      baseFunding: new Decimal(totalBaseFundingWei.toString()).div(
+        Math.pow(10, this.baseTokenDetails.decimals)
+      ),
+      quoteFunding: new Decimal(totalQuoteFundingWei.toString()).div(
+        Math.pow(10, this.quoteTokenDetails.decimals)
+      ),
       priceRange,
       prices: this.prices,
       // This method fetches everything anyway
