@@ -128,16 +128,13 @@ export const ClosedTable = memo(function ClosedTable({
                   </IconButton>
                 </TableCell>
               </TableRow>
-              <HideableTableRow
-                key={`${strategy.transactionHash}-foldout`}
-                className={
-                  foldOutStrategy !== strategy.transactionHash ? "hide" : ""
-                }
-              >
-                <TableCell colSpan={6} key={strategy.transactionHash}>
-                  <Details strategy={strategy} />
-                </TableCell>
-              </HideableTableRow>
+              {foldOutStrategy === strategy.transactionHash && (
+                <HideableTableRow key={`${strategy.transactionHash}-foldout`}>
+                  <TableCell colSpan={6} key={strategy.transactionHash}>
+                    <Details strategy={strategy} />
+                  </TableCell>
+                </HideableTableRow>
+              )}
             </>
           ))}
           {loading && (
