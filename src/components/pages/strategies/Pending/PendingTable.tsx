@@ -58,6 +58,8 @@ export const PendingTable = memo(function PendingTable({
     };
   }, []);
 
+  const loader = <Loader size="sm" />;
+
   return (
     <StyledTableContainer>
       <Table>
@@ -90,17 +92,18 @@ export const PendingTable = memo(function PendingTable({
                 </TableCell>
                 <TableCell>{strategy.nonce}</TableCell>
                 <TableCell>
-                  {decimalTruncatedString(strategy.priceRange.lower)}
-                  {" - "}
-                  {decimalTruncatedString(strategy.priceRange.upper)}
-                  {` ${strategy.quoteToken.symbol} per ${strategy.baseToken.symbol}`}
+                  {!strategy.hasFetchedFunding
+                    ? loader
+                    : `${decimalTruncatedString(
+                        strategy.priceRange.lower
+                      )} - ${decimalTruncatedString(
+                        strategy.priceRange.upper
+                      )} ${strategy.quoteToken.symbol} per ${
+                        strategy.baseToken.symbol
+                      }`}
                 </TableCell>
                 <TableCell>
-                  {strategy.brackets ? (
-                    strategy.brackets.length
-                  ) : (
-                    <Loader size="sm" />
-                  )}
+                  {strategy.brackets ? strategy.brackets.length : loader}
                 </TableCell>
                 <TableCell>{/* status message */}</TableCell>
                 <TableCell>
