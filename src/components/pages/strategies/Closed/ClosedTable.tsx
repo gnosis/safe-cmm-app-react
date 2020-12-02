@@ -84,7 +84,7 @@ export const ClosedTable = memo(function ClosedTable({
             <TableCell>Created</TableCell>
             <TableCell>Token Pair</TableCell>
             <TableCell>Brackets</TableCell>
-            {/* <TableCell>Total Value Claimable</TableCell> */}
+            <TableCell>Total Value Claimable</TableCell>
             <TableCell />
             {/* status */}
             <TableCell />
