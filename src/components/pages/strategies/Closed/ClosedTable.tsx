@@ -1,6 +1,5 @@
 import React, { memo, useState, useCallback } from "react";
 import styled from "styled-components";
-
 import {
   TableContainer,
   Table,
@@ -11,15 +10,18 @@ import {
   IconButton,
   Box,
 } from "@material-ui/core";
-
 import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
-//import { Details } from "./Details";
-import { StrategyState } from "types";
+
 import { Loader } from "@gnosis.pm/safe-react-components";
-import { Details } from "./Details";
-import { Text } from "components/basic/display/Text";
+
+import { StrategyState } from "types";
+
 import { formatSmart } from "utils/format";
+
+import { Text } from "components/basic/display/Text";
+
+import { Details } from "./Details";
 
 const CenteredBox = styled(Box)`
   display: flex;
