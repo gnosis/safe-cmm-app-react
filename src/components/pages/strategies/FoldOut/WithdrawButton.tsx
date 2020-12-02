@@ -164,11 +164,7 @@ export function WithdrawButton(props: Props): React.ReactElement {
   }, [strategy, context, openModal, setWithdrawStates]);
 
   if (status === "CLOSED") {
-    return (
-      <Text size="md">
-        Strategy closed. Strategy details will be added in the near future.
-      </Text>
-    );
+    return null;
   }
 
   if (status !== "ACTIVE" && status !== "TRADING_STOPPED") {
