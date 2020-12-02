@@ -113,7 +113,9 @@ export const ClosedTable = memo(function ClosedTable({
                   )}
                 </TableCell>
                 <TableCell>
-                  {strategy.hasFetchedBalance ? (
+                  {strategy.status === "CLOSED" ? (
+                    <Text>Already claimed</Text>
+                  ) : strategy.hasFetchedBalance ? (
                     <Text>{totalClaimable(strategy)}</Text>
                   ) : (
                     <Loader size="xs" />
