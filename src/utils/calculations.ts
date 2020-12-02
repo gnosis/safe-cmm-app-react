@@ -1,4 +1,5 @@
 import Decimal from "decimal.js";
+import { ZERO_DECIMAL } from "./constants";
 
 import { dateDiffInDays } from "./time";
 
@@ -67,6 +68,11 @@ export function calculateApr(
   const difference = currentValue.minus(initialValue);
 
   const days = dateDiffInDays(startDate, _endDate);
+
+  if (days === 0) {
+    return ZERO_DECIMAL;
+  }
+
   const differencePerDay = difference.div(initialValue).div(days);
 
   return differencePerDay.mul("365");
