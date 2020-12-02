@@ -21,7 +21,7 @@ import { formatSmart } from "utils/format";
 
 import { Text } from "components/basic/display/Text";
 
-import { Details } from "./Details";
+import { FoldOut } from "../FoldOut";
 
 const CenteredBox = styled(Box)`
   display: flex;
@@ -133,7 +133,10 @@ export const ClosedTable = memo(function ClosedTable({
               {foldOutStrategy === strategy.transactionHash && (
                 <HideableTableRow key={`${strategy.transactionHash}-foldout`}>
                   <TableCell colSpan={6} key={strategy.transactionHash}>
-                    <Details strategy={strategy} />
+                    <FoldOut
+                      strategy={strategy}
+                      StrategyComponent={() => <Text>Not yet implemented</Text>}
+                    />
                   </TableCell>
                 </HideableTableRow>
               )}
