@@ -76,4 +76,14 @@ describe("Valid input", () => {
       calculateApr(currentValue, initialValue, startDate, endDate)
     ).toEqual(ONE_DECIMAL.div(ONE_HUNDRED_DECIMAL).times("365"));
   });
+
+  test("Start date === end date", () => {
+    const initialValue = ONE_HUNDRED_DECIMAL;
+    const currentValue = ONE_HUNDRED_DECIMAL.add(ONE_DECIMAL);
+    const endDate = startDate;
+
+    expect(
+      calculateApr(currentValue, initialValue, startDate, endDate)
+    ).toEqual(ZERO_DECIMAL);
+  });
 });
