@@ -58,6 +58,8 @@ export const PendingTable = memo(function PendingTable({
     };
   }, []);
 
+  const loader = <Loader size="sm" />;
+
   return (
     <StyledTableContainer>
       <Table>
@@ -90,17 +92,18 @@ export const PendingTable = memo(function PendingTable({
                 </TableCell>
                 <TableCell>{strategy.nonce}</TableCell>
                 <TableCell>
-                  {decimalTruncatedString(strategy.priceRange.lower)}
-                  {" - "}
-                  {decimalTruncatedString(strategy.priceRange.upper)}
-                  {` ${strategy.quoteToken.symbol} per ${strategy.baseToken.symbol}`}
+                  {!strategy.hasFetchedFunding
+                    ? loader
+                    : `${decimalTruncatedString(
+                        strategy.priceRange.lower
+                      )} - ${decimalTruncatedString(
+                        strategy.priceRange.upper
+                      )} ${strategy.quoteToken.symbol} per ${
+                        strategy.baseToken.symbol
+                      }`}
                 </TableCell>
                 <TableCell>
-                  {strategy.brackets ? (
-                    strategy.brackets.length
-                  ) : (
-                    <Loader size="sm" />
-                  )}
+                  {strategy.brackets ? strategy.brackets.length : loader}
                 </TableCell>
                 <TableCell>{/* status message */}</TableCell>
                 <TableCell>
@@ -113,16 +116,13 @@ export const PendingTable = memo(function PendingTable({
                   </IconButton>
                 </TableCell>
               </TableRow>
-              <HideableTableRow
-                key={`${strategy.transactionHash}-foldout`}
-                className={
-                  foldOutStrategy !== strategy.transactionHash ? "hide" : ""
-                }
-              >
-                <TableCell colSpan={7} key={strategy.transactionHash}>
-                  <DeployedParams strategy={strategy} />
-                </TableCell>
-              </HideableTableRow>
+              {foldOutStrategy === strategy.transactionHash && (
+                <HideableTableRow key={`${strategy.transactionHash}-foldout`}>
+                  <TableCell colSpan={7} key={strategy.transactionHash}>
+                    <DeployedParams strategy={strategy} />
+                  </TableCell>
+                </HideableTableRow>
+              )}
             </>
           ))}
         </TableBody>

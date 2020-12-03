@@ -27,7 +27,7 @@ export const DeployedParams = memo(function DeployedParams(
     amountInUsd: baseAmountInUsd,
     isLoading: isBaseAmountLoading,
   } = useAmountInUsd({
-    tokenAddress: baseToken.address,
+    tokenAddress: baseToken?.address,
     amount: baseFunding?.toFixed(),
     source: "GnosisProtocol",
   });
@@ -35,7 +35,7 @@ export const DeployedParams = memo(function DeployedParams(
     amountInUsd: quoteAmountInUsd,
     isLoading: isQuoteAmountLoading,
   } = useAmountInUsd({
-    tokenAddress: quoteToken.address,
+    tokenAddress: quoteToken?.address,
     amount: quoteFunding?.toFixed(),
     source: "GnosisProtocol",
   });
@@ -65,6 +65,10 @@ export const DeployedParams = memo(function DeployedParams(
 
   const params = useMemo((): Array<any> => {
     const pendingAppendix = strategy.status === "PENDING" ? " to be" : "";
+
+    if (!strategy.hasFetchedFunding) {
+      return [];
+    }
 
     return [
       [

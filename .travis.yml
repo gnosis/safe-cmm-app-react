@@ -55,10 +55,11 @@ deploy:
     local_dir: dist
     upload-dir: releases/$TRAVIS_TAG
     region: $AWS_DEFAULT_REGION
+    script: npm run build-prod
     skip_cleanup: true
     on:
       tags: true
   - provider: script
-    script: ./config/travis/prepare_production_deployment.sh
+    script: ./travis/prepare_production_deployment.sh
     on:
       tags: true
