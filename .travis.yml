@@ -21,9 +21,9 @@ before_install:
   - pip install awscli --upgrade --user
 script:
   - if [[ $APP_BUILD = "PREPROD" ]]; then
-      npm run build-prod
+      npm run build-prod;
     else
-      npm run build
+      npm run build;
     fi;
 
 
