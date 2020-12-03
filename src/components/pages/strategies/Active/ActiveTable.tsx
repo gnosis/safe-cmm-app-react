@@ -1,6 +1,5 @@
 import React, { memo, useState, useCallback } from "react";
 import styled from "styled-components";
-
 import {
   TableContainer,
   Table,
@@ -11,21 +10,24 @@ import {
   IconButton,
   Box,
 } from "@material-ui/core";
+import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
+import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
+
+import { Loader, Text } from "@gnosis.pm/safe-react-components";
+
+import { StrategyState } from "types";
+
+import { decimalFormat } from "utils/decimalFormat";
+
+import { FoldOut } from "../FoldOut";
+
+import { StrategyTab } from "./StrategyTab";
 
 const CenteredBox = styled(Box)`
   display: flex;
   justify-content: center;
   align-items: center;
 `;
-
-import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
-import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
-
-import { StrategyState } from "types";
-import { decimalFormat } from "utils/decimalFormat";
-import { Loader, Text } from "@gnosis.pm/safe-react-components";
-
-import { Details } from "./Details";
 
 const StyledTableHeader = styled(TableHead)`
   th {
@@ -127,7 +129,10 @@ export const ActiveTable = memo(function ActiveTable({
               {foldOutStrategy === strategy.transactionHash && (
                 <TableRow key={`${strategy.transactionHash}-foldout`}>
                   <TableCell colSpan={9} key={strategy.transactionHash}>
-                    <Details strategy={strategy} />
+                    <FoldOut
+                      strategy={strategy}
+                      StrategyComponent={StrategyTab}
+                    />
                   </TableCell>
                 </TableRow>
               )}

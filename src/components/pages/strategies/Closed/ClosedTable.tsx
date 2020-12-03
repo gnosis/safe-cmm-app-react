@@ -1,6 +1,5 @@
 import React, { memo, useState, useCallback } from "react";
 import styled from "styled-components";
-
 import {
   TableContainer,
   Table,
@@ -11,15 +10,18 @@ import {
   IconButton,
   Box,
 } from "@material-ui/core";
-
 import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
-//import { Details } from "./Details";
-import { StrategyState } from "types";
+
 import { Loader } from "@gnosis.pm/safe-react-components";
-import { Details } from "./Details";
-import { Text } from "components/basic/display/Text";
+
+import { StrategyState } from "types";
+
 import { formatSmart } from "utils/format";
+
+import { Text } from "components/basic/display/Text";
+
+import { FoldOut } from "../FoldOut";
 
 const CenteredBox = styled(Box)`
   display: flex;
@@ -82,7 +84,7 @@ export const ClosedTable = memo(function ClosedTable({
             <TableCell>Created</TableCell>
             <TableCell>Token Pair</TableCell>
             <TableCell>Brackets</TableCell>
-            {/* <TableCell>Total Value Claimable</TableCell> */}
+            <TableCell>Total Value Claimable</TableCell>
             <TableCell />
             {/* status */}
             <TableCell />
@@ -131,7 +133,10 @@ export const ClosedTable = memo(function ClosedTable({
               {foldOutStrategy === strategy.transactionHash && (
                 <HideableTableRow key={`${strategy.transactionHash}-foldout`}>
                   <TableCell colSpan={6} key={strategy.transactionHash}>
-                    <Details strategy={strategy} />
+                    <FoldOut
+                      strategy={strategy}
+                      StrategyComponent={() => <Text>Not yet implemented</Text>}
+                    />
                   </TableCell>
                 </HideableTableRow>
               )}
