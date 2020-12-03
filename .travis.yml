@@ -21,8 +21,10 @@ before_install:
   - pip install awscli --upgrade --user
 script:
   - if [[ $APP_BUILD = "PREPROD" ]]; then
+      echo "Executing -> npm run build-prod";
       npm run build-prod;
     else
+      echo "Executing -> npm run build";
       npm run build;
     fi;
 
@@ -30,11 +32,17 @@ script:
 after_success:
   # add storybook to build
   - if [[ $TRAVIS_TAG != "" || $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_BRANCH = master || $TRAVIS_BRANCH = development ]]; then
+      echo "Executing -> npm run release-storybook";
       npm run release-storybook;
     fi
   # Pull Request - Deploy it to a review environment
   # Travis doesn't do deploy step with pull requests builds
   - ./travis/deploy_pull_request.sh
+  # IPFS - Deploy and pin to IPFS
+  # Only tagged builds
+  - if [[ -n "$TRAVIS_TAG" ]]; then
+      ./travis/deploy_and_pin_ipfs.sh
+    fi
 deploy:
   # Development environment
   - provider: s3
@@ -59,7 +67,7 @@ deploy:
     skip_cleanup: true
     on:
       branch: master
-      condition: $APP_BUILD != PREPROD   
+      condition: $APP_BUILD != PREPROD
 
   # preprod environment
   - provider: s3
