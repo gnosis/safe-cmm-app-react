@@ -3,16 +3,30 @@ dist: xenial
 language: node_js
 node_js:
   - "12.4.0"
-env:
-  - INFURA_API_KEY=${INFURA_API_KEY}
 cache:
   yarn: true
+
+matrix:
+  include:
+    - env:
+      - APP_BUILD = 'PREPROD'
+      - INFURA_API_KEY=${INFURA_API_KEY}
+      if: (branch = master AND NOT type = pull_request) OR tag IS present
+    - env:
+      - APP_BUILD = 'DEV/STAGING'
+      - INFURA_API_KEY=${INFURA_API_KEY}
 before_install:
   - npm install
   # Needed to deploy pull request and releases
   - pip install awscli --upgrade --user
 script:
-  - npm run build
+  - if [[ $APP_BUILD = "PREPROD" ]]; then
+      npm run build-prod
+    else
+      npm run build
+    fi;
+
+
 after_success:
   # add storybook to build
   - if [[ $TRAVIS_TAG != "" || $TRAVIS_PULL_REQUEST != "false" || $TRAVIS_BRANCH = master || $TRAVIS_BRANCH = development ]]; then
@@ -45,6 +59,20 @@ deploy:
     skip_cleanup: true
     on:
       branch: master
+      condition: $APP_BUILD != PREPROD   
+
+  # preprod environment
+  - provider: s3
+    bucket: $PREPROD_BUCKET_NAME
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    local_dir: dist
+    upload-dir: current
+    region: $AWS_DEFAULT_REGION
+    skip_cleanup: true
+    on:
+      branch: master
+      condition: $APP_BUILD = PREPROD
 
 
     # Prepare production deployment
@@ -60,7 +88,9 @@ deploy:
     skip_cleanup: true
     on:
       tags: true
+      condition: $APP_BUILD = PREPROD
   - provider: script
     script: ./travis/prepare_production_deployment.sh
     on:
       tags: true
+      condition: $APP_BUILD = PREPROD
