@@ -12,7 +12,7 @@ import { Text } from "components/basic/display/Text";
 import { Arrow } from "components/basic/display/Arrow";
 
 const Wrapper = styled.div<{ isPositive: boolean }>`
-  display: flex;
+  display: inline-flex;
   align-items: center;
 
   & > :last-child {
@@ -40,7 +40,7 @@ export const PercentageIndicator = memo(function PercentageIndicator(
     return <Loader size="sm" />;
   }
   if (!value || value.isNaN()) {
-    return <Text>N/A</Text>;
+    return <Text as="span">N/A</Text>;
   }
 
   const isPositive = value.gte(ZERO_DECIMAL);
