@@ -77,14 +77,12 @@ deploy:
 
     # Prepare production deployment
   - provider: s3
-    script: npm run build-prod
     bucket: $PREPROD_BUCKET_NAME
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     access_key_id: $AWS_ACCESS_KEY_ID
     local_dir: dist
     upload-dir: releases/$TRAVIS_TAG
     region: $AWS_DEFAULT_REGION
-    script: npm run build-prod
     skip_cleanup: true
     on:
       tags: true
