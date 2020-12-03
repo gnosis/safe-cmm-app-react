@@ -78,7 +78,7 @@ deploy:
     # Prepare production deployment
   - provider: s3
     script: npm run build-prod
-    bucket: $STAGING_BUCKET_NAME
+    bucket: $PREPROD_BUCKET_NAME
     secret_access_key: $AWS_SECRET_ACCESS_KEY
     access_key_id: $AWS_ACCESS_KEY_ID
     local_dir: dist
