@@ -34,7 +34,7 @@ export const Needle = memo(function Needle(): JSX.Element {
   const {
     needlePosition = 50,
     startPrice,
-    baseTokenAddress,
+    quoteTokenAddress,
     lowerThreshold,
     upperThreshold,
   } = useContext(BracketsViewContext);
@@ -51,7 +51,7 @@ export const Needle = memo(function Needle(): JSX.Element {
           {startPrice && (
             <PriceDisplay
               price={startPrice}
-              token={baseTokenAddress}
+              token={quoteTokenAddress}
               color="primary"
               size="xs"
               className="price"
