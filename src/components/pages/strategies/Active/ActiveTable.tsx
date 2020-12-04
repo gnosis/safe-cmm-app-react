@@ -89,7 +89,7 @@ export const ActiveTable = memo(function ActiveTable({
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
                   {strategy.quoteToken && strategy.baseToken
-                    ? `${strategy.quoteToken?.symbol} - ${strategy.baseToken?.symbol}`
+                    ? `${strategy.baseToken?.symbol} - ${strategy.quoteToken?.symbol}`
                     : "Unknown"}
                 </TableCell>
                 <TableCell>{strategy.brackets.length}</TableCell>

@@ -87,7 +87,7 @@ export const PendingTable = memo(function PendingTable({
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
                   {strategy.quoteToken && strategy.baseToken
-                    ? `${strategy.quoteToken?.symbol} - ${strategy.baseToken?.symbol}`
+                    ? `${strategy.baseToken?.symbol} - ${strategy.quoteToken?.symbol}`
                     : "Unknown"}
                 </TableCell>
                 <TableCell>{strategy.nonce}</TableCell>
