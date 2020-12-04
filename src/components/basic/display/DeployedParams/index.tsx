@@ -5,13 +5,12 @@ import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { StrategyState } from "types";
 
-import { useAmountInUsd } from "hooks/useAmountInUsd";
-
 import { decimalFormat } from "utils/decimalFormat";
-import { safeAddDecimals } from "utils/calculations";
 import { formatSmart } from "utils/format";
 
 import { Text } from "components/basic/display/Text";
+
+import { useTotalFunding } from "./useTotalFunding";
 
 export type Props = {
   strategy: StrategyState;
@@ -21,47 +20,15 @@ export const DeployedParams = memo(function DeployedParams(
   props: Props
 ): JSX.Element {
   const { strategy } = props;
-  const { baseToken, quoteToken, baseFunding, quoteFunding } = strategy;
 
-  const {
-    amountInUsd: baseAmountInUsd,
-    isLoading: isBaseAmountLoading,
-  } = useAmountInUsd({
-    tokenAddress: baseToken?.address,
-    amount: baseFunding?.toFixed(),
-    source: "GnosisProtocol",
-  });
-  const {
-    amountInUsd: quoteAmountInUsd,
-    isLoading: isQuoteAmountLoading,
-  } = useAmountInUsd({
-    tokenAddress: quoteToken?.address,
-    amount: quoteFunding?.toFixed(),
-    source: "GnosisProtocol",
-  });
+  const { totalFunding, isLoading: isTotalFundingLoading } = useTotalFunding(
+    strategy
+  );
 
-  const totalFunding = useMemo((): React.ReactNode => {
-    if (isBaseAmountLoading || isQuoteAmountLoading) {
-      return <Loader size="xs" />;
-    }
-
-    try {
-      const amountString = formatSmart(
-        safeAddDecimals(baseAmountInUsd, quoteAmountInUsd)
-      );
-      return amountString ? `~$${amountString}` : "N/A";
-    } catch (e) {
-      console.error(`Failed to format total funding`, e);
-      return "N/A";
-    }
-  }, [
-    baseAmountInUsd,
-    isBaseAmountLoading,
-    isQuoteAmountLoading,
-    quoteAmountInUsd,
-  ]);
-
-  const totalFundingTuple = ["Total funding", totalFunding];
+  const totalFundingTuple = [
+    "Total funding",
+    isTotalFundingLoading ? <Loader size="xs" /> : totalFunding,
+  ];
 
   const params = useMemo((): Array<any> => {
     const pendingAppendix = strategy.status === "PENDING" ? " to be" : "";
