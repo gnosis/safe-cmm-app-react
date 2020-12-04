@@ -17,18 +17,20 @@ import {
   calculateRoi,
 } from "utils/calculations";
 import { safeAsyncFn } from "utils/misc";
+import { dateToBatchId } from "utils/time";
 
 type Return = {
   totalValue: Decimal | undefined;
   holdValue: Decimal | undefined;
+  withdrawnValue: Decimal | undefined;
   roi: Decimal | undefined;
   apr: Decimal | undefined;
   isLoading: boolean;
 };
 
-export function useCalculateValues(params: {
-  strategy: StrategyState;
-}): Return {
+type Params = { strategy: StrategyState };
+
+export function useCalculateValues(params: Params): Return {
   const { strategy } = params;
   const {
     baseToken,
@@ -37,13 +39,20 @@ export function useCalculateValues(params: {
     quoteBalance,
     baseFunding,
     quoteFunding,
+    baseWithdrawn,
+    quoteWithdrawn,
     created,
+    claimDate,
+    withdrawRequestDate,
     firstBatchId: batchId,
   } = strategy;
 
   const [isLoading, setIsLoading] = useState(false);
   const [totalValue, setTotalValue] = useState<Decimal | undefined>(undefined);
   const [holdValue, setHoldValue] = useState<Decimal | undefined>(undefined);
+  const [withdrawnValue, setWithdrawnValue] = useState<Decimal | undefined>(
+    undefined
+  );
   const [roi, setRoi] = useState<Decimal | undefined>(undefined);
   const [apr, setApr] = useState<Decimal | undefined>(undefined);
 
@@ -66,6 +75,8 @@ export function useCalculateValues(params: {
         quoteDepositInUsd,
         baseHistoricalInUsd,
         quoteHistoricalInUsd,
+        baseWithdrawnInUsd,
+        quoteWithdrawnInUsd,
       ] = await Promise.all([
         safeAsyncFn(amountInQuote, undefined, {
           source: "GnosisProtocol",
@@ -113,19 +124,67 @@ export function useCalculateValues(params: {
           sourceOptions: { batchId },
           cacheTime: 0,
         }),
+        safeAsyncFn(amountInQuote, undefined, {
+          source: "GnosisProtocol",
+          baseToken,
+          quoteToken: usdReferenceToken,
+          amount: baseWithdrawn?.toFixed(),
+          networkId,
+          sourceOptions: { batchId: dateToBatchId(claimDate) },
+          cacheTime: 0,
+        }),
+        safeAsyncFn(amountInQuote, undefined, {
+          source: "GnosisProtocol",
+          baseToken: quoteToken,
+          quoteToken: usdReferenceToken,
+          amount: quoteWithdrawn?.toFixed(),
+          networkId,
+          sourceOptions: { batchId: dateToBatchId(claimDate) },
+          cacheTime: 0,
+        }),
       ]);
 
-      const totalValue = safeAddDecimals(baseAmountInUsd, quoteAmountInUsd);
-      const holdValue = safeAddDecimals(baseDepositInUsd, quoteDepositInUsd);
-      const roi = calculateRoi(totalValue, holdValue);
-      const apr = calculateApr(
-        totalValue,
-        safeAddDecimals(baseHistoricalInUsd, quoteHistoricalInUsd),
-        created
+      const strategyValueNow = safeAddDecimals(
+        baseAmountInUsd,
+        quoteAmountInUsd
+      );
+      const fundingValueNow = safeAddDecimals(
+        baseDepositInUsd,
+        quoteDepositInUsd
+      );
+      const fundingValueOnStrategyCreation = safeAddDecimals(
+        baseHistoricalInUsd,
+        quoteHistoricalInUsd
+      );
+      const withdrawnValueOnStrategyClose = safeAddDecimals(
+        baseWithdrawnInUsd,
+        quoteWithdrawnInUsd
       );
 
-      setTotalValue(totalValue);
-      setHoldValue(holdValue);
+      let currentValue = strategyValueNow;
+      let initialValue = fundingValueNow;
+
+      // When Strategy is CLOSED, the funds have been withdrawn/claimed
+      // claimDate will be set.
+      // Balances will be 0.
+      // ROI and APR will be calculated based on historical prices.
+
+      if (claimDate) {
+        currentValue = withdrawnValueOnStrategyClose;
+        initialValue = fundingValueOnStrategyCreation;
+      }
+
+      const roi = calculateRoi(currentValue, initialValue);
+      const apr = calculateApr(
+        currentValue,
+        fundingValueOnStrategyCreation, // always against funding value on creation
+        created,
+        claimDate || withdrawRequestDate
+      );
+
+      setTotalValue(strategyValueNow);
+      setHoldValue(fundingValueNow);
+      setWithdrawnValue(withdrawnValueOnStrategyClose);
       setRoi(roi);
       setApr(apr);
 
@@ -144,7 +203,11 @@ export function useCalculateValues(params: {
     quoteBalance,
     quoteFunding,
     usdReferenceToken,
+    claimDate,
+    withdrawRequestDate,
+    baseWithdrawn,
+    quoteWithdrawn,
   ]);
 
-  return { totalValue, holdValue, roi, apr, isLoading };
+  return { totalValue, holdValue, withdrawnValue, roi, apr, isLoading };
 }

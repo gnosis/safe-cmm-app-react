@@ -41,12 +41,15 @@ export interface StrategyState {
   priceRange: PriceRange;
   prices: Decimal[];
   withdrawRequestDate: Date;
+  claimDate: Date;
   baseToken: TokenDetails;
   quoteToken: TokenDetails;
   baseFunding: Decimal;
   quoteFunding: Decimal;
   baseBalance: Decimal;
   quoteBalance: Decimal;
+  baseWithdrawn: Decimal;
+  quoteWithdrawn: Decimal;
   brackets: Bracket[];
   nonce?: number;
 

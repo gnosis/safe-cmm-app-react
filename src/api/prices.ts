@@ -7,7 +7,12 @@ import { getBestAsk } from "api/dexPriceEstimator";
 
 import { TokenDetails } from "types";
 
-import { Network, ONE_DECIMAL, PRICE_CACHE_TIME } from "utils/constants";
+import {
+  Network,
+  ONE_DECIMAL,
+  PRICE_CACHE_TIME,
+  ZERO_DECIMAL,
+} from "utils/constants";
 
 export type PriceSources = "1inch" | "GnosisProtocol";
 
@@ -218,6 +223,10 @@ export async function amountInQuote(
 
   if (!amount || isNaN(+amount)) {
     return null;
+  }
+
+  if (+amount === 0) {
+    return ZERO_DECIMAL;
   }
 
   const price = await getPrice({ ...rest });

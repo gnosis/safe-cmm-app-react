@@ -1,17 +1,15 @@
 import React, { memo, useMemo } from "react";
-import { Box } from "@material-ui/core";
 
 import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { StrategyState } from "types";
 
-import { useAmountInUsd } from "hooks/useAmountInUsd";
-
 import { decimalFormat } from "utils/decimalFormat";
-import { safeAddDecimals } from "utils/calculations";
 import { formatSmart } from "utils/format";
 
-import { Text } from "components/basic/display/Text";
+import { DescriptionList } from "components/basic/display/DescriptionList";
+
+import { useTotalFunding } from "./useTotalFunding";
 
 export type Props = {
   strategy: StrategyState;
@@ -21,105 +19,57 @@ export const DeployedParams = memo(function DeployedParams(
   props: Props
 ): JSX.Element {
   const { strategy } = props;
-  const { baseToken, quoteToken, baseFunding, quoteFunding } = strategy;
 
-  const {
-    amountInUsd: baseAmountInUsd,
-    isLoading: isBaseAmountLoading,
-  } = useAmountInUsd({
-    tokenAddress: baseToken?.address,
-    amount: baseFunding?.toFixed(),
-    source: "GnosisProtocol",
-  });
-  const {
-    amountInUsd: quoteAmountInUsd,
-    isLoading: isQuoteAmountLoading,
-  } = useAmountInUsd({
-    tokenAddress: quoteToken?.address,
-    amount: quoteFunding?.toFixed(),
-    source: "GnosisProtocol",
-  });
+  const isStrategyLoading = !strategy.hasFetchedFunding;
 
-  const totalFunding = useMemo((): React.ReactNode => {
-    if (isBaseAmountLoading || isQuoteAmountLoading) {
-      return <Loader size="xs" />;
-    }
+  const { totalFunding, isLoading: isTotalFundingLoading } = useTotalFunding(
+    strategy
+  );
 
-    try {
-      const amountString = formatSmart(
-        safeAddDecimals(baseAmountInUsd, quoteAmountInUsd)
-      );
-      return amountString ? `~$${amountString}` : "N/A";
-    } catch (e) {
-      console.error(`Failed to format total funding`, e);
-      return "N/A";
-    }
-  }, [
-    baseAmountInUsd,
-    isBaseAmountLoading,
-    isQuoteAmountLoading,
-    quoteAmountInUsd,
-  ]);
+  const loader = useMemo(() => <Loader size="xs" />, []);
 
-  const totalFundingTuple = ["Total funding", totalFunding];
-
-  const params = useMemo((): Array<any> => {
-    const pendingAppendix = strategy.status === "PENDING" ? " to be" : "";
-
-    if (!strategy.hasFetchedFunding) {
-      return [];
-    }
-
-    return [
-      [
-        "Lowest Price",
-        `${decimalFormat(
-          strategy.priceRange.lower,
-          strategy.priceRange.token
-        )}`,
-      ],
-      [
-        "Price Range",
-        `${decimalFormat(
-          strategy.priceRange.lower,
-          strategy.priceRange.token
-        )} - ${decimalFormat(
-          strategy.priceRange.upper,
-          strategy.priceRange.token
-        )}`,
-      ],
-      [
-        "Highest Price",
-        `${decimalFormat(
-          strategy.priceRange.upper,
-          strategy.priceRange.token
-        )}`,
-      ],
-      null, // separator
-      [
-        `Total ${strategy.baseToken.symbol}${pendingAppendix} deposited`,
-        `${formatSmart(strategy.baseFunding)}`,
-      ],
-      [
-        `Total ${strategy.quoteToken.symbol}${pendingAppendix} deposited`,
-        `${formatSmart(strategy.quoteFunding)}`,
-      ],
-    ];
-  }, [strategy]);
+  const pendingAppendix = strategy.status === "PENDING" ? " to be" : "";
 
   return (
-    <Box>
-      {params.concat([totalFundingTuple]).map(
-        (labelValuePairOrNull: string[] | null): JSX.Element => {
-          if (labelValuePairOrNull === null) return <br />;
-          const [label, value] = labelValuePairOrNull;
-          return (
-            <Text key={label} size="lg">
-              <strong>{label}:</strong> {value}
-            </Text>
-          );
-        }
-      )}
-    </Box>
+    <>
+      <DescriptionList size="lg">
+        <dt>Lowest price:</dt>
+        <dd>
+          {isStrategyLoading
+            ? loader
+            : decimalFormat(
+                strategy.priceRange.lower,
+                strategy.priceRange.token
+              )}
+        </dd>
+        <dt>Highest price:</dt>
+        <dd>
+          {isStrategyLoading
+            ? loader
+            : decimalFormat(
+                strategy.priceRange.upper,
+                strategy.priceRange.token
+              )}
+        </dd>
+      </DescriptionList>
+      <DescriptionList size="lg">
+        <dt>
+          Total {strategy.baseToken.symbol}
+          {pendingAppendix} deposited:
+        </dt>
+        <dd>
+          {isStrategyLoading ? loader : formatSmart(strategy.baseFunding)}
+        </dd>
+        <dt>
+          Total {strategy.quoteToken.symbol}
+          {pendingAppendix} deposited:
+        </dt>
+        <dd>
+          {isStrategyLoading ? loader : formatSmart(strategy.quoteFunding)}
+        </dd>
+        <dt>Total funding:</dt>
+        <dd>{isTotalFundingLoading ? loader : totalFunding}</dd>
+      </DescriptionList>
+    </>
   );
 });

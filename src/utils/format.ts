@@ -61,3 +61,13 @@ export function formatSmart(
     throw new Error(message);
   }
 }
+
+export function BNtoDecimal(
+  amount?: BN,
+  precision?: number
+): undefined | Decimal {
+  if (!amount || precision === undefined) {
+    return null;
+  }
+  return new Decimal(amount.toString()).div(TEN_DECIMAL.pow(precision));
+}

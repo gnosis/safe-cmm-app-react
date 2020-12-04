@@ -23,6 +23,8 @@ import { Text } from "components/basic/display/Text";
 
 import { FoldOut } from "../FoldOut";
 
+import { StrategyTab } from "./StrategyTab";
+
 const CenteredBox = styled(Box)`
   display: flex;
   justify-content: center;
@@ -113,7 +115,9 @@ export const ClosedTable = memo(function ClosedTable({
                   )}
                 </TableCell>
                 <TableCell>
-                  {strategy.hasFetchedBalance ? (
+                  {strategy.status === "CLOSED" ? (
+                    <Text>Already claimed</Text>
+                  ) : strategy.hasFetchedBalance ? (
                     <Text>{totalClaimable(strategy)}</Text>
                   ) : (
                     <Loader size="xs" />
@@ -135,7 +139,7 @@ export const ClosedTable = memo(function ClosedTable({
                   <TableCell colSpan={6} key={strategy.transactionHash}>
                     <FoldOut
                       strategy={strategy}
-                      StrategyComponent={() => <Text>Not yet implemented</Text>}
+                      StrategyComponent={StrategyTab}
                     />
                   </TableCell>
                 </HideableTableRow>
