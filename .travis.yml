@@ -9,11 +9,11 @@ cache:
 matrix:
   include:
     - env:
-      - APP_BUILD = 'PREPROD'
+      - APP_BUILD='PREPROD'
       - INFURA_API_KEY=${INFURA_API_KEY}
       if: (branch = master AND NOT type = pull_request) OR tag IS present
     - env:
-      - APP_BUILD = 'DEV/STAGING'
+      - APP_BUILD='DEV/STAGING'
       - INFURA_API_KEY=${INFURA_API_KEY}
 before_install:
   - npm install
