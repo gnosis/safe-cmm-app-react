@@ -51,7 +51,7 @@ export const Needle = memo(function Needle(): JSX.Element {
           {startPrice && (
             <PriceDisplay
               price={startPrice}
-              token={quoteTokenAddress}
+              quoteToken={quoteTokenAddress}
               color="primary"
               size="xs"
               className="price"

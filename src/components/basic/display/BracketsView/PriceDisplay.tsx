@@ -7,7 +7,7 @@ import { TokenDisplay } from "../TokenDisplay";
 
 export type Props = {
   price?: string;
-  token?: string;
+  quoteToken?: string;
   color?: "primary" | "text";
   size?: "sm" | "xs";
   className?: string;
@@ -28,7 +28,7 @@ export const PriceDisplay = memo(function PriceDisplay(
 ): JSX.Element {
   const {
     price,
-    token,
+    quoteToken,
     className,
     color = "text",
     size = "sm",
@@ -46,7 +46,9 @@ export const PriceDisplay = memo(function PriceDisplay(
       <Text size={size} as="span" color={color}>
         {price}
       </Text>
-      {token && <TokenDisplay token={token} size={size} color={color} />}
+      {quoteToken && (
+        <TokenDisplay token={quoteToken} size={size} color={color} />
+      )}
       {isOutOfRange && (
         <Text size={size} color="rinkeby">
           (out of range)
