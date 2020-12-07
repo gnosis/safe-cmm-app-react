@@ -63,6 +63,7 @@ const BABELRC = {
 module.exports = {
   devtool: isDevelopment ? "eval-source-map" : "source-map",
   target: "web",
+  mode: isDevelopment ? "development" : "production",
   module: {
     rules: [
       {

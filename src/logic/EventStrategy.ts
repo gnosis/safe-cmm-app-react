@@ -20,6 +20,7 @@ import { getBracketPricesFromOrderEvents } from "./utils/getBracketPricesFromOrd
 import { getFundingPerBracket } from "./utils/getFundingPerBracket";
 import { getTokenDetailsById } from "./utils/getTokenDetailsById";
 import { getPriceRangeFromPrices } from "./utils/getPriceRangeFromPrices";
+import { BNtoDecimal as BNToDecimal } from "utils/format";
 
 const logger = getLogger("event strategy");
 
@@ -331,6 +332,35 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
 
         if (withdrawClaims.length > 0) {
           status = "CLOSED";
+
+          const baseClaimed = new BN(0);
+          const quoteClaimed = new BN(0);
+          withdrawClaims.forEach(
+            (claim: { returnValues: { token: string; amount: string } }) => {
+              console.log(`claim`, claim);
+              if (claim.returnValues.token === this.baseTokenDetails?.address) {
+                baseClaimed.iadd(new BN(claim.returnValues.amount));
+              } else {
+                quoteClaimed.iadd(new BN(claim.returnValues.amount));
+              }
+            }
+          );
+          const baseWithdrawn = BNToDecimal(
+            baseClaimed,
+            this.baseTokenDetails?.decimals
+          );
+          const quoteWithdrawn = BNToDecimal(
+            quoteClaimed,
+            this.quoteTokenDetails?.decimals
+          );
+
+          const claimBlock = await context.web3Instance.eth.getBlock(
+            withdrawClaims[0].blockNumber
+          );
+          const claimDate = new Date(claimBlock.timestamp * 1000);
+
+          this.setState({ status, claimDate, baseWithdrawn, quoteWithdrawn });
+          return;
         }
       } else {
         status = "ACTIVE";
@@ -339,7 +369,6 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
     console.log(this);
 
     this.setState({ status, hasFetchedStatus: true });
-    return null;
   }
 
   async readBalances(context: ContractInteractionContextProps): Promise<void> {

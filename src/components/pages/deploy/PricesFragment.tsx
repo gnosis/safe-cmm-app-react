@@ -130,7 +130,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
               {...input}
               warn={meta.touched && meta.data?.warn}
               error={meta.touched && meta.error}
-              tokenAddress={baseTokenAddress}
+              tokenAddress={quoteTokenAddress}
               labelText="Lowest price"
               labelTooltip="The lowest price our strategy covers, lower than this you hold 100% token B"
             />
@@ -170,7 +170,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
               {...input}
               warn={meta.touched && meta.data?.warn}
               error={meta.touched && meta.error}
-              tokenAddress={baseTokenAddress}
+              tokenAddress={quoteTokenAddress}
               labelText="Start Price"
               labelTooltip="Below the start price, brackets will be funded with token A. Above the start price, brackets will be funded with token B."
               labelSize="xl"
@@ -211,7 +211,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
               {...input}
               warn={meta.touched && meta.data?.warn}
               error={meta.touched && meta.error}
-              tokenAddress={baseTokenAddress}
+              tokenAddress={quoteTokenAddress}
               labelText="Highest price"
               labelTooltip="The max price per token A you are willing to sell or buy"
             />

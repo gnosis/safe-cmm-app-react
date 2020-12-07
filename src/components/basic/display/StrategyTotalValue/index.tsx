@@ -2,8 +2,9 @@ import React, { memo } from "react";
 
 import { StrategyState } from "types";
 
+import { useCalculateValues } from "hooks/useCalculateValues";
+
 import { StrategyTotalValueViewer } from "./viewer";
-import { useCalculateValues } from "./useCalculateValues";
 
 export type Props = {
   strategy: StrategyState;
