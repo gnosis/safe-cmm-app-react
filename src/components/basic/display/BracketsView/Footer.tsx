@@ -29,7 +29,7 @@ const TwoPrices = styled.span`
 
 export const Footer = memo(function Footer(): JSX.Element {
   const {
-    baseTokenAddress,
+    quoteTokenAddress,
     startPrice,
     lowestPrice,
     highestPrice,
@@ -51,7 +51,7 @@ export const Footer = memo(function Footer(): JSX.Element {
         startPrice && (
           <PriceDisplay
             price={startPrice}
-            token={baseTokenAddress}
+            quoteToken={quoteTokenAddress}
             adornment={adornment}
             color="primary"
             size="xs"
@@ -61,29 +61,33 @@ export const Footer = memo(function Footer(): JSX.Element {
         )
       );
     },
-    [baseTokenAddress, startPrice]
+    [quoteTokenAddress, startPrice]
   );
 
   const lowestPriceDisplay = useMemo(() => {
     return (
       lowestPrice && (
-        <PriceDisplay price={lowestPrice} token={baseTokenAddress} size="xs" />
+        <PriceDisplay
+          price={lowestPrice}
+          quoteToken={quoteTokenAddress}
+          size="xs"
+        />
       )
     );
-  }, [baseTokenAddress, lowestPrice]);
+  }, [quoteTokenAddress, lowestPrice]);
 
   const highestPriceDisplay = useMemo(() => {
     return (
       highestPrice && (
         <PriceDisplay
           price={highestPrice}
-          token={baseTokenAddress}
+          quoteToken={quoteTokenAddress}
           size="xs"
           className="justifyRight"
         />
       )
     );
-  }, [baseTokenAddress, highestPrice]);
+  }, [quoteTokenAddress, highestPrice]);
 
   const leftSide = useMemo(() => {
     if (needlePosition < 0) {
