@@ -132,6 +132,12 @@ describe("invalid params", () => {
     expect(calculateBracketsFromMarketPrice(params)).toEqual(invalidResponse);
   });
 
+  test("invalid lowestPrice", () => {
+    const params = clone(baseParams);
+    params.lowestPrice = params.highestPrice;
+    expect(calculateBracketsFromMarketPrice(params)).toEqual(invalidResponse);
+  });
+
   test("invalid highestPrice", () => {
     const params = clone(baseParams);
     params.highestPrice = params.lowestPrice;
