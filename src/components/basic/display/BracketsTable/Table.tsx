@@ -96,7 +96,7 @@ export const Table = memo(function Table(props: Props): JSX.Element {
 
   // Token components are repeated often, reusing same instance
   const priceTokenDisplay = (
-    <TokenDisplay token={baseTokenAddress} size="md" color="textGrey" />
+    <TokenDisplay token={quoteTokenAddress} size="md" color="textGrey" />
   );
   const baseTokenDisplay = (
     <TokenDisplay token={baseTokenAddress} size="md" color="text" />
