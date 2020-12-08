@@ -16,9 +16,10 @@ const Template: Story<Props> = (props) => <BracketsViewView {...props} />;
 export const Default = Template.bind({});
 Default.args = {
   ...requiredData,
-  totalBrackets: 5,
   leftBrackets: 3,
   rightBrackets: 2,
+
+  bracketsSizes: [10, 15, 19, 25, 31], // must sum to 100
 
   baseTokenAddress: "0x",
   quoteTokenAddress: "0x",
@@ -34,17 +35,17 @@ Minimal.args = { ...requiredData };
 export const AllBracketsLeft = Template.bind({});
 AllBracketsLeft.args = {
   ...Default.args,
-  totalBrackets: 3,
   leftBrackets: 3,
   rightBrackets: 0,
+  bracketsSizes: [30, 32, 38],
 };
 
 export const AllBracketsRight = Template.bind({});
 AllBracketsRight.args = {
   ...Default.args,
-  totalBrackets: 3,
   leftBrackets: 0,
   rightBrackets: 3,
+  bracketsSizes: [30, 32, 38],
 };
 
 export const StartPriceCloseToLowestPrice = Template.bind({});
