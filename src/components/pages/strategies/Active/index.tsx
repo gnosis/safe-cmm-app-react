@@ -9,7 +9,6 @@ import { strategiesOfStatusSelector } from "state/selectors/strategiesOfStatus";
 import { strategiesLoadingState } from "state/atoms";
 
 export const Active = memo(function Active(): JSX.Element {
-  //const { strategies, status } = useWeb3Strategies();
   const strategies = useRecoilValue(strategiesOfStatusSelector("ACTIVE"));
   const strategyLoadingState = useRecoilValue(strategiesLoadingState);
 
