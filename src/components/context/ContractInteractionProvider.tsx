@@ -138,16 +138,20 @@ export const ContractInteractionProvider = ({
     // This removes file endings, because IProxy.sol and IProxy are the same
     const contractName = dirtyContractName.replace(/\..*/, "");
     if (!globalArtifacts[contractName]) {
-      // Load from default folder with contractName.json
-      globalArtifactPromises[contractName] = readContractJSON(contractName);
+      if (globalArtifactPromises[contractName]) {
+        await globalArtifactPromises[contractName];
+      } else {
+        // Load from default folder with contractName.json
+        globalArtifactPromises[contractName] = readContractJSON(contractName);
 
-      logger.log(
-        `${contractName} artifact was not cached -> loading contract artifact`
-      );
-      // Await the result to make sure it gets added the globalArtifacts
-      globalArtifacts[contractName] = await globalArtifactPromises[
-        contractName
-      ];
+        logger.log(
+          `${contractName} artifact was not cached -> loading contract artifact`
+        );
+        // Await the result to make sure it gets added the globalArtifacts
+        globalArtifacts[contractName] = await globalArtifactPromises[
+          contractName
+        ];
+      }
     }
     return await globalArtifacts[contractName];
   }, []);
