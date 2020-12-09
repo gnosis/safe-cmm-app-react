@@ -25,7 +25,6 @@ export const BracketsViewFragment = memo(
   function BracketsViewFragment(): JSX.Element {
     const { values } = useFormState<DeployFormValues>();
 
-    const totalBrackets = Number(values.totalBrackets);
     // I know this is confusing, so let me explain:
     // Base token brackets correspond to the amount of brackets that will be funded with
     // base tokens, and the same goes for quote tokens.
@@ -42,6 +41,10 @@ export const BracketsViewFragment = memo(
       () => getBracketValue(values.calculatedBrackets, "quote"),
       [values.calculatedBrackets]
     );
+    const bracketsSizes = useMemo(
+      () => values.bracketsSizes?.split("|").map(Number) || [100],
+      [values.bracketsSizes]
+    );
 
     return (
       <Wrapper>
@@ -50,7 +53,7 @@ export const BracketsViewFragment = memo(
           {...values}
           leftBrackets={leftBrackets}
           rightBrackets={rightBrackets}
-          totalBrackets={totalBrackets}
+          bracketsSizes={bracketsSizes}
         />
       </Wrapper>
     );

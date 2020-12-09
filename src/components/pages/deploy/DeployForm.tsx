@@ -42,22 +42,27 @@ const updateCalculatedBracketsFactory = (
   field: FormFields | RegExp
 ): Calculation => ({
   field,
-  updates: {
-    calculatedBrackets: (_: any, allValues: DeployFormValues): string => {
-      const {
-        lowestPrice,
-        startPrice,
-        highestPrice,
-        totalBrackets,
-      } = allValues;
-      const { baseTokenBrackets, quoteTokenBrackets } = calculateBrackets({
-        lowestPrice,
-        startPrice,
-        highestPrice,
-        totalBrackets,
-      });
-      return `${baseTokenBrackets}|${quoteTokenBrackets}`;
-    },
+  updates: (
+    _value: any,
+    _name: any,
+    allValues: DeployFormValues
+  ): Partial<DeployFormValues> => {
+    const { lowestPrice, startPrice, highestPrice, totalBrackets } = allValues;
+    const {
+      baseTokenBrackets,
+      quoteTokenBrackets,
+      bracketsSizes,
+    } = calculateBrackets({
+      lowestPrice,
+      startPrice,
+      highestPrice,
+      totalBrackets,
+    });
+
+    return {
+      calculatedBrackets: `${baseTokenBrackets}|${quoteTokenBrackets}`,
+      bracketsSizes: bracketsSizes.join("|"),
+    };
   },
 });
 

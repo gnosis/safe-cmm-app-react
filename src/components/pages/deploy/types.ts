@@ -8,6 +8,7 @@ export type FormFields =
   | "quoteTokenAmount"
   | "totalBrackets"
   | "totalInvestment"
-  | "calculatedBrackets";
+  | "calculatedBrackets"
+  | "bracketsSizes";
 
 export type DeployFormValues = Record<FormFields, string>;
