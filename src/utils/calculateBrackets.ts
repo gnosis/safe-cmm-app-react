@@ -1,6 +1,11 @@
 import Decimal from "decimal.js";
+import { range } from "lodash";
 
-import { ONE_DECIMAL, ZERO_DECIMAL } from "utils/constants";
+import {
+  ONE_DECIMAL,
+  ONE_HUNDRED_DECIMAL,
+  ZERO_DECIMAL,
+} from "utils/constants";
 
 export interface Params {
   lowestPrice: string;
@@ -12,6 +17,7 @@ export interface Params {
 interface Result {
   baseTokenBrackets: number;
   quoteTokenBrackets: number;
+  bracketsSizes: number[];
 }
 
 /**
@@ -44,7 +50,7 @@ export function calculateBrackets(params: Params): Result {
     lowestPriceNum >= highestPriceNum ||
     totalBrackets <= 0
   ) {
-    return { baseTokenBrackets: 0, quoteTokenBrackets: 0 };
+    return { baseTokenBrackets: 0, quoteTokenBrackets: 0, bracketsSizes: [] };
   }
 
   //  Working with Decimals for enhanced precision
@@ -74,9 +80,27 @@ export function calculateBrackets(params: Params): Result {
     quoteTokenBrackets = 0;
   }
 
+  const interval = highestPrice.minus(lowestPrice);
+
+  // Calculates the percentage each bracket takes in the interval
+  // Percentage given in the range 0-100
+  const bracketsSizes = range(totalBrackets).map((index) => {
+    const lowerBoundary = lowestPrice.mul(stepSizeAsMultiplier.pow(index));
+    const upperBoundary = lowestPrice.mul(stepSizeAsMultiplier.pow(index + 1));
+
+    const bracketLength = upperBoundary.minus(lowerBoundary);
+
+    const percentageOfInterval = bracketLength
+      .div(interval)
+      .mul(ONE_HUNDRED_DECIMAL);
+
+    return percentageOfInterval.toNumber();
+  });
+
   return {
     baseTokenBrackets: totalBrackets - quoteTokenBrackets,
     quoteTokenBrackets,
+    bracketsSizes,
   };
 }
 
@@ -111,7 +135,11 @@ export function calculateBracketsFromMarketPrice(
     highestPrice,
   } = params;
 
-  const result = { baseTokenBrackets: 0, quoteTokenBrackets: 0 };
+  const result = {
+    baseTokenBrackets: 0,
+    quoteTokenBrackets: 0,
+    bracketsSizes: [],
+  };
 
   const totalBrackets = new Decimal(inputTotalBrackets);
 
