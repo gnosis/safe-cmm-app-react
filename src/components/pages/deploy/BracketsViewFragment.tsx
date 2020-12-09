@@ -6,7 +6,6 @@ import { BracketsViewer } from "components/basic/display/BracketsView";
 
 import { theme } from "theme";
 
-import { getBracketValue } from "./DeployForm";
 import { DeployFormValues } from "./types";
 
 const Wrapper = styled.div`
@@ -33,14 +32,12 @@ export const BracketsViewFragment = memo(
     // Since we display the price from left (lower) to right (higher):
     // - quote will come on the left
     // - base will come on the right
-    const rightBrackets = useMemo(
-      () => getBracketValue(values.calculatedBrackets, "base"),
-      [values.calculatedBrackets]
-    );
-    const leftBrackets = useMemo(
-      () => getBracketValue(values.calculatedBrackets, "quote"),
-      [values.calculatedBrackets]
-    );
+    const rightBrackets = useMemo(() => +values.baseTokenBrackets, [
+      values.baseTokenBrackets,
+    ]);
+    const leftBrackets = useMemo(() => +values.quoteTokenBrackets, [
+      values.quoteTokenBrackets,
+    ]);
     const bracketsSizes = useMemo(
       () => values.bracketsSizes?.split("|").map(Number) || [100],
       [values.bracketsSizes]

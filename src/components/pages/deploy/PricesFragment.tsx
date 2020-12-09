@@ -6,6 +6,7 @@ import BN from "bn.js";
 import { formatAmountFull, ZERO } from "@gnosis.pm/dex-js";
 
 import { useTokenDetails } from "hooks/useTokenDetails";
+import { useTokenBalance } from "hooks/useTokenBalance";
 
 import { TokenDetails } from "types";
 
@@ -23,9 +24,7 @@ import { isNumber } from "validators/isNumber";
 import { isGreaterThan } from "validators/isGreaterThan";
 import { isSmallerThan } from "validators/isSmallerThan";
 
-import { getBracketValue } from "./DeployForm";
 import { FormFields } from "./types";
-import { useTokenBalance } from "hooks/useTokenBalance";
 
 const Wrapper = styled.div`
   display: flex;
@@ -51,10 +50,6 @@ const Wrapper = styled.div`
     border: 1px solid ${theme.colors.backgroundBadgeGray};
     border-radius: 16px;
   }
-`;
-
-const InvisibleField = styled(Field)`
-  display: none;
 `;
 
 export const PricesFragment = memo(function PricesFragment(): JSX.Element {
@@ -136,10 +131,10 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
             />
           )}
         />
-        <Field<string> name="calculatedBrackets" subscription={{ value: true }}>
+        <Field<string> name="baseTokenBrackets" subscription={{ value: true }}>
           {({ input: { value } }) => (
-            // Field `baseTokenAmount` is "subscribed" to field `calculatedBrackets`
-            // `calculatedBrackets` value is a string storing "base|quote" brackets value
+            // Field `baseTokenAmount` is "subscribed" to field `baseTokenBrackets`
+            // `baseTokenBrackets` value is a string storing base brackets value
             <Field<string>
               name="baseTokenAmount"
               // validation done at form level since this field might not be used
@@ -148,7 +143,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
                   {...input}
                   warn={meta.touched && meta.data?.warn}
                   error={meta.touched && meta.error}
-                  brackets={getBracketValue(value, "base")}
+                  brackets={+value}
                   tokenAddress={baseTokenAddress}
                   onMaxClick={onBaseTokenMaxClick}
                 />
@@ -217,10 +212,10 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
             />
           )}
         />
-        <Field<string> name="calculatedBrackets" subscription={{ value: true }}>
+        <Field<string> name="quoteTokenBrackets" subscription={{ value: true }}>
           {({ input: { value } }) => (
-            // Field `quoteTokenAmount` is "subscribed" to field `calculatedBrackets`
-            // `calculatedBrackets` value is a string storing "base|quote" brackets value
+            // Field `quoteTokenAmount` is "subscribed" to field `quoteTokenBrackets`
+            // `quoteTokenBrackets` value is a string storing quote brackets value
             <Field<string>
               name="quoteTokenAmount"
               // validation done at form level since this field might not be used
@@ -229,7 +224,7 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
                   {...input}
                   warn={meta.touched && meta.data?.warn}
                   error={meta.touched && meta.error}
-                  brackets={getBracketValue(value, "quote")}
+                  brackets={+value}
                   tokenAddress={quoteTokenAddress}
                   onMaxClick={onQuoteTokenMaxClick}
                 />
@@ -238,8 +233,6 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
           )}
         </Field>
       </div>
-      {/* stores the calculated brackets as string separated by a '|' */}
-      <InvisibleField name="calculatedBrackets" component="input" />
     </Wrapper>
   );
 });

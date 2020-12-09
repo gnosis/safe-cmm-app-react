@@ -24,20 +24,11 @@ import { ContractInteractionContext } from "components/context/ContractInteracti
 
 import { DeployFormValues, FormFields } from "./types";
 
-// Syntactic sugar to extract bracket value from stored input field value
-export function getBracketValue(
-  value: string | undefined,
-  type: "base" | "quote"
-): number {
-  if (!value || !/\d+|\d+/.test(value)) {
-    return 0;
-  }
-  const [base, quote] = value.split("|");
-  return type === "base" ? +base : +quote;
-}
-
 // Calculate brackets based on all form fields
-// Returns string with base/quote tokens concatenated separated by a `|`
+// Creates 3 calculated fields:
+// - baseTokenBrackets
+// - quoteTokenBrackets
+// - bracketsSizes
 const updateCalculatedBracketsFactory = (
   field: FormFields | RegExp
 ): Calculation => ({
@@ -60,7 +51,8 @@ const updateCalculatedBracketsFactory = (
     });
 
     return {
-      calculatedBrackets: `${baseTokenBrackets}|${quoteTokenBrackets}`,
+      baseTokenBrackets: baseTokenBrackets.toString(),
+      quoteTokenBrackets: quoteTokenBrackets.toString(),
       bracketsSizes: bracketsSizes.join("|"),
     };
   },
@@ -136,14 +128,8 @@ export const DeployForm = memo(function DeployForm({
       const highestPrice = Number(values.highestPrice);
 
       // this is a calculated field where we store two integers in a single string
-      const baseTokenBrackets = getBracketValue(
-        values.calculatedBrackets,
-        "base"
-      );
-      const quoteTokenBrackets = getBracketValue(
-        values.calculatedBrackets,
-        "quote"
-      );
+      const baseTokenBrackets = Number(values.baseTokenBrackets);
+      const quoteTokenBrackets = Number(values.quoteTokenBrackets);
 
       if (lowestPrice >= highestPrice) {
         errors["lowestPrice"] = {

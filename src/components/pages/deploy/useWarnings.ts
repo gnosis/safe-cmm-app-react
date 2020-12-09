@@ -10,7 +10,6 @@ import {
 import { ValidationError, ValidationErrors } from "validators/types";
 
 import { DeployFormValues } from "./types";
-import { getBracketValue } from "./DeployForm";
 import { useFundingOutOfThreshold } from "./useFundingOutOfThreshold";
 import { useIsStartPriceOutOfThreshold } from "./useStartPriceOutOfThreshold";
 
@@ -67,11 +66,12 @@ export function useWarnings(values: DeployFormValues): ValidationErrors {
     startPrice,
     baseTokenAmount,
     quoteTokenAmount,
-    calculatedBrackets,
+    baseTokenBrackets,
+    quoteTokenBrackets,
   } = values;
 
-  const baseBrackets = getBracketValue(calculatedBrackets, "base");
-  const quoteBrackets = getBracketValue(calculatedBrackets, "quote");
+  const baseBrackets = +baseTokenBrackets;
+  const quoteBrackets = +quoteTokenBrackets;
 
   const startPriceOutOfThreshold = useIsStartPriceOutOfThreshold({
     baseTokenAddress,
