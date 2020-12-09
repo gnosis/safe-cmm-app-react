@@ -41,7 +41,7 @@ after_success:
   # IPFS - Deploy and pin to IPFS
   # Only tagged builds
   - if [[ -n "$TRAVIS_TAG" ]]; then
-      ./travis/deploy_and_pin_ipfs.sh
+      ./travis/deploy_and_pin_ipfs.sh;
     fi
 deploy:
   # Development environment
