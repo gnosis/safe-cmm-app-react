@@ -56,9 +56,14 @@ const Bracket = styled.div<{
 `;
 
 export const Brackets = memo(function Brackets(): JSX.Element {
-  const { bracketsSizes, leftBrackets, type, hoverId, onHover } = useContext(
-    BracketsViewContext
-  );
+  const {
+    bracketsSizes,
+    leftBrackets,
+    rightBrackets,
+    type,
+    hoverId,
+    onHover,
+  } = useContext(BracketsViewContext);
 
   const onMouseLeave = useCallback((): void => onHover && onHover(), [onHover]);
 
@@ -74,14 +79,16 @@ export const Brackets = memo(function Brackets(): JSX.Element {
     [hoverId, type]
   );
 
+  const inInitialState = !leftBrackets && !rightBrackets;
+
   return (
     <Wrapper>
       {bracketsSizes.map((size, id) => (
         <Bracket
           key={id}
           width={size}
-          hasLeftBrackets={leftBrackets > 0}
-          type={id < leftBrackets ? "left" : "right"}
+          hasLeftBrackets={leftBrackets > 0 || inInitialState}
+          type={id < leftBrackets || inInitialState ? "left" : "right"}
           className={buildClasses(id)}
           onMouseEnter={() => onHover && onHover(id)}
           onMouseLeave={onMouseLeave}
