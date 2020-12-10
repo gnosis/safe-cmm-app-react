@@ -137,6 +137,10 @@ export const ContractInteractionProvider = ({
   > => {
     // This removes file endings, because IProxy.sol and IProxy are the same
     const contractName = dirtyContractName.replace(/\..*/, "");
+
+    // FIXME: This is not ideal and looks even more confusing than before.
+    //        fix this by removing global artifacts and replacing it with only the promises.
+    //        However, during testing this fix worked and we're rolling it out for now.
     if (!globalArtifacts[contractName]) {
       if (globalArtifactPromises[contractName]) {
         await globalArtifactPromises[contractName];
@@ -144,9 +148,6 @@ export const ContractInteractionProvider = ({
         // Load from default folder with contractName.json
         globalArtifactPromises[contractName] = readContractJSON(contractName);
 
-        logger.log(
-          `${contractName} artifact was not cached -> loading contract artifact`
-        );
         // Await the result to make sure it gets added the globalArtifacts
         globalArtifacts[contractName] = await globalArtifactPromises[
           contractName
@@ -157,10 +158,6 @@ export const ContractInteractionProvider = ({
   }, []);
 
   const handleGetCachedArtifact = useCallback((contractName): any => {
-    logger.log(
-      `${contractName} in artifact cache:`,
-      globalArtifacts[contractName]
-    );
     if (!globalArtifacts[contractName]) {
       throw new Error(
         `${contractName} has not been fetched previously. Please fetch it before running the part of the application that is using artifacts.require`
@@ -179,16 +176,13 @@ export const ContractInteractionProvider = ({
    */
   const handleGetContract = useCallback(
     async (contractName, contractAddress = null): Promise<any> => {
-      logger.log(`Trying to retrieve ${contractName} @ ${contractAddress}`);
       const contractArtifact = await handleGetArtifact(contractName);
-      logger.log("Artifact", contractArtifact);
+
       if (!globalContractsByAddress[contractName]) {
-        logger.log("Contract not cached -> creating cache");
         globalContractsByAddress[contractName] = {};
       }
 
       if (!globalContractsByAddress[contractName][contractAddress]) {
-        logger.log("Contractaddress not cached -> creating contract instance");
         const contractInstance = new web3Instance.eth.Contract(
           contractArtifact.abi,
           contractAddress
