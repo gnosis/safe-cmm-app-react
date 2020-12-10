@@ -42,43 +42,26 @@ export function calculateBrackets(params: Params): Result {
   // Minimal validation
   if (
     isNaN(lowestPriceNum) ||
-    isNaN(startPriceNum) ||
     isNaN(highestPriceNum) ||
     isNaN(totalBrackets) ||
     lowestPriceNum <= 0 ||
-    startPriceNum <= 0 ||
     lowestPriceNum >= highestPriceNum ||
     totalBrackets <= 0
   ) {
-    return { baseTokenBrackets: 0, quoteTokenBrackets: 0, bracketsSizes: [] };
+    return {
+      baseTokenBrackets: 0,
+      quoteTokenBrackets: 0,
+      bracketsSizes: [100],
+    };
   }
 
   //  Working with Decimals for enhanced precision
   const lowestPrice = new Decimal(lowestPriceStr);
-  const startPrice = new Decimal(startPriceStr);
   const highestPrice = new Decimal(highestPriceStr);
 
   const stepSizeAsMultiplier = highestPrice
     .div(lowestPrice)
     .pow(ONE_DECIMAL.div(totalBrackets));
-
-  // Same rounding as default Math.round
-  Decimal.set({ rounding: Decimal.ROUND_HALF_CEIL });
-
-  let quoteTokenBrackets = startPrice
-    .div(lowestPrice)
-    .ln()
-    .div(stepSizeAsMultiplier.ln())
-    // round to nearest integer
-    .round()
-    // will work with integers from now on
-    .toNumber();
-
-  if (quoteTokenBrackets > totalBrackets) {
-    quoteTokenBrackets = totalBrackets;
-  } else if (quoteTokenBrackets < 0) {
-    quoteTokenBrackets = 0;
-  }
 
   const interval = highestPrice.minus(lowestPrice);
 
@@ -96,6 +79,31 @@ export function calculateBrackets(params: Params): Result {
 
     return percentageOfInterval.toNumber();
   });
+
+  // Same rounding as default Math.round
+  Decimal.set({ rounding: Decimal.ROUND_HALF_CEIL });
+
+  // Start price is optional.
+  // Without it we don't know which brackets goes where,
+  // but we can still give out the prices intervals
+  if (isNaN(startPriceNum) || startPriceNum <= 0) {
+    return { baseTokenBrackets: 0, quoteTokenBrackets: 0, bracketsSizes };
+  }
+
+  let quoteTokenBrackets = new Decimal(startPriceStr)
+    .div(lowestPrice)
+    .ln()
+    .div(stepSizeAsMultiplier.ln())
+    // round to nearest integer
+    .round()
+    // will work with integers from now on
+    .toNumber();
+
+  if (quoteTokenBrackets > totalBrackets) {
+    quoteTokenBrackets = totalBrackets;
+  } else if (quoteTokenBrackets < 0) {
+    quoteTokenBrackets = 0;
+  }
 
   return {
     baseTokenBrackets: totalBrackets - quoteTokenBrackets,
@@ -131,7 +139,7 @@ export function calculateBracketsFromMarketPrice(
   const result = {
     baseTokenBrackets: 0,
     quoteTokenBrackets: 0,
-    bracketsSizes: [],
+    bracketsSizes: [100],
   };
 
   if (
@@ -152,6 +160,8 @@ export function calculateBracketsFromMarketPrice(
   ) {
     return result;
   }
+
+  result.bracketsSizes = [];
 
   // there's 1 pair of prices per bracket
   const totalBrackets = prices.length / 2;

@@ -153,7 +153,7 @@ describe("invalid params", () => {
   const invalidResponse = {
     baseTokenBrackets: 0,
     quoteTokenBrackets: 0,
-    bracketsSizes: [],
+    bracketsSizes: [100],
   };
 
   test("invalid prices", () => {
