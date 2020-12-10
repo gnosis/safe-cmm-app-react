@@ -70,8 +70,8 @@ export function useWarnings(values: DeployFormValues): ValidationErrors {
     quoteTokenBrackets,
   } = values;
 
-  const baseBrackets = +baseTokenBrackets;
-  const quoteBrackets = +quoteTokenBrackets;
+  const baseBrackets = baseTokenBrackets && +baseTokenBrackets;
+  const quoteBrackets = quoteTokenBrackets && +quoteTokenBrackets;
 
   const startPriceOutOfThreshold = useIsStartPriceOutOfThreshold({
     baseTokenAddress,
