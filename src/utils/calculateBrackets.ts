@@ -120,7 +120,7 @@ export function calculateBracketsFromMarketPrice(
     marketPrice.isNaN() ||
     lowestPrice.isNaN() ||
     highestPrice.isNaN() ||
-    lowestPrice >= highestPrice ||
+    lowestPrice.gte(highestPrice) ||
     !lowestPrice.gt(ZERO_DECIMAL) ||
     !marketPrice.gt(ZERO_DECIMAL) ||
     !totalBrackets.gt(ZERO_DECIMAL)

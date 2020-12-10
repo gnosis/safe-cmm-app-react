@@ -26,11 +26,19 @@ export const BracketsViewFragment = memo(
     const { values } = useFormState<DeployFormValues>();
 
     const totalBrackets = Number(values.totalBrackets);
-    const leftBrackets = useMemo(
+    // I know this is confusing, so let me explain:
+    // Base token brackets correspond to the amount of brackets that will be funded with
+    // base tokens, and the same goes for quote tokens.
+    // The lower end of the brackets will be first funded with quote tokens, then the remainder
+    // with base tokens.
+    // Since we display the price from left (lower) to right (higher):
+    // - quote will come on the left
+    // - base will come on the right
+    const rightBrackets = useMemo(
       () => getBracketValue(values.calculatedBrackets, "base"),
       [values.calculatedBrackets]
     );
-    const rightBrackets = useMemo(
+    const leftBrackets = useMemo(
       () => getBracketValue(values.calculatedBrackets, "quote"),
       [values.calculatedBrackets]
     );
