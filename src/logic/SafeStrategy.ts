@@ -15,6 +15,7 @@ import BN from "bn.js";
 import Decimal from "decimal.js";
 import { getTokenDetailsById } from "./utils/getTokenDetailsById";
 import { getPriceRangeFromPrices } from "./utils/getPriceRangeFromPrices";
+import { adjustPriceDecimals } from "utils/prices";
 
 const logger = getLogger("safe-strategy");
 
@@ -114,34 +115,6 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
     this.baseTokenId = placeOrders[0].params.buyToken;
     this.quoteTokenId = placeOrders[0].params.sellToken;
 
-    const prices = [];
-    const sumBaseFunding = new BN(0);
-    const sumQuoteFunding = new BN(0);
-
-    placeOrders.forEach((placeOrderCall) => {
-      const buyToken = placeOrderCall.params.buyToken;
-
-      const sellAmount = placeOrderCall.params.sellAmount || "0";
-      const buyAmount = placeOrderCall.params.buyAmount || "0";
-
-      if (buyToken === this.baseTokenId) {
-        prices.push(new Decimal(sellAmount).div(new Decimal(buyAmount)));
-        sumBaseFunding.iadd(new BN(buyAmount));
-        sumQuoteFunding.iadd(new BN(sellAmount));
-      } else {
-        prices.push(new Decimal(buyAmount).div(new Decimal(sellAmount)));
-        sumBaseFunding.iadd(new BN(sellAmount));
-        sumQuoteFunding.iadd(new BN(buyAmount));
-      }
-    });
-
-    prices.sort((a: Decimal, b: Decimal): number => {
-      if (a.eq(b)) return 0;
-      return a.gt(b) ? 1 : -1;
-    });
-
-    this.prices = prices;
-
     const batchExchangeContract = await context.getDeployed("BatchExchange");
     const [baseTokenDetails, quoteTokenDetails] = await Promise.all([
       getTokenDetailsById(
@@ -155,6 +128,46 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
         batchExchangeContract
       ),
     ]);
+
+    const prices = [];
+    const sumBaseFunding = new BN(0);
+    const sumQuoteFunding = new BN(0);
+
+    placeOrders.forEach((placeOrderCall) => {
+      const buyToken = placeOrderCall.params.buyToken;
+
+      const sellAmount = placeOrderCall.params.sellAmount || "0";
+      const buyAmount = placeOrderCall.params.buyAmount || "0";
+
+      if (buyToken === this.baseTokenId) {
+        prices.push(
+          adjustPriceDecimals({
+            price: new Decimal(sellAmount).div(new Decimal(buyAmount)),
+            numeratorDecimals: quoteTokenDetails.decimals,
+            denominatorDecimals: baseTokenDetails.decimals,
+          })
+        );
+        sumBaseFunding.iadd(new BN(buyAmount));
+        sumQuoteFunding.iadd(new BN(sellAmount));
+      } else {
+        prices.push(
+          adjustPriceDecimals({
+            price: new Decimal(buyAmount).div(new Decimal(sellAmount)),
+            numeratorDecimals: quoteTokenDetails.decimals,
+            denominatorDecimals: baseTokenDetails.decimals,
+          })
+        );
+        sumBaseFunding.iadd(new BN(sellAmount));
+        sumQuoteFunding.iadd(new BN(buyAmount));
+      }
+    });
+
+    prices.sort((a: Decimal, b: Decimal): number => {
+      if (a.eq(b)) return 0;
+      return a.gt(b) ? 1 : -1;
+    });
+
+    this.prices = prices;
 
     this.baseTokenDetails = baseTokenDetails;
     this.quoteTokenDetails = quoteTokenDetails;
@@ -212,7 +225,6 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
 
     const priceRange = getPriceRangeFromPrices(
       this.prices,
-      this.baseTokenDetails,
       this.quoteTokenDetails
     );
 

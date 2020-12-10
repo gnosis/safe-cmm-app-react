@@ -177,15 +177,6 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
     this.baseTokenId = baseTokenId;
     this.quoteTokenId = quoteTokenId;
 
-    // Find prices in order events
-    // Pitfall: not possible to directly assign these to bracket addresses, we have to guess in what order the
-    //          proxy safes were used. Best not to rely on this information too much, it could be wrong.
-    const bracketPrices = getBracketPricesFromOrderEvents(
-      this.bracketOrderEvents
-    );
-
-    this.prices = bracketPrices;
-
     // Resolve token details by id
     const [baseTokenDetails, quoteTokenDetails] = await Promise.all([
       getTokenDetailsById(
@@ -201,6 +192,17 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
     ]);
     this.baseTokenDetails = baseTokenDetails;
     this.quoteTokenDetails = quoteTokenDetails;
+
+    // Find prices in order events
+    // Pitfall: not possible to directly assign these to bracket addresses, we have to guess in what order the
+    //          proxy safes were used. Best not to rely on this information too much, it could be wrong.
+    const bracketPrices = getBracketPricesFromOrderEvents(
+      this.bracketOrderEvents,
+      this.baseTokenDetails,
+      this.quoteTokenDetails
+    );
+
+    this.prices = bracketPrices;
 
     // Bracket fundings from deposit events
     const bracketFunding = getFundingPerBracket(
@@ -256,7 +258,6 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
 
     const priceRange = getPriceRangeFromPrices(
       bracketPrices,
-      this.baseTokenDetails,
       this.quoteTokenDetails
     );
 
@@ -337,7 +338,6 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
           const quoteClaimed = new BN(0);
           withdrawClaims.forEach(
             (claim: { returnValues: { token: string; amount: string } }) => {
-              console.log(`claim`, claim);
               if (claim.returnValues.token === this.baseTokenDetails?.address) {
                 baseClaimed.iadd(new BN(claim.returnValues.amount));
               } else {
