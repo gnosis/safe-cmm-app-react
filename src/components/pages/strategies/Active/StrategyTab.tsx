@@ -4,7 +4,7 @@ import Decimal from "decimal.js";
 
 import { useGetPrice } from "hooks/useGetPrice";
 
-import { ZERO_DECIMAL, TEN_DECIMAL } from "utils/constants";
+import { ZERO_DECIMAL } from "utils/constants";
 import { calculateBracketsFromMarketPrice } from "utils/calculateBrackets";
 
 import { StrategyState } from "types";
@@ -28,15 +28,6 @@ const Grid = styled.div`
   align-items: baseline;
 `;
 
-// TODO: move to utils
-function calculatePriceFromPartial(
-  price: Decimal,
-  denominatorDecimals: number,
-  numeratorDecimals: number
-): Decimal {
-  return price.mul(TEN_DECIMAL.pow(denominatorDecimals - numeratorDecimals));
-}
-
 function formatBrackets(strategy: StrategyState): BracketRowData[] {
   // Edge case when strategy was not properly deployed
   // Most likely the first strategies deployed during development
@@ -44,25 +35,11 @@ function formatBrackets(strategy: StrategyState): BracketRowData[] {
     return [];
   }
 
-  const {
-    baseToken: { decimals: baseTokenDecimals },
-    quoteToken: { decimals: quoteTokenDecimals },
-    brackets,
-    prices,
-  } = strategy;
+  const { brackets, prices } = strategy;
 
   return brackets.map((bracket, index) => ({
-    // TODO: maybe formatting no longer needed?
-    lowPrice: calculatePriceFromPartial(
-      prices[index * 2],
-      baseTokenDecimals,
-      quoteTokenDecimals
-    ),
-    highPrice: calculatePriceFromPartial(
-      prices[index * 2 + 1],
-      baseTokenDecimals,
-      quoteTokenDecimals
-    ),
+    lowPrice: prices[index * 2],
+    highPrice: prices[index * 2 + 1],
     balanceBase: bracket.balanceBase || ZERO_DECIMAL,
     balanceQuote: bracket.balanceQuote || ZERO_DECIMAL,
   }));
@@ -92,7 +69,7 @@ const StrategyTabView = memo(function StrategyTabView(
   );
 
   const { strategy, price } = props;
-  const { baseToken, quoteToken, brackets, priceRange } = strategy;
+  const { baseToken, quoteToken, priceRange, prices } = strategy;
 
   const {
     baseTokenBrackets,
@@ -102,11 +79,9 @@ const StrategyTabView = memo(function StrategyTabView(
     () =>
       calculateBracketsFromMarketPrice({
         marketPrice: price || ZERO_DECIMAL,
-        totalBrackets: brackets.length,
-        lowestPrice: priceRange?.lower || ZERO_DECIMAL,
-        highestPrice: priceRange?.upper || ZERO_DECIMAL,
+        prices: prices || [],
       }),
-    [brackets.length, price, priceRange?.lower, priceRange?.upper]
+    [price, prices]
   );
 
   const { leftBrackets, rightBrackets } = useMemo(() => {
@@ -134,7 +109,7 @@ const StrategyTabView = memo(function StrategyTabView(
         quoteTokenAddress={quoteToken.address}
         lowestPrice={priceRange?.lower.toString()}
         highestPrice={priceRange?.upper.toString()}
-        bracketsSizes={[100]}
+        bracketsSizes={bracketsSizes}
         leftBrackets={baseTokenBrackets}
         rightBrackets={quoteTokenBrackets}
         startPrice={price?.isFinite() ? price.toString() : "N/A"}
