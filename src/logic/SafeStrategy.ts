@@ -1,21 +1,24 @@
+import BN from "bn.js";
+import Decimal from "decimal.js";
+import { SetterOrUpdater } from "recoil";
+import { filter } from "lodash";
+
+import { StrategyState } from "types";
+
 import getLogger from "utils/logger";
+import { calculatePrice } from "utils/prices";
+
+import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
+
+import { BaseStrategy, Bracket, IStrategy } from "./IStrategy";
 
 import {
   DecoderNode,
   flattenMultiSend,
   TransactionMethodCall,
 } from "./utils/flattenMultiSend";
-
-import { BaseStrategy, Bracket, IStrategy } from "./IStrategy";
-import { ContractInteractionContextProps } from "components/context/ContractInteractionProvider";
-import { SetterOrUpdater } from "recoil";
-import { StrategyState } from "types";
-import { filter } from "lodash";
-import BN from "bn.js";
-import Decimal from "decimal.js";
 import { getTokenDetailsById } from "./utils/getTokenDetailsById";
 import { getPriceRangeFromPrices } from "./utils/getPriceRangeFromPrices";
-import { adjustPriceDecimals } from "utils/prices";
 
 const logger = getLogger("safe-strategy");
 
@@ -141,8 +144,9 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
 
       if (buyToken === this.baseTokenId) {
         prices.push(
-          adjustPriceDecimals({
-            price: new Decimal(sellAmount).div(new Decimal(buyAmount)),
+          calculatePrice({
+            numerator: sellAmount,
+            denominator: buyAmount,
             numeratorDecimals: quoteTokenDetails.decimals,
             denominatorDecimals: baseTokenDetails.decimals,
           })
@@ -151,8 +155,9 @@ export class SafeStrategy extends BaseStrategy implements IStrategy {
         sumQuoteFunding.iadd(new BN(sellAmount));
       } else {
         prices.push(
-          adjustPriceDecimals({
-            price: new Decimal(buyAmount).div(new Decimal(sellAmount)),
+          calculatePrice({
+            numerator: buyAmount,
+            denominator: sellAmount,
             numeratorDecimals: quoteTokenDetails.decimals,
             denominatorDecimals: baseTokenDetails.decimals,
           })
