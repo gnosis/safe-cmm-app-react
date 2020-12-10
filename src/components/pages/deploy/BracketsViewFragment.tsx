@@ -23,6 +23,11 @@ const Wrapper = styled.div`
 export const BracketsViewFragment = memo(
   function BracketsViewFragment(): JSX.Element {
     const { values } = useFormState<DeployFormValues>();
+    const {
+      baseTokenBrackets,
+      quoteTokenBrackets,
+      bracketsSizes: bracketsSizesStr,
+    } = values;
 
     // I know this is confusing, so let me explain:
     // Base token brackets correspond to the amount of brackets that will be funded with
@@ -32,15 +37,18 @@ export const BracketsViewFragment = memo(
     // Since we display the price from left (lower) to right (higher):
     // - quote will come on the left
     // - base will come on the right
-    const rightBrackets = useMemo(() => +values.baseTokenBrackets, [
-      values.baseTokenBrackets,
-    ]);
-    const leftBrackets = useMemo(() => +values.quoteTokenBrackets, [
-      values.quoteTokenBrackets,
-    ]);
+    const rightBrackets = useMemo(
+      () => baseTokenBrackets && +baseTokenBrackets,
+      [baseTokenBrackets]
+    );
+    const leftBrackets = useMemo(
+      () => quoteTokenBrackets && +quoteTokenBrackets,
+      [quoteTokenBrackets]
+    );
+
     const bracketsSizes = useMemo(
-      () => values.bracketsSizes?.split("|").map(Number) || [100],
-      [values.bracketsSizes]
+      () => bracketsSizesStr?.split("|").map(Number),
+      [bracketsSizesStr]
     );
 
     return (
