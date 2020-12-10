@@ -94,7 +94,11 @@ const StrategyTabView = memo(function StrategyTabView(
   const { strategy, price } = props;
   const { baseToken, quoteToken, brackets, priceRange } = strategy;
 
-  const { baseTokenBrackets, quoteTokenBrackets } = useMemo(
+  const {
+    baseTokenBrackets,
+    quoteTokenBrackets,
+    bracketsSizes = [100],
+  } = useMemo(
     () =>
       calculateBracketsFromMarketPrice({
         marketPrice: price || ZERO_DECIMAL,
