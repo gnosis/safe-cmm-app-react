@@ -1,17 +1,17 @@
 import React, { useState } from "react";
+import { Meta, Story } from "@storybook/react/types-6-0";
 
-import { TextFieldWithCustomLabel } from ".";
+import { TextFieldWithCustomLabel, Props } from ".";
 
 export default {
   component: TextFieldWithCustomLabel,
   title: "basic/input/TextFieldWithCustomLabel",
   // Our exports that end in "Data" are not stories.
   excludeStories: /.*Data$/,
-};
+} as Meta;
 
-const onSubmit = (e: React.FormEvent): void => e.preventDefault();
-
-export const textFieldData = {
+export const textFieldData: Props = {
+  value: "",
   id: "fieldId",
   customLabel: (
     <div
@@ -27,12 +27,18 @@ export const textFieldData = {
   ),
 };
 
-export const Default: React.FC = () => {
-  const [value, setValue] = useState("");
+const Template: Story<Props> = (args) => {
+  const { value: initialValue, ...rest } = args;
+  const [value, setValue] = useState(initialValue);
+
+  console.log(`wwwwww`, args);
+
+  const onSubmit = (e: React.FormEvent): void => e.preventDefault();
+
   return (
     <form noValidate autoComplete="off" onSubmit={onSubmit}>
       <TextFieldWithCustomLabel
-        {...textFieldData}
+        {...rest}
         value={value}
         onChange={(e) => setValue(e.target.value)}
       />
@@ -40,90 +46,31 @@ export const Default: React.FC = () => {
   );
 };
 
-export const CustomWidth: React.FC = () => {
-  const [value, setValue] = useState("");
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <TextFieldWithCustomLabel
-        {...textFieldData}
-        width={200}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-    </form>
-  );
+export const Default = Template.bind({});
+Default.args = { ...textFieldData };
+
+export const CustomWidth = Template.bind({});
+CustomWidth.args = { ...Default.args, width: 200 };
+
+export const VeryLongValue = Template.bind({});
+VeryLongValue.args = {
+  ...Default.args,
+  value: "564897654165765132578645325746146254890849084089",
 };
 
-export const VeryLongValue: React.FC = () => {
-  const [value, setValue] = useState(
-    "564897654165765132578645325746146254890849084089"
-  );
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <TextFieldWithCustomLabel
-        {...textFieldData}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-    </form>
-  );
+export const WithAdornmentsAndLongInput = Template.bind({});
+WithAdornmentsAndLongInput.args = {
+  ...Default.args,
+  value: "38798749879879879543574.2468165735484657465",
+  startAdornment: <strong>Buy</strong>,
+  endAdornment: <strong>DAI</strong>,
 };
 
-export const WithAdornmentsAndLongInput: React.FC = () => {
-  const [value, setValue] = useState(
-    "38798749879879879543574.2468165735484657465"
-  );
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <TextFieldWithCustomLabel
-        {...textFieldData}
-        startAdornment={<strong>Buy</strong>}
-        endAdornment={<strong>DAI</strong>}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-      />
-    </form>
-  );
-};
+export const WithErrorMessage = Template.bind({});
+WithErrorMessage.args = { ...Default.args, meta: { error: "Invalid input" } };
 
-export const WithErrorMessage: React.FC = () => {
-  const [value, setValue] = useState("kajsdla");
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <TextFieldWithCustomLabel
-        {...textFieldData}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        meta={{ error: "Invalid input" }}
-      />
-    </form>
-  );
-};
+export const WithErrorHighlightWithoutMessage = Template.bind({});
+WithErrorHighlightWithoutMessage.args = { ...Default.args, error: true };
 
-export const WithErrorHighlightWithoutMessage: React.FC = () => {
-  const [value, setValue] = useState("");
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <TextFieldWithCustomLabel
-        {...textFieldData}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        error
-      />
-    </form>
-  );
-};
-
-export const WithWarningHighlight: React.FC = () => {
-  const [value, setValue] = useState("");
-  return (
-    <form noValidate autoComplete="off" onSubmit={onSubmit}>
-      <TextFieldWithCustomLabel
-        {...textFieldData}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        warn
-      />
-    </form>
-  );
-};
+export const WithWarningHighlight = Template.bind({});
+WithWarningHighlight.args = { ...Default.args, warn: true };
