@@ -84,7 +84,7 @@ const Wrapper = styled.div<WrapperProps>`
 export interface Props
   extends Omit<React.ComponentProps<typeof TextField>, "label">,
     WrapperProps {
-  customLabel: React.ReactElement;
+  customLabel: React.ReactNode;
 }
 
 export const TextFieldWithCustomLabel = (props: Props): JSX.Element => {
