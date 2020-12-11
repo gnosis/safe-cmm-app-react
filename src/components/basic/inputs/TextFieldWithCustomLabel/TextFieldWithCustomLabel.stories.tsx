@@ -31,8 +31,6 @@ const Template: Story<Props> = (args) => {
   const { value: initialValue, ...rest } = args;
   const [value, setValue] = useState(initialValue);
 
-  console.log(`wwwwww`, args);
-
   const onSubmit = (e: React.FormEvent): void => e.preventDefault();
 
   return (
@@ -74,3 +72,10 @@ WithErrorHighlightWithoutMessage.args = { ...Default.args, error: true };
 
 export const WithWarningHighlight = Template.bind({});
 WithWarningHighlight.args = { ...Default.args, warn: true };
+
+export const WithMinMax = Template.bind({});
+WithMinMax.args = {
+  ...Default.args,
+  customLabel: "Min 0, max 100",
+  input: { min: 0, max: 100, type: "number" },
+};
