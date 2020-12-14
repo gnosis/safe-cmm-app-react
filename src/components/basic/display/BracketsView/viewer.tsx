@@ -24,9 +24,10 @@ export type Props = {
   baseTokenAddress?: string;
   quoteTokenAddress?: string;
 
-  totalBrackets?: number;
   leftBrackets?: number;
   rightBrackets?: number;
+
+  bracketsSizes?: number[];
 
   lowestPrice?: string;
   startPrice?: string;
@@ -76,9 +77,10 @@ export const BracketsViewView = memo(function BracketsViewView(
   props: Props
 ): JSX.Element {
   const {
-    totalBrackets = 1,
-    leftBrackets = 0,
+    leftBrackets = 1,
     rightBrackets = 0,
+
+    bracketsSizes = [100],
 
     startPrice,
     lowestPrice,
@@ -96,16 +98,16 @@ export const BracketsViewView = memo(function BracketsViewView(
   const context = useMemo(
     () => ({
       ...props,
-      totalBrackets: totalBrackets >= 1 ? totalBrackets : 1,
       leftBrackets,
       rightBrackets,
+      bracketsSizes,
       needlePosition,
       lowerThreshold:
         type === "deploy" ? DEPLOY_LOWER_THRESHOLD : STRATEGY_LOWER_THRESHOLD,
       upperThreshold:
         type === "deploy" ? DEPLOY_UPPER_THRESHOLD : STRATEGY_UPPER_THRESHOLD,
     }),
-    [leftBrackets, needlePosition, props, rightBrackets, totalBrackets, type]
+    [bracketsSizes, leftBrackets, needlePosition, props, rightBrackets, type]
   );
 
   return (

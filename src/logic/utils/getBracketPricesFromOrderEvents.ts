@@ -1,10 +1,17 @@
 import Decimal from "decimal.js";
 
+import { TokenDetails } from "types";
+
 import { OrderPlacementEvent } from "logic/EventStrategy";
+
+import { calculatePrice } from "utils/prices";
+
 import { getTokenIdsFromOrderEvents } from "./getTokenIdsFromOrderEvents";
 
 export const getBracketPricesFromOrderEvents = (
-  bracketOrderEvents: OrderPlacementEvent[]
+  bracketOrderEvents: OrderPlacementEvent[],
+  { decimals: baseTokenDecimals }: TokenDetails,
+  { decimals: quoteTokenDecimals }: TokenDetails
 ): Decimal[] => {
   const tokenIdsOrNull = getTokenIdsFromOrderEvents(bracketOrderEvents);
 
@@ -18,16 +25,22 @@ export const getBracketPricesFromOrderEvents = (
   bracketOrderEvents.forEach((bracketOrder) => {
     if (bracketOrder.buyToken === baseToken) {
       bracketPrices.push(
-        new Decimal(bracketOrder.priceDenominator).div(
-          new Decimal(bracketOrder.priceNumerator)
-        )
+        calculatePrice({
+          numerator: bracketOrder.priceDenominator,
+          denominator: bracketOrder.priceNumerator,
+          numeratorDecimals: quoteTokenDecimals,
+          denominatorDecimals: baseTokenDecimals,
+        })
       );
     }
     if (bracketOrder.buyToken === quoteToken) {
       bracketPrices.push(
-        new Decimal(bracketOrder.priceNumerator).div(
-          new Decimal(bracketOrder.priceDenominator)
-        )
+        calculatePrice({
+          numerator: bracketOrder.priceNumerator,
+          denominator: bracketOrder.priceDenominator,
+          numeratorDecimals: quoteTokenDecimals,
+          denominatorDecimals: baseTokenDecimals,
+        })
       );
     }
   });

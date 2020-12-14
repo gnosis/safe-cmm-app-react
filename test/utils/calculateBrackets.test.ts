@@ -1,6 +1,10 @@
 import { Params, calculateBrackets } from "utils/calculateBrackets";
 import clone from "lodash/clone";
 
+function sumArray(array: number[]): number {
+  return array.reduce((acc, val) => acc + val, 0);
+}
+
 const baseParams: Params = {
   lowestPrice: "0.8",
   startPrice: "1",
@@ -15,6 +19,7 @@ test("totalBrackets == 0", () => {
   expect(calculateBrackets(params)).toEqual({
     baseTokenBrackets: 0,
     quoteTokenBrackets: 0,
+    bracketsSizes: [100],
   });
 });
 
@@ -25,6 +30,7 @@ test("totalBrackets == 1", () => {
   expect(calculateBrackets(params)).toEqual({
     baseTokenBrackets: 0,
     quoteTokenBrackets: 1,
+    bracketsSizes: [100],
   });
 });
 
@@ -32,59 +38,72 @@ test("even brackets", () => {
   const params = clone(baseParams);
   params.totalBrackets = "2";
 
-  expect(calculateBrackets(params)).toEqual({
-    baseTokenBrackets: 1,
-    quoteTokenBrackets: 1,
-  });
+  const actual = calculateBrackets(params);
+
+  expect(sumArray(actual.bracketsSizes)).toEqual(100);
+  expect(actual.bracketsSizes.length).toEqual(+params.totalBrackets);
+  expect(actual.bracketsSizes).toEqual([44.94897427831781, 55.05102572168219]);
+  expect(actual.baseTokenBrackets).toEqual(1);
+  expect(actual.quoteTokenBrackets).toEqual(1);
 });
 
 test("odd brackets", () => {
   const params = clone(baseParams);
 
-  expect(calculateBrackets(params)).toEqual({
-    baseTokenBrackets: 1,
-    quoteTokenBrackets: 2,
-  });
+  const actual = calculateBrackets(params);
+
+  expect(sumArray(actual.bracketsSizes)).toEqual(100);
+  expect(actual.bracketsSizes.length).toEqual(+params.totalBrackets);
+  expect(actual.baseTokenBrackets).toEqual(1);
+  expect(actual.quoteTokenBrackets).toEqual(2);
 });
 
 test("lowestPrice > startPrice", () => {
   const params = clone(baseParams);
   params.startPrice = (Number(params.lowestPrice) * 0.9).toString();
 
-  expect(calculateBrackets(params)).toEqual({
-    baseTokenBrackets: 3,
-    quoteTokenBrackets: 0,
-  });
+  const actual = calculateBrackets(params);
+
+  expect(sumArray(actual.bracketsSizes)).toEqual(100);
+  expect(actual.bracketsSizes.length).toEqual(+params.totalBrackets);
+  expect(actual.baseTokenBrackets).toEqual(3);
+  expect(actual.quoteTokenBrackets).toEqual(0);
 });
 
 test("lowestPrice == startPrice", () => {
   const params = clone(baseParams);
   params.startPrice = params.lowestPrice;
 
-  expect(calculateBrackets(params)).toEqual({
-    baseTokenBrackets: 3,
-    quoteTokenBrackets: 0,
-  });
+  const actual = calculateBrackets(params);
+
+  expect(sumArray(actual.bracketsSizes)).toEqual(100);
+  expect(actual.bracketsSizes.length).toEqual(+params.totalBrackets);
+  expect(actual.baseTokenBrackets).toEqual(3);
+  expect(actual.quoteTokenBrackets).toEqual(0);
 });
 
 test("startPrice == highestPrice", () => {
   const params = clone(baseParams);
   params.startPrice = params.highestPrice;
 
-  expect(calculateBrackets(params)).toEqual({
-    baseTokenBrackets: 0,
-    quoteTokenBrackets: 3,
-  });
+  const actual = calculateBrackets(params);
+
+  expect(sumArray(actual.bracketsSizes)).toEqual(100);
+  expect(actual.bracketsSizes.length).toEqual(+params.totalBrackets);
+  expect(actual.baseTokenBrackets).toEqual(0);
+  expect(actual.quoteTokenBrackets).toEqual(3);
 });
 
 test("startPrice > highestPrice", () => {
   const params = clone(baseParams);
   params.startPrice = (Number(params.highestPrice) * 1.1).toString();
 
-  expect(calculateBrackets(params)).toEqual({
-    baseTokenBrackets: 0,
-    quoteTokenBrackets: 3,
-  });
+  const actual = calculateBrackets(params);
+
+  expect(sumArray(actual.bracketsSizes)).toEqual(100);
+  expect(actual.bracketsSizes.length).toEqual(+params.totalBrackets);
+  expect(actual.baseTokenBrackets).toEqual(0);
+  expect(actual.quoteTokenBrackets).toEqual(3);
 });
 
 test("startPrice == bracket boundary", () => {
@@ -94,16 +113,19 @@ test("startPrice == bracket boundary", () => {
   // pow(1.2/0.8, 1/3) * 0.8
   params.startPrice = "0.915771394";
 
-  expect(calculateBrackets(params)).toEqual({
-    baseTokenBrackets: 2,
-    quoteTokenBrackets: 1,
-  });
+  const actual = calculateBrackets(params);
+
+  expect(sumArray(actual.bracketsSizes)).toEqual(100);
+  expect(actual.bracketsSizes.length).toEqual(+params.totalBrackets);
+  expect(actual.baseTokenBrackets).toEqual(2);
+  expect(actual.quoteTokenBrackets).toEqual(1);
 });
 
 describe("invalid params", () => {
   const invalidResponse = {
     baseTokenBrackets: 0,
     quoteTokenBrackets: 0,
+    bracketsSizes: [100],
   };
   test("invalid lowestPrice", () => {
     const params = clone(baseParams);
@@ -114,7 +136,14 @@ describe("invalid params", () => {
   test("invalid startPrice", () => {
     const params = clone(baseParams);
     params.startPrice = "sfas";
-    expect(calculateBrackets(params)).toEqual(invalidResponse);
+
+    const response = clone(invalidResponse);
+    response.bracketsSizes = [
+      28.942848510666373,
+      33.131290910223285,
+      37.92586057911034,
+    ];
+    expect(calculateBrackets(params)).toEqual(response);
   });
 
   test("invalid highestPrice", () => {
@@ -138,12 +167,20 @@ describe("invalid params", () => {
   test("startPrice < 0", () => {
     const params = clone(baseParams);
     params.startPrice = "-1";
-    expect(calculateBrackets(params)).toEqual(invalidResponse);
+
+    const response = clone(invalidResponse);
+    response.bracketsSizes = [
+      28.942848510666373,
+      33.131290910223285,
+      37.92586057911034,
+    ];
+    expect(calculateBrackets(params)).toEqual(response);
   });
 
   test("lowestPrice > highestPrice", () => {
     const params = clone(baseParams);
     params.lowestPrice = params.highestPrice;
+
     expect(calculateBrackets(params)).toEqual(invalidResponse);
   });
 
