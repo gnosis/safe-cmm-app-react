@@ -1,6 +1,5 @@
 import React, { memo, useCallback, useContext } from "react";
 import styled from "styled-components";
-import { range } from "lodash";
 
 import { theme } from "theme";
 
@@ -10,74 +9,55 @@ function buildBorder(color: string): string {
   return `2px solid ${color}`;
 }
 
-const Wrapper = styled.div<{ hasLeftBrackets?: boolean; isDeploy?: boolean }>`
+const Wrapper = styled.div`
   height: inherit;
   display: flex;
+`;
 
-  & > * {
-    width: 100%;
-  }
+const Bracket = styled.div<{
+  type: "left" | "right";
+  width: number;
+  hasLeftBrackets?: boolean;
+}>`
+  width: ${({ width }) => width}%;
 
-  /* Default to left side color */
-  background-color: ${theme.colors.backgroundLightGreen};
+  ${({ type, hasLeftBrackets }) => {
+    const colorSuffix = type === "left" ? "Green" : "Purple";
+    const firstOfType =
+      (type === "left" || !hasLeftBrackets) &&
+      `&:first-of-type {
+            border-left: ${buildBorder(
+              theme.colors[`borderDark${colorSuffix}`]
+            )};
+          }`;
 
-  .left:first-of-type {
-    border-left: ${buildBorder(theme.colors.borderDarkGreen)};
-  }
+    return `
+      ${firstOfType || ""}
 
-  .left {
-    border-right: ${({ isDeploy }) =>
-      buildBorder(
-        theme.colors[isDeploy ? "borderLightGreen" : "borderDarkGreen"]
-      )};
-
-    ${({ isDeploy }) =>
-      isDeploy
-        ? ""
-        : `
-          &.hover,&:hover {
-            background-color: ${theme.colors.borderLightGreen};
-          }`}
-  }
-
-  .left:last-of-type {
-    border-right: ${buildBorder(theme.colors.borderDarkGreen)};
-  }
-
-  ${({ hasLeftBrackets }) =>
-    hasLeftBrackets
-      ? ""
-      : `
-  .right:first-of-type {
-    border-left: ${buildBorder(theme.colors.borderDarkPurple)};
-  }`}
-
-  .right {
-    background-color: ${theme.colors.backgroundLightPurple};
-
-    border-right: ${({ isDeploy }) =>
-      buildBorder(
-        theme.colors[isDeploy ? "borderLightPurple" : "borderDarkPurple"]
-      )};
-
-    ${({ isDeploy }) =>
-      isDeploy
-        ? ""
-        : `
-          
-          &.hover,&:hover {
-            background-color: ${theme.colors.borderLightPurple};
-          }`}
-  }
-
-  .right:last-of-type {
-    border-right: ${buildBorder(theme.colors.borderDarkPurple)};
-  }
+      background-color: ${theme.colors[`backgroundLight${colorSuffix}`]};
+  
+      border-right: ${buildBorder(theme.colors[`borderDark${colorSuffix}`])};
+  
+      &.deploy {
+        border-right: ${buildBorder(theme.colors[`borderLight${colorSuffix}`])};
+      }
+  
+      &:not(.deploy).hover,
+      &:not(.deploy):hover {
+        background-color: ${theme.colors[`borderLight${colorSuffix}`]};
+      }
+    }
+  
+    &:last-of-type {
+      border-right: ${buildBorder(theme.colors[`borderDark${colorSuffix}`])};
+    }
+    `;
+  }}
 `;
 
 export const Brackets = memo(function Brackets(): JSX.Element {
   const {
-    totalBrackets,
+    bracketsSizes,
     leftBrackets,
     rightBrackets,
     type,
@@ -87,22 +67,29 @@ export const Brackets = memo(function Brackets(): JSX.Element {
 
   const onMouseLeave = useCallback((): void => onHover && onHover(), [onHover]);
 
+  const buildClasses = useCallback(
+    (id: number): string => {
+      const classes = [];
+
+      hoverId === id && classes.push("hover");
+      type === "deploy" && classes.push("deploy");
+
+      return classes.join(" ");
+    },
+    [hoverId, type]
+  );
+
+  const inInitialState = !leftBrackets && !rightBrackets;
+
   return (
-    <Wrapper hasLeftBrackets={!!leftBrackets} isDeploy={type === "deploy"}>
-      {range(
-        !leftBrackets && !rightBrackets ? totalBrackets : leftBrackets
-      ).map((id) => (
-        <div
-          className={`left ${hoverId === id ? "hover" : ""}`}
+    <Wrapper>
+      {bracketsSizes.map((size, id) => (
+        <Bracket
           key={id}
-          onMouseEnter={() => onHover && onHover(id)}
-          onMouseLeave={onMouseLeave}
-        />
-      ))}
-      {range(leftBrackets, rightBrackets + leftBrackets).map((id) => (
-        <div
-          className={`right ${hoverId === id ? "hover" : ""}`}
-          key={id}
+          width={size}
+          hasLeftBrackets={leftBrackets > 0 || inInitialState}
+          type={id < leftBrackets || inInitialState ? "left" : "right"}
+          className={buildClasses(id)}
           onMouseEnter={() => onHover && onHover(id)}
           onMouseLeave={onMouseLeave}
         />

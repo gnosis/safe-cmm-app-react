@@ -1,6 +1,11 @@
 import Decimal from "decimal.js";
+import { range } from "lodash";
 
-import { ONE_DECIMAL, ZERO_DECIMAL } from "utils/constants";
+import {
+  ONE_DECIMAL,
+  ONE_HUNDRED_DECIMAL,
+  ZERO_DECIMAL,
+} from "utils/constants";
 
 export interface Params {
   lowestPrice: string;
@@ -12,6 +17,7 @@ export interface Params {
 interface Result {
   baseTokenBrackets: number;
   quoteTokenBrackets: number;
+  bracketsSizes: number[];
 }
 
 /**
@@ -36,30 +42,55 @@ export function calculateBrackets(params: Params): Result {
   // Minimal validation
   if (
     isNaN(lowestPriceNum) ||
-    isNaN(startPriceNum) ||
     isNaN(highestPriceNum) ||
     isNaN(totalBrackets) ||
     lowestPriceNum <= 0 ||
-    startPriceNum <= 0 ||
     lowestPriceNum >= highestPriceNum ||
     totalBrackets <= 0
   ) {
-    return { baseTokenBrackets: 0, quoteTokenBrackets: 0 };
+    return {
+      baseTokenBrackets: 0,
+      quoteTokenBrackets: 0,
+      bracketsSizes: [100],
+    };
   }
 
   //  Working with Decimals for enhanced precision
   const lowestPrice = new Decimal(lowestPriceStr);
-  const startPrice = new Decimal(startPriceStr);
   const highestPrice = new Decimal(highestPriceStr);
 
   const stepSizeAsMultiplier = highestPrice
     .div(lowestPrice)
     .pow(ONE_DECIMAL.div(totalBrackets));
 
+  const interval = highestPrice.minus(lowestPrice);
+
+  // Calculates the percentage each bracket takes in the interval
+  // Percentage given in the range 0-100
+  const bracketsSizes = range(totalBrackets).map((index) => {
+    const lowerBoundary = lowestPrice.mul(stepSizeAsMultiplier.pow(index));
+    const upperBoundary = lowestPrice.mul(stepSizeAsMultiplier.pow(index + 1));
+
+    const bracketLength = upperBoundary.minus(lowerBoundary);
+
+    const percentageOfInterval = bracketLength
+      .div(interval)
+      .mul(ONE_HUNDRED_DECIMAL);
+
+    return percentageOfInterval.toNumber();
+  });
+
   // Same rounding as default Math.round
   Decimal.set({ rounding: Decimal.ROUND_HALF_CEIL });
 
-  let quoteTokenBrackets = startPrice
+  // Start price is optional.
+  // Without it we don't know which brackets goes where,
+  // but we can still give out the prices intervals
+  if (isNaN(startPriceNum) || startPriceNum <= 0) {
+    return { baseTokenBrackets: 0, quoteTokenBrackets: 0, bracketsSizes };
+  }
+
+  let quoteTokenBrackets = new Decimal(startPriceStr)
     .div(lowestPrice)
     .ln()
     .div(stepSizeAsMultiplier.ln())
@@ -77,14 +108,13 @@ export function calculateBrackets(params: Params): Result {
   return {
     baseTokenBrackets: totalBrackets - quoteTokenBrackets,
     quoteTokenBrackets,
+    bracketsSizes,
   };
 }
 
 export type FromMarketPriceParams = {
-  lowestPrice: Decimal;
-  highestPrice: Decimal;
   marketPrice: Decimal;
-  totalBrackets: number;
+  prices: Decimal[];
 };
 
 /**
@@ -104,66 +134,79 @@ export type FromMarketPriceParams = {
 export function calculateBracketsFromMarketPrice(
   params: FromMarketPriceParams
 ): Result {
-  const {
-    totalBrackets: inputTotalBrackets,
-    marketPrice,
-    lowestPrice,
-    highestPrice,
-  } = params;
+  const { marketPrice, prices } = params;
 
-  const result = { baseTokenBrackets: 0, quoteTokenBrackets: 0 };
-
-  const totalBrackets = new Decimal(inputTotalBrackets);
+  const result = {
+    baseTokenBrackets: 0,
+    quoteTokenBrackets: 0,
+    bracketsSizes: [100],
+  };
 
   if (
-    totalBrackets.isNaN() ||
+    // no invalid or empty market price
     marketPrice.isNaN() ||
-    lowestPrice.isNaN() ||
-    highestPrice.isNaN() ||
-    lowestPrice >= highestPrice ||
-    !lowestPrice.gt(ZERO_DECIMAL) ||
-    !marketPrice.gt(ZERO_DECIMAL) ||
-    !totalBrackets.gt(ZERO_DECIMAL)
+    marketPrice.lte(ZERO_DECIMAL) ||
+    // no empty prices array
+    prices.length === 0 ||
+    // no odd prices array
+    prices.length % 2 !== 0 ||
+    // no invalid first/last prices
+    prices[0].isNaN() ||
+    prices[prices.length - 1].isNaN() ||
+    // no first price greater than or equal to last price
+    prices[0].gte(prices[prices.length - 1]) ||
+    // no first price less than or equal to zero
+    prices[0].lte(ZERO_DECIMAL)
   ) {
     return result;
   }
 
+  result.bracketsSizes = [];
+
+  // there's 1 pair of prices per bracket
+  const totalBrackets = prices.length / 2;
+
+  const lowestPrice = prices[0];
+  const highestPrice = prices[prices.length - 1];
+  const interval = highestPrice.minus(lowestPrice);
+
+  // Go over the prices in pairs
+  range(0, prices.length, 2).forEach((index) => {
+    const lowerBoundary = prices[index];
+    const upperBoundary = prices[index + 1];
+
+    const priceDifference = upperBoundary.minus(lowerBoundary);
+
+    // Calculate the interval percentage
+    const percentageOfInterval = priceDifference
+      .div(interval)
+      .mul(ONE_HUNDRED_DECIMAL);
+
+    result.bracketsSizes.push(percentageOfInterval.toNumber());
+
+    // Try to find where the market price fits
+    if (marketPrice.gte(lowerBoundary) && marketPrice.lt(upperBoundary)) {
+      // middle bracket found!
+      result.baseTokenBrackets = index / 2;
+      result.quoteTokenBrackets = totalBrackets - index / 2 - 1;
+      // now, which side takes it?
+      if (marketPrice.lt(lowerBoundary.add(priceDifference.div(2)))) {
+        result.baseTokenBrackets += 1;
+      } else {
+        result.quoteTokenBrackets += 1;
+      }
+    }
+  });
+
+  // In case the market price was outside the prices range
   if (lowestPrice.gt(marketPrice)) {
     // all on the right
-    result.quoteTokenBrackets = totalBrackets.toNumber();
+    result.quoteTokenBrackets = totalBrackets;
     return result;
   } else if (marketPrice.gt(highestPrice)) {
     // all on the left
-    result.baseTokenBrackets = totalBrackets.toNumber();
-    return result;
-  } else {
-    // market price somewhere in the middle
-
-    // price position within the interval
-    const pricePosition = marketPrice.minus(lowestPrice);
-    const interval = highestPrice.minus(lowestPrice);
-    const bracketSize = interval.div(totalBrackets);
-    const middleBracket = pricePosition
-      .div(bracketSize)
-      // integer division
-      .floor();
-
-    // `increment` defines whether middleBracket is on left or right side
-    // Calculates it by checking in which part of the bracket the price falls into
-    // `price % bracketSize` gives us where within a bracket the price is located
-    //  checking whether it's greater than `bracketSize/2` gives us which side
-    const increment = pricePosition.mod(bracketSize).gt(bracketSize.div(2))
-      ? ZERO_DECIMAL
-      : ONE_DECIMAL;
-
-    const quoteTokenBrackets = totalBrackets.minus(
-      middleBracket.add(increment)
-    );
-    const baseTokenBrackets = totalBrackets.minus(quoteTokenBrackets);
-
-    result.quoteTokenBrackets = quoteTokenBrackets.toNumber();
-    result.baseTokenBrackets = baseTokenBrackets.toNumber();
-
+    result.baseTokenBrackets = totalBrackets;
     return result;
   }
+  return result;
 }
