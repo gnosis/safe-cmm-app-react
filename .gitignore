@@ -6,3 +6,6 @@ ngrok.yml
 storybook-static/
 private.*
 old.**.ts
+
+yalc*
+.yalc

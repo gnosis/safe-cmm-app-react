@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 import { theme } from "theme";
 
+import { MAXIMUM_BRACKETS, MINIMUM_BRACKETS } from "utils/constants";
+
 import {
   NumberInput,
   Props as NumberInputProps,
@@ -34,9 +36,13 @@ export const BracketsInput = (props: Props): JSX.Element => {
   return (
     <Wrapper
       {...props}
-      // TODO: Seems like step and min are not respected.
-      // Oh well, let's deal with that when adding validation
-      input={{ type: "number", step: 1, min: 1, value }}
+      input={{
+        type: "number",
+        step: 1,
+        min: MINIMUM_BRACKETS,
+        max: MAXIMUM_BRACKETS,
+        value,
+      }}
     />
   );
 };
