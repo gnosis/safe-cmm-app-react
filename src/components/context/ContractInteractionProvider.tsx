@@ -106,12 +106,12 @@ export const ContractInteractionProvider = ({
     return newSafeInfo;
   }, [safeInfo]);
 
-  const handleInitWeb3 = useCallback(async (safeInfo: SafeInfo) => {
-    const newInstance = await initWeb3(safeInfo.network);
+  const handleInitWeb3 = useCallback((safeInfo: SafeInfo): void => {
+    const newInstance = initWeb3(safeInfo.network);
     setWeb3Instance(newInstance);
   }, []);
 
-  const handleInit = useCallback(async () => {
+  const handleInit = useCallback(async (): Promise<void> => {
     setStatus("LOADING");
 
     if (window.self === window.top) {
@@ -121,7 +121,7 @@ export const ContractInteractionProvider = ({
 
     try {
       const safeInfo = await handleInitSdk();
-      await handleInitWeb3(safeInfo);
+      handleInitWeb3(safeInfo);
     } catch (err) {
       console.error(err);
       setWeb3Instance(null);
