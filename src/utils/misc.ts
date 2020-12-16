@@ -28,10 +28,6 @@ export function tokenDetailsToSelectItem(
   };
 }
 
-export function priceToBn(price: string): BN {
-  return new BN(new Decimal(price).mul(1e18).toFixed(0));
-}
-
 /**
  * Wrapper for async functions, try/catching errors and returning default value on failure
  *

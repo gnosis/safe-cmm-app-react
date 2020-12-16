@@ -6,8 +6,6 @@ import { parseAmount, ZERO } from "@gnosis.pm/dex-js";
 import deployStrategy from "api/deployStrategy";
 import getLogger from "utils/logger";
 
-import { priceToBn } from "utils/misc";
-
 import { ValidationErrors } from "validators/types";
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
