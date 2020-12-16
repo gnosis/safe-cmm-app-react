@@ -1,5 +1,4 @@
 import { importTradingStrategyHelpers } from "api/utils/dexImports";
-import Decimal from "decimal.js";
 
 import getLogger from "utils/logger";
 
@@ -9,13 +8,11 @@ const orderAndFund = async (
   context,
   {
     safeAddresses,
-    currentPriceWei: currentPrice,
+    currentPrice,
     tokenBaseContract,
-    tokenBaseDetails,
     tokenQuoteContract,
-    tokenQuoteDetails,
-    boundsLowerWei: boundsLower,
-    boundsUpperWei: boundsUpper,
+    boundsLower,
+    boundsUpper,
     investmentBaseWei,
     investmentQuoteWei,
   }
