@@ -13,11 +13,11 @@ const deployStrategy = async (
   numBrackets,
   tokenAddressBase,
   tokenAddressQuote,
-  boundsLowerWei,
-  boundsUpperWei,
+  boundsLower,
+  boundsUpper,
   investmentBaseWei,
   investmentQuoteWei,
-  currentPriceWei
+  currentPrice
 ) => {
   logger.log(
     `==> Arguments for Deployment`,
@@ -25,8 +25,8 @@ const deployStrategy = async (
       numBrackets,
       tokenAddressBase,
       tokenAddressQuote,
-      boundsLowerWei,
-      boundsUpperWei,
+      boundsLower,
+      boundsUpper,
       investmentBaseWei,
       investmentQuoteWei,
     ].map((n) => n.toString())
@@ -102,9 +102,9 @@ const deployStrategy = async (
     tokenBaseDetails,
     tokenQuoteContract,
     tokenQuoteDetails,
-    currentPriceWei,
-    boundsLowerWei,
-    boundsUpperWei,
+    currentPriceWei: currentPrice,
+    boundsLowerWei: boundsLower,
+    boundsUpperWei: boundsUpper,
     investmentBaseWei,
     investmentQuoteWei,
   });

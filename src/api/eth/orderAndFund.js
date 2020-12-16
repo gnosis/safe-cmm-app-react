@@ -9,13 +9,13 @@ const orderAndFund = async (
   context,
   {
     safeAddresses,
-    currentPriceWei,
+    currentPriceWei: currentPrice,
     tokenBaseContract,
     tokenBaseDetails,
     tokenQuoteContract,
     tokenQuoteDetails,
-    boundsLowerWei,
-    boundsUpperWei,
+    boundsLowerWei: boundsLower,
+    boundsUpperWei: boundsUpper,
     investmentBaseWei,
     investmentQuoteWei,
   }
@@ -53,17 +53,13 @@ const orderAndFund = async (
     `==> Quote token address: ${tokenQuoteContract.options.address}; token id: ${tokenQuoteId}`
   );
 
-  const dividendForBounds = new Decimal(10).pow(
-    Math.max(tokenBaseDetails.decimals, tokenQuoteDetails.decimals)
-  );
-
   const orderTransactions = await transactionsForOrders(
     context.safeInfo.safeAddress,
     safeAddresses,
     tokenBaseId,
     tokenQuoteId,
-    new Decimal(boundsLowerWei.toString()).div(dividendForBounds).toNumber(),
-    new Decimal(boundsUpperWei.toString()).div(dividendForBounds).toNumber(),
+    boundsLower,
+    boundsUpper,
     true
   );
 
@@ -72,9 +68,9 @@ const orderAndFund = async (
     safeAddresses,
     tokenBaseContract.options.address,
     tokenQuoteContract.options.address,
-    boundsLowerWei,
-    boundsUpperWei,
-    currentPriceWei,
+    boundsLower,
+    boundsUpper,
+    currentPrice,
     investmentQuoteWei,
     investmentBaseWei,
     false
