@@ -146,9 +146,9 @@ export async function getPrice(
   // base and quote being the same.
   // We don't want to query the price of a token against itself.
   if (baseToken.address === quoteToken.address) {
-    // Special case
+    // Unless... in this special case.
     // We use USDC to quote values as USD.
-    // If we want to use USDC on the strategy though, it'll be quoted against itself.
+    // If a user wants to use USDC on the strategy though, it'll be quoted against itself.
     // In that case, skip the check and return 1
     if (baseToken.symbol === "USDC") {
       return ONE_DECIMAL;
