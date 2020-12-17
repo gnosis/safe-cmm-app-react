@@ -6,8 +6,6 @@ import { parseAmount, ZERO } from "@gnosis.pm/dex-js";
 import deployStrategy from "api/deployStrategy";
 import getLogger from "utils/logger";
 
-import { priceToBn } from "utils/misc";
-
 import { ValidationErrors } from "validators/types";
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
@@ -74,13 +72,13 @@ export function useDeployStrategy(): Result {
         baseTokenAddress,
         quoteTokenAddress,
         // prices
-        priceToBn(lowestPrice),
-        priceToBn(highestPrice),
+        Number(lowestPrice),
+        Number(highestPrice),
         // amounts
         parseAmount(baseTokenAmount, baseToken.decimals) || ZERO,
         parseAmount(quoteTokenAmount, quoteToken.decimals) || ZERO,
         // start price
-        priceToBn(startPrice)
+        Number(startPrice)
       );
 
       logger.log(`==> Successfully deployed strategy`);
