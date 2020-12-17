@@ -21,7 +21,7 @@ export function formatSmart(
 ): string | null {
   let amountDecimal: Decimal;
 
-  if (amount === undefined) {
+  if (!amount) {
     return null;
   } else if (typeof amount === "string") {
     if (isNaN(+amount)) {
@@ -30,7 +30,7 @@ export function formatSmart(
 
     amountDecimal = new Decimal(amount);
   } else {
-    if (amount.isNaN()) {
+    if (amount.isNaN() || !amount.isFinite()) {
       return null;
     }
 

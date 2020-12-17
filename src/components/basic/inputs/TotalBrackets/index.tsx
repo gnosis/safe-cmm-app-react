@@ -62,9 +62,8 @@ export const TotalBrackets = (props: Props): JSX.Element => {
     const totalAmount = safeAddDecimals(baseAmountInUsd, quoteAmountInUsd);
 
     if (baseAmountInUsd || quoteAmountInUsd) {
-      return `~ $${
-        totalAmount && !totalAmount.isNaN() ? formatSmart(totalAmount) : ""
-      }`;
+      const formattedAmount = formatSmart(totalAmount);
+      return `~ $${formattedAmount ? formattedAmount : ""}`;
     } else {
       return "-";
     }
