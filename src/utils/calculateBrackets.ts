@@ -6,6 +6,7 @@ import {
   ONE_HUNDRED_DECIMAL,
   ZERO_DECIMAL,
 } from "utils/constants";
+import { safeStringToDecimal } from "utils/calculations";
 
 export interface Params {
   lowestPrice: string;
@@ -35,17 +36,17 @@ export function calculateBrackets(params: Params): Result {
     totalBrackets: totalBracketsStr,
   } = params;
 
-  const lowestPriceNum = Number(lowestPriceStr);
-  const startPriceNum = Number(startPriceStr);
-  const highestPriceNum = Number(highestPriceStr);
+  const lowestPrice = safeStringToDecimal(lowestPriceStr);
+  const startPrice = safeStringToDecimal(startPriceStr);
+  const highestPrice = safeStringToDecimal(highestPriceStr);
   const totalBrackets = Number(totalBracketsStr);
   // Minimal validation
   if (
-    isNaN(lowestPriceNum) ||
-    isNaN(highestPriceNum) ||
+    !lowestPrice ||
+    !highestPrice ||
     isNaN(totalBrackets) ||
-    lowestPriceNum <= 0 ||
-    lowestPriceNum >= highestPriceNum ||
+    lowestPrice.lte(ZERO_DECIMAL) ||
+    lowestPrice.gte(highestPrice) ||
     totalBrackets <= 0
   ) {
     return {
@@ -54,10 +55,6 @@ export function calculateBrackets(params: Params): Result {
       bracketsSizes: [100],
     };
   }
-
-  //  Working with Decimals for enhanced precision
-  const lowestPrice = new Decimal(lowestPriceStr);
-  const highestPrice = new Decimal(highestPriceStr);
 
   const stepSizeAsMultiplier = highestPrice
     .div(lowestPrice)
@@ -86,11 +83,11 @@ export function calculateBrackets(params: Params): Result {
   // Start price is optional.
   // Without it we don't know which brackets goes where,
   // but we can still give out the prices intervals
-  if (isNaN(startPriceNum) || startPriceNum <= 0) {
+  if (!startPrice || startPrice.lte(ZERO_DECIMAL)) {
     return { baseTokenBrackets: 0, quoteTokenBrackets: 0, bracketsSizes };
   }
 
-  let quoteTokenBrackets = new Decimal(startPriceStr)
+  let quoteTokenBrackets = startPrice
     .div(lowestPrice)
     .ln()
     .div(stepSizeAsMultiplier.ln())

@@ -3,6 +3,7 @@ import Decimal from "decimal.js";
 import { useGetPrice } from "hooks/useGetPrice";
 import { useTokenDetails } from "hooks/useTokenDetails";
 
+import { safeStringToDecimal } from "utils/calculations";
 import { ONE_HUNDRED_DECIMAL } from "utils/constants";
 
 type UseIsStartPriceOutOfThresholdParams = {
@@ -24,19 +25,17 @@ export function useIsStartPriceOutOfThreshold(
 ): number | undefined {
   const { baseTokenAddress, quoteTokenAddress, startPrice, threshold } = params;
 
+  const startPriceDecimal = safeStringToDecimal(startPrice);
+
   // Avoid additional queries if `startPrice` is not set
-  const baseToken = useTokenDetails(startPrice ? baseTokenAddress : undefined);
-  const quoteToken = useTokenDetails(
-    startPrice ? quoteTokenAddress : undefined
-  );
+  const baseToken = useTokenDetails(startPriceDecimal && baseTokenAddress);
+  const quoteToken = useTokenDetails(startPriceDecimal && quoteTokenAddress);
 
   const { price } = useGetPrice({ baseToken, quoteToken });
 
-  if (!startPrice || isNaN(+startPrice) || !price) {
+  if (!startPriceDecimal || !price) {
     return undefined;
   }
-
-  const startPriceDecimal = new Decimal(startPrice);
 
   const priceDifferencePercentage = startPriceDecimal
     .minus(price)

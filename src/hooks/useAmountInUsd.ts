@@ -5,6 +5,9 @@ import { PriceSources } from "api/prices";
 
 import { usdReferenceTokenState } from "state/selectors";
 
+import { ZERO_DECIMAL } from "utils/constants";
+import { safeStringToDecimal } from "utils/calculations";
+
 import { useGetPrice } from "./useGetPrice";
 import { useTokenDetails } from "./useTokenDetails";
 
@@ -27,10 +30,14 @@ type Result = {
 export function useAmountInUsd(params: Params): Result {
   const { tokenAddress, amount, source, sourceOptions } = params;
 
+  const amountDecimal = safeStringToDecimal(amount);
   // Setting address to be queried `undefined` when no amount is provided
   // to avoid fetching price when there's no amount
   const address =
-    Number(amount) > 0 && !isNaN(+amount) ? tokenAddress : undefined;
+    amountDecimal &&
+    amountDecimal.gt(ZERO_DECIMAL) &&
+    amountDecimal.isFinite() &&
+    tokenAddress;
 
   const baseToken = useTokenDetails(address);
 
@@ -45,7 +52,7 @@ export function useAmountInUsd(params: Params): Result {
 
   return {
     isLoading: isLoadingPrice,
-    amountInUsd: address && price ? price.mul(amount) : null,
+    amountInUsd: address && price ? price.mul(amountDecimal) : null,
     error: priceError || "",
   };
 }
