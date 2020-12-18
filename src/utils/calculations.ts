@@ -24,6 +24,20 @@ export function safeAddDecimals(
   }
 }
 
+export function safeStringToDecimal(value?: string): Decimal | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue || isNaN(+trimmedValue) || !isFinite(+trimmedValue)) {
+    return undefined;
+  }
+
+  return new Decimal(trimmedValue);
+}
+
 /**
  * Calculates ROI based on difference between current|initial values.
  * Returns undefined when any input is invalid.

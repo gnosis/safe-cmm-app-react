@@ -43,7 +43,7 @@ export const hasBalanceFactory = (
     };
   }
 
-  const bnAmount = parseAmount(value, details.decimals);
+  const bnAmount = parseAmount(value.trim(), details.decimals);
 
   // Edge case, `parseAmount` does not return a valid BN
   // This could happen when an invalid value is provided,
