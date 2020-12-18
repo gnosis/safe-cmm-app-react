@@ -29,7 +29,8 @@ export function useAmountInUsd(params: Params): Result {
 
   // Setting address to be queried `undefined` when no amount is provided
   // to avoid fetching price when there's no amount
-  const address = Number(amount) > 0 ? tokenAddress : undefined;
+  const address =
+    Number(amount) > 0 && !isNaN(+amount) ? tokenAddress : undefined;
 
   const baseToken = useTokenDetails(address);
 
