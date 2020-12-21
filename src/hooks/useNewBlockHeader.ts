@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { BlockHeader } from "web3-eth";
 
-import { subscribeToNewBlockHeaders } from "api/web3/wallet";
+import { subscribeToNewBlockHeaders } from "api/web3/subscription";
 
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
