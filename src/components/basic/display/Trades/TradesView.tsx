@@ -15,6 +15,10 @@ import { theme, ThemeTextSize } from "theme";
 
 import { formatSmart } from "utils/format";
 
+import { Text } from "components/basic/display/Text";
+
+import { Header } from "./Header";
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -87,45 +91,54 @@ const Dot = styled.div<{ type: "buy" | "sell" }>`
   }
 `;
 
-export type Props = { trades: Trade[] };
+export type Props = { trades: Trade[]; totalTrades: number };
 
 export const TradesView = memo(function Trades(props: Props): JSX.Element {
-  const { trades } = props;
+  const { trades, totalTrades } = props;
+
+  if (trades.length === 0) {
+    return <Text size="2xl">No trades yet</Text>;
+  }
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <StyledCell strong>TYPE</StyledCell>
-          <StyledCell>TRADE</StyledCell>
-          <StyledCell>PRICE</StyledCell>
-          <StyledCell>DATE</StyledCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {trades.map((trade, id) => (
-          <TableRow key={id}>
-            <StyledCell textSize="lg" type={trade.type} strong>
-              <Dot type={trade.type}>
-                {trade.type.replace(/^\w/, (l) => l.toUpperCase())}
-              </Dot>
-            </StyledCell>
-            <StyledCell textSize="lg">
-              {`${formatSmart(trade.baseTokenAmount)} ${
-                trade.baseTokenSymbol
-              } for ${formatSmart(trade.quoteTokenAmount)} ${
-                trade.quoteTokenSymbol
-              }`}
-            </StyledCell>
-            <StyledCell textSize="lg">
-              {`1 ${trade.baseTokenSymbol} = ${formatSmart(trade.price)} ${
-                trade.quoteTokenSymbol
-              }`}
-            </StyledCell>
-            <StyledCell textSize="lg">{trade.date.toLocaleString()}</StyledCell>
+    <Wrapper>
+      <Header loaded={trades.length} total={totalTrades} />
+      <Table>
+        <TableHead>
+          <TableRow>
+            <StyledCell strong>TYPE</StyledCell>
+            <StyledCell>TRADE</StyledCell>
+            <StyledCell>PRICE</StyledCell>
+            <StyledCell>DATE</StyledCell>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {trades.map((trade, id) => (
+            <TableRow key={id}>
+              <StyledCell textSize="lg" type={trade.type} strong>
+                <Dot type={trade.type}>
+                  {trade.type.replace(/^\w/, (l) => l.toUpperCase())}
+                </Dot>
+              </StyledCell>
+              <StyledCell textSize="lg">
+                {`${formatSmart(trade.baseTokenAmount)} ${
+                  trade.baseTokenSymbol
+                } for ${formatSmart(trade.quoteTokenAmount)} ${
+                  trade.quoteTokenSymbol
+                }`}
+              </StyledCell>
+              <StyledCell textSize="lg">
+                {`1 ${trade.baseTokenSymbol} = ${formatSmart(trade.price)} ${
+                  trade.quoteTokenSymbol
+                }`}
+              </StyledCell>
+              <StyledCell textSize="lg">
+                {trade.date.toLocaleString()}
+              </StyledCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Wrapper>
   );
 });

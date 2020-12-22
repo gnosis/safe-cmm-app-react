@@ -32,7 +32,11 @@ const defaultData: Props = {
       date: new Date(2020, 6, 22),
     },
   ],
+  totalTrades: 50,
 };
 
 export const Default = Template.bind({});
 Default.args = { ...defaultData };
+
+export const NoTrades = Template.bind({});
+NoTrades.args = { trades: [], totalTrades: 0 };
