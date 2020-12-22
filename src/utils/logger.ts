@@ -1,24 +1,26 @@
 const loggers = {};
 
 class Logger {
-  constructor(namespace) {
+  namespace: string;
+
+  constructor(namespace: string) {
     this.namespace = namespace;
   }
 
-  log(...args) {
+  log(...args: any[]): void {
     console.log(`[${this.namespace}]`, ...args);
   }
 
-  warn(...args) {
+  warn(...args: any[]): void {
     console.warn(`[${this.namespace}]`, ...args);
   }
 
-  error(...args) {
+  error(...args: any[]): void {
     console.error(`[${this.namespace}]`, ...args);
   }
 }
 
-const getLoggerOrCreate = (name = "default") => {
+const getLoggerOrCreate = (name = "default"): Logger => {
   if (loggers[name]) {
     return loggers[name];
   }

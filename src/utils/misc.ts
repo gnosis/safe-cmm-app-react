@@ -1,6 +1,3 @@
-import BN from "bn.js";
-import Decimal from "decimal.js";
-
 import { TokenDetails, Unpromise } from "types";
 import { SelectItem } from "@gnosis.pm/safe-react-components/dist/inputs/Select";
 

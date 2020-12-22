@@ -1,10 +1,18 @@
-import BN from "bn.js";
-import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
-import { fromPairs } from "lodash";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { fromPairs } from "lodash";
+import BN from "bn.js";
+
 import { tokenBalancesState } from "state/atoms";
 import { tokenListState } from "state/selectors";
+
+import { useNewBlockHeader } from "hooks/useNewBlockHeader";
+
+import getLogger from "utils/logger";
+
+import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
+
+const logger = getLogger("balances-loader");
 
 export type Balances = Record<string, BN>;
 
@@ -24,6 +32,7 @@ export function useTokenBalances(): Return {
   const tokenList = useRecoilValue(tokenListState);
 
   const { fetchTokenBalance } = useContext(ContractInteractionContext);
+  const newBlock = useNewBlockHeader();
 
   const updateBalances = useCallback(async (): Promise<void> => {
     if (updating) {
@@ -33,7 +42,7 @@ export function useTokenBalances(): Return {
     setIsLoading(true);
     setError("");
 
-    console.log("----------------- updating balances");
+    logger.log("updating balances");
 
     if (fetchTokenBalance) {
       try {
@@ -47,22 +56,18 @@ export function useTokenBalances(): Return {
         setBalances((curr) => ({ ...curr, ...newBalances }));
       } catch (e) {
         const msg = "Failed to update balances";
-        console.error(msg, e);
+        logger.error(msg, e);
         setError(msg);
       }
     }
+
     setIsLoading(false);
     updating = false;
   }, [fetchTokenBalance, setBalances, tokenList]);
 
   useEffect(() => {
     updateBalances();
-
-    // TODO: update on new block instead of interval
-    const interval = setInterval(updateBalances, 10000);
-
-    return () => clearInterval(interval);
-  }, [updateBalances]);
+  }, [updateBalances, newBlock]);
 
   return { balances, isLoading, error };
 }

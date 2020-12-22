@@ -25,7 +25,7 @@ function UPerBracketAmount(props: Props): JSX.Element {
     }
     const amountInTokenUnits = parseAmount(totalAmount, tokenDetails.decimals);
 
-    if (amountInTokenUnits == null) {
+    if (!amountInTokenUnits) {
       return "";
     }
 
