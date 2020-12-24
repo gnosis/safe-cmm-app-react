@@ -37,6 +37,7 @@ export interface StrategyState {
   transactionHash: string;
   status: StrategyStatusEnum;
   created: Date;
+  deploymentBlock: number;
   firstBatchId: number;
   priceRange: PriceRange;
   prices: Decimal[];
