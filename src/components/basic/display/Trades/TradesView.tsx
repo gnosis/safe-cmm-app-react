@@ -11,6 +11,8 @@ import {
 } from "@material-ui/core";
 import Decimal from "decimal.js";
 
+import { Loader } from "@gnosis.pm/safe-react-components";
+
 import { theme, ThemeTextSize } from "theme";
 
 import { formatSmart } from "utils/format";
@@ -19,9 +21,16 @@ import { Text } from "components/basic/display/Text";
 
 import { Header } from "./Header";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ center?: boolean }>`
   display: flex;
   flex-direction: column;
+  ${({ center }) =>
+    center
+      ? `
+  justify-items: center;
+  align-items: center;
+  `
+      : ""}
 `;
 
 type CellProps = {
@@ -91,10 +100,22 @@ const Dot = styled.div<{ type: "buy" | "sell" }>`
   }
 `;
 
-export type Props = { trades: Trade[]; totalTrades: number };
+export type Props = {
+  trades: Trade[];
+  totalTrades: number;
+  isLoading: boolean;
+};
 
 export const TradesView = memo(function Trades(props: Props): JSX.Element {
-  const { trades, totalTrades } = props;
+  const { trades, totalTrades, isLoading } = props;
+
+  if (isLoading) {
+    return (
+      <Wrapper center>
+        <Loader size="md" />
+      </Wrapper>
+    );
+  }
 
   if (trades.length === 0) {
     return <Text size="2xl">No trades yet</Text>;
