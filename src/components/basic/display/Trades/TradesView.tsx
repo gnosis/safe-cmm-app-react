@@ -15,6 +15,8 @@ import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { theme, ThemeTextSize } from "theme";
 
+import { DisplayTrade } from "api/web3/trades";
+
 import { formatSmart } from "utils/format";
 
 import { Text } from "components/basic/display/Text";
@@ -73,18 +75,6 @@ const StyledCell = withStyles({
   )
 );
 
-// TODO: placeholder trade type
-export type Trade = {
-  type: "buy" | "sell";
-  baseTokenSymbol: string;
-  quoteTokenSymbol: string;
-  baseTokenAmount: Decimal;
-  quoteTokenAmount: Decimal;
-  price: Decimal;
-  date: Date;
-  pendingUntil: Date;
-};
-
 const Dot = styled.div<{ type: "buy" | "sell" }>`
   display: inline-flex;
   align-items: center;
@@ -102,7 +92,7 @@ const Dot = styled.div<{ type: "buy" | "sell" }>`
 `;
 
 export type Props = {
-  trades: Trade[];
+  trades: DisplayTrade[];
   totalTrades: number;
   isLoading: boolean;
 };
