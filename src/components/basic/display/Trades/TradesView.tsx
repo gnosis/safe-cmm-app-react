@@ -100,7 +100,7 @@ export type Props = {
 export const TradesView = memo(function Trades(props: Props): JSX.Element {
   const { trades, totalTrades, isLoading } = props;
 
-  if (isLoading) {
+  if (isLoading && trades.length === 0) {
     return (
       <Wrapper center>
         <Loader size="md" />
@@ -109,7 +109,7 @@ export const TradesView = memo(function Trades(props: Props): JSX.Element {
   }
 
   if (trades.length === 0) {
-    return <Text size="2xl">No trades yet</Text>;
+    return <Text size="2xl">No trades</Text>;
   }
   const now = Date.now();
 
