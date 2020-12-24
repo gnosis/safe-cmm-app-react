@@ -138,7 +138,7 @@ export const TradesView = memo(function Trades(props: Props): JSX.Element {
             <TableRow key={id}>
               <StyledCell textSize="lg" type={trade.type} strong>
                 <Dot type={trade.type}>
-                  {trade.type.replace(/^\w/, (l) => l.toUpperCase())}
+                  {trade.type?.replace(/^\w/, (l) => l.toUpperCase())}
                 </Dot>
               </StyledCell>
               <StyledCell textSize="lg">
