@@ -82,6 +82,7 @@ export type Trade = {
   quoteTokenAmount: Decimal;
   price: Decimal;
   date: Date;
+  pendingUntil: Date;
 };
 
 const Dot = styled.div<{ type: "buy" | "sell" }>`
@@ -120,6 +121,7 @@ export const TradesView = memo(function Trades(props: Props): JSX.Element {
   if (trades.length === 0) {
     return <Text size="2xl">No trades yet</Text>;
   }
+  const now = Date.now();
 
   return (
     <Wrapper>
@@ -154,7 +156,8 @@ export const TradesView = memo(function Trades(props: Props): JSX.Element {
                 }`}
               </StyledCell>
               <StyledCell textSize="lg">
-                {trade.date.toLocaleString()}
+                {trade.date.toLocaleString()}{" "}
+                {trade.pendingUntil.getTime() > now && "*"}
               </StyledCell>
             </TableRow>
           ))}
