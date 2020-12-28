@@ -96,7 +96,7 @@ export function useTrades(
           return [trades, reverts];
         }
 
-        const toBlock = Math.min(nextFromBlock + 10000, latestBlockNumber);
+        const toBlock = Math.min(nextFromBlock + 50000, latestBlockNumber);
 
         const [rangeTrades, rangeReverts] = await fetchAllOnRange(
           strategy,
