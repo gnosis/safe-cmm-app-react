@@ -234,6 +234,37 @@ export async function fetchTradeEventsForStrategy(
   }));
 }
 
+export type FetchTradesAndRevertsResult = {
+  trades: EventWithBlockInfo[];
+  reverts: EventWithBlockInfo[];
+};
+
+export async function fetchTradesAndReverts(
+  strategy: StrategyState,
+  context: ContractInteractionContextProps,
+  fromBlock: number,
+  toBlock?: number
+): Promise<FetchTradesAndRevertsResult> {
+  const [trades, reverts] = await Promise.all([
+    fetchTradeEventsForStrategy({
+      strategy,
+      context,
+      type: "Trade",
+      fromBlock,
+      toBlock,
+    }),
+    fetchTradeEventsForStrategy({
+      strategy,
+      context,
+      type: "TradeReversion",
+      fromBlock,
+      toBlock,
+    }),
+  ]);
+
+  return { trades, reverts };
+}
+
 /**
  * Builds a key used to find trades duplicates and reverts
  *

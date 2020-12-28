@@ -5,7 +5,8 @@ import { StrategyState } from "types";
 
 import {
   EventWithBlockInfo,
-  fetchTradeEventsForStrategy,
+  fetchTradesAndReverts,
+  FetchTradesAndRevertsResult,
   matchTradesAndReverts,
   Trade,
 } from "api/web3/trades";
@@ -20,32 +21,6 @@ import {
   ContractInteractionContext,
   ContractInteractionContextProps,
 } from "components/context/ContractInteractionProvider";
-
-type FetchAllResult = [EventWithBlockInfo[], EventWithBlockInfo[]];
-
-async function fetchAllOnRange(
-  strategy: StrategyState,
-  context: ContractInteractionContextProps,
-  fromBlock: number,
-  toBlock?: number
-): Promise<FetchAllResult> {
-  return Promise.all([
-    fetchTradeEventsForStrategy({
-      strategy,
-      context,
-      type: "Trade",
-      fromBlock,
-      toBlock,
-    }),
-    fetchTradeEventsForStrategy({
-      strategy,
-      context,
-      type: "TradeReversion",
-      fromBlock,
-      toBlock,
-    }),
-  ]);
-}
 
 export function useTrades(
   strategy: StrategyState
@@ -70,7 +45,7 @@ export function useTrades(
       strategy: StrategyState,
       context: ContractInteractionContextProps,
       _latestBlockNumber?: number
-    ): Promise<FetchAllResult> => {
+    ): Promise<FetchTradesAndRevertsResult> => {
       const lastCheckedBlockState = lastCheckedBlockSelector(
         strategy.transactionHash
       );
@@ -82,21 +57,23 @@ export function useTrades(
 
       let latestBlockNumber = _latestBlockNumber;
 
+      // When latestBlock not set means this is the first load
+      // In that case, fetch the number from the network
       if (!latestBlockNumber) {
         const latestBlock = await context.web3Instance.eth.getBlock("latest");
         latestBlockNumber = latestBlock.number;
       }
       console.log(`latest block`, latestBlockNumber);
 
-      let trades = [];
-      let reverts = [];
+      let allTrades = [];
+      let allReverts = [];
 
       // Fetches all trades and reverts in batches
       while (nextFromBlock < latestBlockNumber) {
         // Stop loop if component un-mounts
         if (cancelled.current) {
           console.log(`cancelled, stopping`);
-          return [trades, reverts];
+          return { trades: allTrades, reverts: allReverts };
         }
 
         const toBlock = Math.min(
@@ -104,7 +81,10 @@ export function useTrades(
           latestBlockNumber
         );
 
-        const [rangeTrades, rangeReverts] = await fetchAllOnRange(
+        const {
+          trades: rangeTrades,
+          reverts: rangeReverts,
+        } = await fetchTradesAndReverts(
           strategy,
           context,
           nextFromBlock,
@@ -113,8 +93,8 @@ export function useTrades(
         console.log(
           `fetched ${rangeTrades.length} trades and ${rangeReverts.length} reverts`
         );
-        trades = trades.concat(rangeTrades);
-        reverts = reverts.concat(rangeReverts);
+        allTrades = allTrades.concat(rangeTrades);
+        allReverts = allReverts.concat(rangeReverts);
 
         nextFromBlock = toBlock;
       }
@@ -125,7 +105,7 @@ export function useTrades(
 
       set(lastCheckedBlockState, latestBlockNumber);
 
-      return [trades, reverts];
+      return { trades: allTrades, reverts: allReverts };
     },
     []
   );
@@ -147,10 +127,10 @@ export function useTrades(
       // TODO: closed strategies don't need to look at the most recent blocks
       // Implement query to get blocknumber from timestamp: https://blocklytics.org/blog/ethereum-blocks-subgraph-made-for-time-travel/
       fetchAll(strategy, context, newBlock?.number).then(
-        ([tradeEvents, reverts]) => {
+        ({ trades, reverts }) => {
           console.log(
             `got response from fetchAll:`,
-            tradeEvents.length,
+            trades.length,
             reverts.length
           );
 
@@ -159,11 +139,11 @@ export function useTrades(
             console.log(`processed trades`);
 
             // Only update trades state if there was any new trade or revert
-            (tradeEvents.length > 0 || reverts.length > 0) &&
+            (trades.length > 0 || reverts.length > 0) &&
               setTrades(
                 (curr) =>
                   matchTradesAndReverts({
-                    trades: (curr as EventWithBlockInfo[]).concat(tradeEvents),
+                    trades: (curr as EventWithBlockInfo[]).concat(trades),
                     reverts,
                   }).sort((a, b) => b.timestamp - a.timestamp) // sort descending
               );
