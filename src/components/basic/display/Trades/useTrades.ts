@@ -1,5 +1,5 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useContext, useEffect, useRef, useState } from "react";
+import { useRecoilCallback, useRecoilState } from "recoil";
 
 import { StrategyState } from "types";
 
@@ -55,30 +55,33 @@ export function useTrades(
   const [trades, setTrades] = useRecoilState(
     tradesSelector(strategy.transactionHash)
   );
-  const [lastCheckedBlock, setLastCheckedBlock] = useRecoilState(
-    lastCheckedBlockSelector(strategy.transactionHash)
-  );
 
   const context = useContext(ContractInteractionContext);
 
+  // "instance" variable to control when component is unmounted and drop promises
   const cancelled = useRef(false);
+  // "instance" variable to prevent concurrent queries
+  const canQuery = useRef(true);
 
   const newBlock = useNewBlockHeader();
 
-  const fetchAll = useCallback(
-    async (
+  const fetchAll = useRecoilCallback(
+    ({ snapshot, set }) => async (
       strategy: StrategyState,
       context: ContractInteractionContextProps,
-      fromBlock: number,
       _latestBlockNumber?: number
     ): Promise<FetchAllResult> => {
-      console.log(`fetchAll from block`, fromBlock);
+      const lastCheckedBlockState = lastCheckedBlockSelector(
+        strategy.transactionHash
+      );
 
-      let nextFromBlock = fromBlock;
+      let nextFromBlock =
+        (await snapshot.getPromise(lastCheckedBlockState)) ||
+        strategy.deploymentBlock;
+      console.log(`fetchAll from block`, nextFromBlock);
 
       let latestBlockNumber = _latestBlockNumber;
 
-      // todo:if might not be needed
       if (!latestBlockNumber) {
         const latestBlock = await context.web3Instance.eth.getBlock("latest");
         latestBlockNumber = latestBlock.number;
@@ -114,14 +117,14 @@ export function useTrades(
       }
 
       console.log(
-        `done fetching all trades and reverts from block ${fromBlock} to block ${latestBlockNumber}`
+        `done fetching all trades and reverts until block ${latestBlockNumber}`
       );
 
-      setLastCheckedBlock(latestBlockNumber);
+      set(lastCheckedBlockState, latestBlockNumber);
 
       return [trades, reverts];
     },
-    [setLastCheckedBlock]
+    []
   );
 
   useEffect(() => {
@@ -131,42 +134,58 @@ export function useTrades(
     if (
       strategy?.hasFetchedBalance &&
       context.web3Instance &&
-      (!newBlock || newBlock.number % 5 === 0)
+      (!newBlock || newBlock.number % 5 === 0) &&
+      canQuery.current
     ) {
+      // Prevent concurrent requests
+      canQuery.current = false;
+
       setIsLoading(true);
       // TODO: closed strategies don't need to look at the most recent blocks
       // Implement query to get blocknumber from timestamp: https://blocklytics.org/blog/ethereum-blocks-subgraph-made-for-time-travel/
-      fetchAll(
-        strategy,
-        context,
-        lastCheckedBlock || strategy.deploymentBlock,
-        newBlock?.number
-      ).then(([tradeEvents, reverts]) => {
-        console.log(
-          `got response from fetchAll:`,
-          tradeEvents.length,
-          reverts.length
-        );
-        if (!cancelled.current) {
-          console.log(`processed trades`);
+      fetchAll(strategy, context, newBlock?.number).then(
+        ([tradeEvents, reverts]) => {
+          console.log(
+            `got response from fetchAll:`,
+            tradeEvents.length,
+            reverts.length
+          );
 
-          (tradeEvents.length > 0 || reverts.length > 0) &&
-            setTrades(
-              (curr) =>
-                matchTradesAndReverts({
-                  trades: (curr as EventWithBlockInfo[]).concat(tradeEvents),
-                  reverts,
-                }).sort((a, b) => b.timestamp - a.timestamp) // sort descending
-            );
+          // Only try to persist state if not unmounted
+          if (!cancelled.current) {
+            console.log(`processed trades`);
+
+            // Only update trades state if there was any new trade or revert
+            (tradeEvents.length > 0 || reverts.length > 0) &&
+              setTrades(
+                (curr) =>
+                  matchTradesAndReverts({
+                    trades: (curr as EventWithBlockInfo[]).concat(tradeEvents),
+                    reverts,
+                  }).sort((a, b) => b.timestamp - a.timestamp) // sort descending
+              );
+
+            setIsLoading(false);
+
+            // Release lock
+            canQuery.current = true;
+
+            // Shouldn't check closed strategies again
+            if (strategy.withdrawRequestDate) {
+              canQuery.current = false;
+              console.log(
+                `closed strategy, no longer checking for new trades from here on`
+              );
+            }
+          }
         }
-        setIsLoading(false);
-      });
+      );
     }
 
     return (): void => {
       cancelled.current = true;
     };
-  }, [context, fetchAll, lastCheckedBlock, newBlock, setTrades, strategy]);
+  }, [context, fetchAll, newBlock, setTrades, strategy]);
 
-  return { trades, isLoading };
+  return { trades, isLoading: isLoading || !strategy?.hasFetchedBalance };
 }
