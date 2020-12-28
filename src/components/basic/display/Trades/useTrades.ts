@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useRecoilState } from "recoil";
 
 import { StrategyState } from "types";
 
@@ -8,11 +9,15 @@ import {
   matchTradesAndReverts,
   Trade,
 } from "api/web3/trades";
+
+import { lastCheckedBlockSelector, tradesSelector } from "state/atoms";
+
+import { useNewBlockHeader } from "hooks/useNewBlockHeader";
+
 import {
   ContractInteractionContext,
   ContractInteractionContextProps,
 } from "components/context/ContractInteractionProvider";
-import { useNewBlockHeader } from "hooks/useNewBlockHeader";
 
 type blockValues = number | "latest" | null;
 
@@ -45,9 +50,14 @@ async function fetchAllOnRange(
 export function useTrades(
   strategy: StrategyState
 ): { trades: Trade[]; isLoading: boolean } {
-  const [trades, setTrades] = useState<Trade[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [fromBlock, setFromBlock] = useState(strategy.deploymentBlock);
+
+  const [trades, setTrades] = useRecoilState(
+    tradesSelector(strategy.transactionHash)
+  );
+  const [lastCheckedBlock, setLastCheckedBlock] = useRecoilState(
+    lastCheckedBlockSelector(strategy.transactionHash)
+  );
 
   const context = useContext(ContractInteractionContext);
 
@@ -107,11 +117,11 @@ export function useTrades(
         `done fetching all trades and reverts from block ${fromBlock} to block ${latestBlockNumber}`
       );
 
-      setFromBlock(latestBlockNumber);
+      setLastCheckedBlock(latestBlockNumber);
 
       return [trades, reverts];
     },
-    []
+    [setLastCheckedBlock]
   );
 
   useEffect(() => {
@@ -126,34 +136,37 @@ export function useTrades(
       setIsLoading(true);
       // TODO: closed strategies don't need to look at the most recent blocks
       // Implement query to get blocknumber from timestamp: https://blocklytics.org/blog/ethereum-blocks-subgraph-made-for-time-travel/
-      fetchAll(strategy, context, fromBlock, newBlock?.number).then(
-        ([tradeEvents, reverts]) => {
-          console.log(
-            `got response from fetchAll:`,
-            tradeEvents.length,
-            reverts.length
-          );
-          if (!cancelled.current) {
-            console.log(`processed trades`);
+      fetchAll(
+        strategy,
+        context,
+        lastCheckedBlock || strategy.deploymentBlock,
+        newBlock?.number
+      ).then(([tradeEvents, reverts]) => {
+        console.log(
+          `got response from fetchAll:`,
+          tradeEvents.length,
+          reverts.length
+        );
+        if (!cancelled.current) {
+          console.log(`processed trades`);
 
-            (tradeEvents.length > 0 || reverts.length > 0) &&
-              setTrades(
-                (curr) =>
-                  matchTradesAndReverts({
-                    trades: (curr as EventWithBlockInfo[]).concat(tradeEvents),
-                    reverts,
-                  }).sort((a, b) => b.timestamp) // sort descending
-              );
-            setIsLoading(false);
-          }
+          (tradeEvents.length > 0 || reverts.length > 0) &&
+            setTrades(
+              (curr) =>
+                matchTradesAndReverts({
+                  trades: (curr as EventWithBlockInfo[]).concat(tradeEvents),
+                  reverts,
+                }).sort((a, b) => b.timestamp - a.timestamp) // sort descending
+            );
         }
-      );
+        setIsLoading(false);
+      });
     }
 
     return (): void => {
       cancelled.current = true;
     };
-  }, [context, fetchAll, fromBlock, newBlock, strategy]);
+  }, [context, fetchAll, lastCheckedBlock, newBlock, setTrades, strategy]);
 
   return { trades, isLoading };
 }
