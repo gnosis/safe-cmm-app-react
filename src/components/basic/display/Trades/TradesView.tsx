@@ -9,7 +9,6 @@ import {
   TableRow,
   withStyles,
 } from "@material-ui/core";
-import Decimal from "decimal.js";
 
 import { Loader } from "@gnosis.pm/safe-react-components";
 
