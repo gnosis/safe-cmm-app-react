@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import styled from "styled-components";
 
-import { Icon } from "@gnosis.pm/safe-react-components";
+import { Icon, Loader } from "@gnosis.pm/safe-react-components";
 
 import { Text } from "components/basic/display/Text";
 
@@ -18,10 +18,11 @@ const Wrapper = styled.div`
 export type Props = {
   loaded: number;
   total: number;
+  isLoading: boolean;
 };
 
 export const Header = memo(function Header(props: Props): JSX.Element {
-  const { loaded, total } = props;
+  const { loaded, total, isLoading } = props;
 
   return (
     <Wrapper>
@@ -32,6 +33,7 @@ export const Header = memo(function Header(props: Props): JSX.Element {
       <Text color="secondaryHover" as="span">
         ({total} total)
       </Text>
+      {isLoading && <Loader size="xs" />}
     </Wrapper>
   );
 });

@@ -114,7 +114,11 @@ export const TradesView = memo(function Trades(props: Props): JSX.Element {
 
   return (
     <Wrapper>
-      <Header loaded={trades.length} total={totalTrades} />
+      <Header
+        loaded={trades.length}
+        total={totalTrades}
+        isLoading={isLoading}
+      />
       <Table>
         <TableHead>
           <TableRow>
