@@ -46,10 +46,12 @@ export function useTrades(
       context: ContractInteractionContextProps,
       _latestBlockNumber?: number
     ): Promise<FetchTradesAndRevertsResult> => {
+      // Get the state for this strategy
       const lastCheckedBlockState = lastCheckedBlockSelector(
         strategy.transactionHash
       );
 
+      // Get latestCheckedBlock from global state
       let nextFromBlock =
         (await snapshot.getPromise(lastCheckedBlockState)) ||
         strategy.deploymentBlock;
