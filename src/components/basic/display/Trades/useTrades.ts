@@ -19,15 +19,13 @@ import {
   ContractInteractionContextProps,
 } from "components/context/ContractInteractionProvider";
 
-type blockValues = number | "latest" | null;
-
 type FetchAllResult = [EventWithBlockInfo[], EventWithBlockInfo[]];
 
 async function fetchAllOnRange(
   strategy: StrategyState,
   context: ContractInteractionContextProps,
-  fromBlock: blockValues,
-  toBlock?: blockValues
+  fromBlock: number,
+  toBlock?: number
 ): Promise<FetchAllResult> {
   return Promise.all([
     fetchTradeEventsForStrategy({
