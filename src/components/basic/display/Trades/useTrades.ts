@@ -14,6 +14,8 @@ import { lastCheckedBlockSelector, tradesSelector } from "state/atoms";
 
 import { useNewBlockHeader } from "hooks/useNewBlockHeader";
 
+import { TRADES_BATCH_SIZE } from "utils/constants";
+
 import {
   ContractInteractionContext,
   ContractInteractionContextProps,
@@ -97,7 +99,10 @@ export function useTrades(
           return [trades, reverts];
         }
 
-        const toBlock = Math.min(nextFromBlock + 1000000, latestBlockNumber);
+        const toBlock = Math.min(
+          nextFromBlock + TRADES_BATCH_SIZE,
+          latestBlockNumber
+        );
 
         const [rangeTrades, rangeReverts] = await fetchAllOnRange(
           strategy,
