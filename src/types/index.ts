@@ -2,6 +2,8 @@ import Decimal from "decimal.js";
 
 import { Bracket, PriceRange } from "logic/IStrategy";
 
+import { Trade } from "api/web3/trades";
+
 export interface TokenDetails {
   address: string;
   decimals: number;
@@ -59,6 +61,11 @@ export interface StrategyState {
   hasFetchedBalance: boolean;
   hasFetchedStatus: boolean;
   hasFetchedFunding: boolean;
+}
+
+export interface TradesState {
+  trades: Trade[];
+  lastCheckedBlock: number;
 }
 
 export type Unpromise<T> = T extends Promise<infer U> ? U : T;
