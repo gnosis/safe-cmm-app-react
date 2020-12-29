@@ -21,8 +21,8 @@ export type BaseTradeEvent = {
   orderId: string;
   sellTokenId: number;
   buyTokenId: number;
-  sellAmount: BN;
-  buyAmount: BN;
+  sellAmount: string;
+  buyAmount: string;
   // block related
   txHash: string;
   eventIndex: number;
@@ -143,8 +143,8 @@ function parseTradeEvent(event: TradeEvent): BaseTradeEvent {
     orderId,
     sellTokenId: +sellToken,
     buyTokenId: +buyToken,
-    sellAmount: new BN(executedSellAmount),
-    buyAmount: new BN(executedBuyAmount),
+    sellAmount: executedSellAmount,
+    buyAmount: executedBuyAmount,
     txHash,
     eventIndex,
     blockNumber,
@@ -376,14 +376,17 @@ export function transformTradeEventToDisplayTrade(
   let baseTokenAmount: Decimal;
   let quoteTokenAmount: Decimal;
 
+  const sellAmountBN = new BN(sellAmount);
+  const buyAmountBN = new BN(buyAmount);
+
   if (sellTokenId === baseToken.id) {
     type = "sell";
-    baseTokenAmount = BNtoDecimal(sellAmount, baseToken.decimals);
-    quoteTokenAmount = BNtoDecimal(buyAmount, quoteToken.decimals);
+    baseTokenAmount = BNtoDecimal(sellAmountBN, baseToken.decimals);
+    quoteTokenAmount = BNtoDecimal(buyAmountBN, quoteToken.decimals);
   } else {
     type = "buy";
-    baseTokenAmount = BNtoDecimal(buyAmount, quoteToken.decimals);
-    quoteTokenAmount = BNtoDecimal(sellAmount, baseToken.decimals);
+    baseTokenAmount = BNtoDecimal(buyAmountBN, quoteToken.decimals);
+    quoteTokenAmount = BNtoDecimal(sellAmountBN, baseToken.decimals);
   }
 
   return {
