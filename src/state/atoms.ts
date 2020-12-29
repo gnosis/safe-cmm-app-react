@@ -51,11 +51,10 @@ export const strategyTradesStateFamily = atomFamily<TradesState, string>({
     const key = getStorageKey(txHash, "trades");
 
     // Default empty state
-    let state = { trades: [], lastCheckedBlock: 0 };
+    let state: TradesState = { trades: [], lastCheckedBlock: 0 };
     try {
       // Lazy load from local storage, if any
       const storedState = await localforage.getItem<TradesState>(key);
-      logger.log(`State for key '${key}'`, storedState);
       state = storedState || state;
     } catch (e) {
       // No worries, use default
@@ -65,19 +64,26 @@ export const strategyTradesStateFamily = atomFamily<TradesState, string>({
   },
   effects_UNSTABLE: (txHash: string) => [
     ({ onSet }): void =>
-      onSet((state) => console.debug(`new trades state ${txHash}`, state)),
-    ({ onSet }): void =>
       onSet((state) =>
         localforage.setItem(
           getStorageKey(txHash, "trades"),
           state,
           (err, value) =>
-            console.debug(`stored 'trades|${txHash}':`, err, value)
+            err &&
+            logger.warn(
+              `Failed to store '${getStorageKey(txHash, "trades")}':`,
+              value,
+              err
+            )
         )
       ),
   ],
 });
 
+/**
+ * Syntactic sugar to read/write only trades, event though it's part of
+ * a single TradesState object
+ */
 export const tradesSelector = selectorFamily<Trade[], string>({
   key: "trades",
   get: (txHash: string) => ({ get }) =>
@@ -90,6 +96,10 @@ export const tradesSelector = selectorFamily<Trade[], string>({
   },
 });
 
+/**
+ * Syntactic sugar to read/write only lastCheckedBlock, event though it's part of
+ * a single TradesState object
+ */
 export const lastCheckedBlockSelector = selectorFamily<number, string>({
   key: "lastCheckedBlock",
   get: (txHash: string) => ({ get }) =>
