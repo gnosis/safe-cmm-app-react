@@ -94,6 +94,7 @@ export const TabView = memo(function TabView(): JSX.Element {
           <SafeStyleTabHeaderWithCounter
             count={strategyCount}
             hasDot={hasTradingStopped}
+            label="Strategies"
             active={selectedTab === "strategies"}
           />
         ),

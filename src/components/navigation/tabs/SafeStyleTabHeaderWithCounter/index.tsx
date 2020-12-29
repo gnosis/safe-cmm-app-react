@@ -1,15 +1,14 @@
-import React, { useCallback } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import { theme } from "theme";
-import { ButtonLink } from "@gnosis.pm/safe-react-components";
+
 import { Badge } from "components/basic/display/Badge";
+import { Text } from "components/basic/display/Text";
 
 export interface Props {
-  children?: React.ReactNode;
+  label: string;
   active?: boolean;
-  name?: string;
-  onClick?: (SyntheticEvent) => void;
   count?: number;
   hasDot?: boolean;
   activeBgColor?: string;
@@ -22,22 +21,23 @@ interface TabHeaderButtonProps {
   active?: boolean;
 }
 
-const TabHeaderButton = styled(ButtonLink)<TabHeaderButtonProps>`
+const Wrapper = styled.div<TabHeaderButtonProps>`
   text-decoration: none;
+  display: flex;
+  align-items: center;
 
   .button-text {
     font-weight: ${({ active }) => (active ? 600 : 400)};
     text-transform: none;
     font-family: ${theme.fonts.fontFamily};
     font-size: ${theme.text.size.xl};
+    margin-right: 5px;
   }
 `;
 
 export const SafeStyleTabHeaderWithCounter = ({
-  children,
+  label,
   active,
-  name,
-  onClick,
   count = 0,
   hasDot,
   activeBgColor,
@@ -45,19 +45,20 @@ export const SafeStyleTabHeaderWithCounter = ({
   activeTextColor,
   inactiveTextColor,
 }: Props): JSX.Element => {
-  const handleClick = useCallback(() => {
-    if (onClick) onClick(name);
-  }, [onClick, name]);
-
   return (
-    <TabHeaderButton
-      textSize="xl"
-      onClick={handleClick}
+    <Wrapper
       color={active ? "primary" : "placeHolder"}
       className={active ? "active" : ""}
       active={active}
     >
-      <span className="button-text">{children}&nbsp;</span>
+      <Text
+        className="button-text"
+        size="xl"
+        color={active ? "primary" : "placeHolder"}
+        as="span"
+      >
+        {label}
+      </Text>
       <Badge
         backgroundColor={active ? activeBgColor : inactiveBgColor}
         textColor={active ? activeTextColor : inactiveTextColor}
@@ -65,6 +66,6 @@ export const SafeStyleTabHeaderWithCounter = ({
       >
         {count}
       </Badge>
-    </TabHeaderButton>
+    </Wrapper>
   );
 };
