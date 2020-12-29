@@ -1,5 +1,7 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, Suspense, useMemo, useState } from "react";
 import styled from "styled-components";
+
+import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { StrategyState } from "types";
 
@@ -35,6 +37,8 @@ export const FoldOut = memo(function FoldOut(props: Props): JSX.Element {
     }
   }, [activeTab, strategy]);
 
+  const loader = useMemo(() => <Loader size="lg" />, []);
+
   return (
     <>
       <Header
@@ -42,7 +46,9 @@ export const FoldOut = memo(function FoldOut(props: Props): JSX.Element {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
-      <TabContents>{contents}</TabContents>
+      <TabContents>
+        <Suspense fallback={loader}>{contents}</Suspense>
+      </TabContents>
     </>
   );
 });
