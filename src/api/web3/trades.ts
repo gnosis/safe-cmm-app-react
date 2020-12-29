@@ -10,6 +10,9 @@ import { ContractInteractionContextProps } from "components/context/ContractInte
 import { BNtoDecimal } from "utils/format";
 import { ZERO_DECIMAL } from "utils/constants";
 import { batchIdToDate, dateToBatchId } from "utils/time";
+import getLoggerOrCreate from "utils/logger";
+
+const logger = getLoggerOrCreate("trades api");
 
 /* TYPES */
 
@@ -88,19 +91,27 @@ async function fetchEvents(
   } = params;
   const batchExchangeContract = await context.getDeployed("BatchExchange");
 
-  console.log(`fetching ${type}s from block ${fromBlock} to block ${toBlock}`);
+  logger.log(`Fetching ${type}s from block ${fromBlock} to block ${toBlock}`);
+
   return Promise.all(
     brackets.map(
       async ({ address }): Promise<BaseTradeEvent[]> => {
-        const events = await batchExchangeContract.getPastEvents(type, {
-          filter: { owner: address },
-          fromBlock,
-          toBlock,
-        });
-        console.log(`events`, address, events);
-        return events.map(
-          (event: TradeEvent): BaseTradeEvent => parseTradeEvent(event)
-        );
+        try {
+          const events = await batchExchangeContract.getPastEvents(type, {
+            filter: { owner: address },
+            fromBlock,
+            toBlock,
+          });
+          return events.map(
+            (event: TradeEvent): BaseTradeEvent => parseTradeEvent(event)
+          );
+        } catch (e) {
+          logger.error(
+            `Failed to fetch events for bracket ${address} from block ${fromBlock} to block ${toBlock}`,
+            e
+          );
+          return [];
+        }
       }
     )
   ).then((trades) => trades.flat());
@@ -180,7 +191,7 @@ async function fetchBlockTimestamp(params: {
         return 0;
       }
     } catch (e) {
-      console.error(`Failed to fetch block data for block ${blockNumber}`, e);
+      logger.error(`Failed to fetch block data for block ${blockNumber}`, e);
       return 0;
     }
   }
@@ -313,8 +324,6 @@ export function matchTradesAndReverts(params: {
     })
   );
 
-  console.log(`sorted maps`, tradesMap);
-
   // Apply reverts to trades mappings
   reverts.forEach((revert) => {
     const key = buildKey(revert);
@@ -322,21 +331,11 @@ export function matchTradesAndReverts(params: {
 
     for (const trade of tradesList) {
       if (!trade.revertId) {
-        console.log(
-          `found trade ${trade.id} reverted by ${revert.id}`,
-          trade,
-          revert
-        );
         trade.revertId = revert.id;
         trade.revertTimestamp = revert.timestamp;
         // revert "consumed" here
         return;
       } else if (trade.revertId === revert.id) {
-        console.log(
-          `trade ${trade.id} already reverted by ${revert.id}`,
-          trade,
-          revert
-        );
         // revert "consumed" before
         return;
       }
