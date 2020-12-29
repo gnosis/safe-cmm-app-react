@@ -1,4 +1,5 @@
 import { atom, atomFamily, selectorFamily } from "recoil";
+import localforage from "localforage";
 import BN from "bn.js";
 
 import {
@@ -9,6 +10,10 @@ import {
   WithdrawState,
 } from "types";
 import { Trade } from "api/web3/trades";
+
+import getLoggerOrCreate from "utils/logger";
+
+const logger = getLoggerOrCreate("recoil state");
 
 export const tokenBalancesState = atom<Record<string, BN>>({
   key: "tokenBalances",
@@ -36,13 +41,39 @@ export const tokenDetailsState = atom<Record<string, TokenDetails>>({
   default: {},
 });
 
+function getStorageKey(txHash: string, type: "trades" | "strategy"): string {
+  return `${txHash}|${type}`;
+}
+
 export const strategyTradesStateFamily = atomFamily<TradesState, string>({
   key: "tradesState",
-  default: { trades: [], lastCheckedBlock: 0 }, // TODO: try local storage first
+  default: async (txHash: string): Promise<TradesState> => {
+    const key = getStorageKey(txHash, "trades");
+
+    // Default empty state
+    let state = { trades: [], lastCheckedBlock: 0 };
+    try {
+      // Lazy load from local storage, if any
+      const storedState = await localforage.getItem<TradesState>(key);
+      logger.log(`State for key '${key}'`, storedState);
+      state = storedState || state;
+    } catch (e) {
+      // No worries, use default
+      logger.warn(`Failed to fetch stored state for key ${key}`);
+    }
+    return state;
+  },
   effects_UNSTABLE: (txHash: string) => [
     ({ onSet }): void =>
+      onSet((state) => console.debug(`new trades state ${txHash}`, state)),
+    ({ onSet }): void =>
       onSet((state) =>
-        console.debug(`new trades state saved ${txHash}`, state)
+        localforage.setItem(
+          getStorageKey(txHash, "trades"),
+          state,
+          (err, value) =>
+            console.debug(`stored 'trades|${txHash}':`, err, value)
+        )
       ),
   ],
 });
@@ -67,6 +98,9 @@ export const lastCheckedBlockSelector = selectorFamily<number, string>({
     const tradesStateAtom = strategyTradesStateFamily(txHash);
     const tradesState = get(tradesStateAtom);
 
-    set(tradesStateAtom, { ...tradesState, lastCheckedBlock });
+    // Only update state if changed
+    if (lastCheckedBlock !== tradesState.lastCheckedBlock) {
+      set(tradesStateAtom, { ...tradesState, lastCheckedBlock });
+    }
   },
 });
