@@ -68,8 +68,9 @@ export function useTrades(
           const latestBlock = await context.web3Instance.eth.getBlock("latest");
           latestBlockNumber = latestBlock.number;
         } catch (e) {
-          // Not a problem, fetch until latest
-          logger.warn(`Failed to fetch latest block`, e);
+          // If we can't fetch latest block, not good.
+          logger.error(`Failed to fetch latest block`, e);
+          return { trades: [], reverts: [] };
         }
       }
 
