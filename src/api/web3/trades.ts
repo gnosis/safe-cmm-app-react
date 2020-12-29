@@ -344,10 +344,7 @@ export function matchTradesAndReverts(params: {
   });
 
   // Flattening lists
-  return Array.from(tradesMap.values()).reduce(
-    (acc, tradesByKey) => acc.concat(tradesByKey),
-    []
-  );
+  return Array.from(tradesMap.values()).flat();
 }
 
 type TransformTradeEventParams = {
