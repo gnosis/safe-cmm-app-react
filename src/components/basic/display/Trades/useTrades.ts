@@ -16,11 +16,14 @@ import { lastCheckedBlockSelector, tradesSelector } from "state/atoms";
 import { useNewBlockHeader } from "hooks/useNewBlockHeader";
 
 import { TRADES_BATCH_SIZE } from "utils/constants";
+import getLoggerOrCreate from "utils/logger";
 
 import {
   ContractInteractionContext,
   ContractInteractionContextProps,
 } from "components/context/ContractInteractionProvider";
+
+const logger = getLoggerOrCreate("use trades hook");
 
 export function useTrades(
   strategy: StrategyState
@@ -55,17 +58,20 @@ export function useTrades(
       let nextFromBlock =
         (await snapshot.getPromise(lastCheckedBlockState)) ||
         strategy.deploymentBlock;
-      console.log(`fetchAll from block`, nextFromBlock);
 
       let latestBlockNumber = _latestBlockNumber;
 
       // When latestBlock not set means this is the first load
       // In that case, fetch the number from the network
       if (!latestBlockNumber) {
-        const latestBlock = await context.web3Instance.eth.getBlock("latest");
-        latestBlockNumber = latestBlock.number;
+        try {
+          const latestBlock = await context.web3Instance.eth.getBlock("latest");
+          latestBlockNumber = latestBlock.number;
+        } catch (e) {
+          // Not a problem, fetch until latest
+          logger.warn(`Failed to fetch latest block`, e);
+        }
       }
-      console.log(`latest block`, latestBlockNumber);
 
       let allTrades = [];
       let allReverts = [];
@@ -74,7 +80,6 @@ export function useTrades(
       while (nextFromBlock < latestBlockNumber) {
         // Stop loop if component un-mounts
         if (cancelled.current) {
-          console.log(`cancelled, stopping`);
           return { trades: allTrades, reverts: allReverts };
         }
 
@@ -83,27 +88,29 @@ export function useTrades(
           latestBlockNumber
         );
 
-        const {
-          trades: rangeTrades,
-          reverts: rangeReverts,
-        } = await fetchTradesAndReverts(
-          strategy,
-          context,
-          nextFromBlock,
-          toBlock
-        );
-        console.log(
-          `fetched ${rangeTrades.length} trades and ${rangeReverts.length} reverts`
-        );
-        allTrades = allTrades.concat(rangeTrades);
-        allReverts = allReverts.concat(rangeReverts);
+        try {
+          const {
+            trades: rangeTrades,
+            reverts: rangeReverts,
+          } = await fetchTradesAndReverts(
+            strategy,
+            context,
+            nextFromBlock,
+            toBlock
+          );
+          allTrades = allTrades.concat(rangeTrades);
+          allReverts = allReverts.concat(rangeReverts);
+        } catch (e) {
+          logger.error(`Failed to fetch trades and reverts`, e);
+
+          // Save what we can
+          set(lastCheckedBlockState, nextFromBlock);
+
+          return { trades: allTrades, reverts: allReverts };
+        }
 
         nextFromBlock = toBlock;
       }
-
-      console.log(
-        `done fetching all trades and reverts until block ${latestBlockNumber}`
-      );
 
       set(lastCheckedBlockState, latestBlockNumber);
 
@@ -115,7 +122,6 @@ export function useTrades(
   useEffect(() => {
     cancelled.current = false;
 
-    console.log(`starting to fetch trades`);
     if (
       strategy?.hasFetchedBalance &&
       context.web3Instance &&
@@ -130,16 +136,8 @@ export function useTrades(
       // Implement query to get blocknumber from timestamp: https://blocklytics.org/blog/ethereum-blocks-subgraph-made-for-time-travel/
       fetchAll(strategy, context, newBlock?.number).then(
         ({ trades, reverts }) => {
-          console.log(
-            `got response from fetchAll:`,
-            trades.length,
-            reverts.length
-          );
-
           // Only try to persist state if not unmounted
           if (!cancelled.current) {
-            console.log(`processed trades`);
-
             // Only update trades state if there was any new trade or revert
             (trades.length > 0 || reverts.length > 0) &&
               setTrades(
@@ -158,9 +156,6 @@ export function useTrades(
             // Shouldn't check closed strategies again
             if (strategy.withdrawRequestDate) {
               canQuery.current = false;
-              console.log(
-                `closed strategy, no longer checking for new trades from here on`
-              );
             }
           }
         }
