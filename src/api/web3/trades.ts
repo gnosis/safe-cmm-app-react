@@ -381,8 +381,8 @@ export function transformTradeEventToDisplayTrade(
     quoteTokenAmount = BNtoDecimal(buyAmountBN, quoteToken.decimals);
   } else {
     type = "buy";
-    baseTokenAmount = BNtoDecimal(buyAmountBN, quoteToken.decimals);
-    quoteTokenAmount = BNtoDecimal(sellAmountBN, baseToken.decimals);
+    baseTokenAmount = BNtoDecimal(buyAmountBN, baseToken.decimals);
+    quoteTokenAmount = BNtoDecimal(sellAmountBN, quoteToken.decimals);
   }
 
   return {
