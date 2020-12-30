@@ -16,7 +16,7 @@ import {
   calculateApr,
   calculateRoi,
 } from "utils/calculations";
-import { safeAsyncFn } from "utils/misc";
+import { makeCancellablePromise, safeAsyncFn } from "utils/misc";
 import { dateToBatchId } from "utils/time";
 
 type Return = {
@@ -191,7 +191,9 @@ export function useCalculateValues(params: Params): Return {
       setIsLoading(false);
     }
 
-    fetchValues();
+    const { cancel } = makeCancellablePromise(fetchValues());
+
+    return (): void => cancel();
   }, [
     baseToken,
     baseBalance,
