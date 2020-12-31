@@ -1,5 +1,4 @@
 import { atom, atomFamily, selectorFamily } from "recoil";
-import localforage from "localforage";
 import BN from "bn.js";
 
 import {
@@ -9,7 +8,9 @@ import {
   TradesState,
   WithdrawState,
 } from "types";
+
 import { Trade } from "api/web3/trades";
+import storage from "api/storage";
 
 import getLoggerOrCreate from "utils/logger";
 
@@ -54,7 +55,7 @@ export const strategyTradesStateFamily = atomFamily<TradesState, string>({
     let state: TradesState = { trades: [], lastCheckedBlock: 0 };
     try {
       // Lazy load from local storage, if any
-      const storedState = await localforage.getItem<TradesState>(key);
+      const storedState = await storage.getItem<TradesState>(key);
       state = storedState || state;
     } catch (e) {
       // No worries, use default
@@ -65,7 +66,7 @@ export const strategyTradesStateFamily = atomFamily<TradesState, string>({
   effects_UNSTABLE: (txHash: string) => [
     ({ onSet }): void =>
       onSet((state) =>
-        localforage.setItem(
+        storage.setItem(
           getStorageKey(txHash, "trades"),
           state,
           (err, value) =>
