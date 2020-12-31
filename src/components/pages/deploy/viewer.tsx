@@ -14,6 +14,7 @@ import { BracketsViewFragment } from "./BracketsViewFragment";
 const PageLayout = styled.div`
   display: flex;
   min-width: 860px;
+  margin: 24px 0 0;
 `;
 
 const DeployColumn = styled.div`
