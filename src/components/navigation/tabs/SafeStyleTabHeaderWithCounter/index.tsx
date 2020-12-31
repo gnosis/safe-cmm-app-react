@@ -27,9 +27,9 @@ const TabHeaderButton = styled(ButtonLink)<TabHeaderButtonProps>`
 
   .button-text {
     font-weight: ${({ active }) => (active ? 600 : 400)};
-    text-transform: uppercase;
+    text-transform: none;
     font-family: ${theme.fonts.fontFamily};
-    font-size: 11px;
+    font-size: ${theme.text.size.xl};
   }
 `;
 
