@@ -31,6 +31,12 @@ const Wrapper = styled.div`
 
 const SelectWrapper = styled(Select)`
   width: ${COMPONENT_WIDTH};
+
+  .MuiSelect-root.MuiSelect-select.MuiSelect-selectMenu.MuiInputBase-input.MuiInput-input
+    > div
+    > p {
+    font-size: 13px;
+  }
 `;
 
 export interface TokenSelectorViewerProps
