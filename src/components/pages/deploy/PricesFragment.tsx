@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import { Field, useField, useForm } from "react-final-form";
 import styled from "styled-components";
 import BN from "bn.js";
@@ -63,12 +63,40 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
     input: { value: baseTokenAmount },
   } = useField<string>("baseTokenAmount");
   const {
+    input: { value: baseTokenBrackets },
+  } = useField<string>("baseTokenBrackets");
+  const {
     input: { value: quoteTokenAmount },
   } = useField<string>("quoteTokenAmount");
+  const {
+    input: { value: quoteTokenBrackets },
+  } = useField<string>("quoteTokenBrackets");
 
   const {
     mutators: { setFieldValue },
+    change,
+    resetFieldState,
   } = useForm();
+
+  // Resetting amount fields when they are disabled
+  const resetAmountField = useCallback(
+    (bracketsInput: string, amountFieldName: string): void => {
+      if (!+bracketsInput) {
+        change(amountFieldName, undefined);
+        resetFieldState(amountFieldName);
+      }
+    },
+    [change, resetFieldState]
+  );
+
+  useEffect(() => resetAmountField(baseTokenBrackets, "baseTokenAmount"), [
+    baseTokenBrackets,
+    resetAmountField,
+  ]);
+  useEffect(() => resetAmountField(quoteTokenBrackets, "quoteTokenAmount"), [
+    quoteTokenBrackets,
+    resetAmountField,
+  ]);
 
   const baseTokenDetails = useTokenDetails(baseTokenAddress);
   const quoteTokenDetails = useTokenDetails(quoteTokenAddress);
