@@ -125,17 +125,24 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
 
   const onBaseTokenMaxClick = useCallback(
     () =>
+      +baseTokenBrackets &&
       onMaxClickFactory("baseTokenAmount", baseTokenDetails, baseTokenBalance),
-    [baseTokenDetails, onMaxClickFactory, baseTokenBalance]
+    [baseTokenBrackets, onMaxClickFactory, baseTokenDetails, baseTokenBalance]
   );
   const onQuoteTokenMaxClick = useCallback(
     () =>
+      +quoteTokenBrackets &&
       onMaxClickFactory(
         "quoteTokenAmount",
         quoteTokenDetails,
         quoteTokenBalance
       ),
-    [onMaxClickFactory, quoteTokenDetails, quoteTokenBalance]
+    [
+      quoteTokenBrackets,
+      onMaxClickFactory,
+      quoteTokenDetails,
+      quoteTokenBalance,
+    ]
   );
 
   return (
