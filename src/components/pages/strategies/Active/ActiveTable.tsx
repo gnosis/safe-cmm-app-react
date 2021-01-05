@@ -80,12 +80,8 @@ export const ActiveTable = memo(function ActiveTable({
         </StyledTableHeader>
         <TableBody>
           {strategies.map((strategy) => (
-            <>
-              <TableRow
-                key={strategy.transactionHash}
-                hover
-                onClick={makeStrategyFoldoutHandler(strategy)}
-              >
+            <React.Fragment key={strategy.transactionHash}>
+              <TableRow hover onClick={makeStrategyFoldoutHandler(strategy)}>
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
                   {strategy.quoteToken && strategy.baseToken
@@ -127,7 +123,7 @@ export const ActiveTable = memo(function ActiveTable({
                 </TableCell>
               </TableRow>
               {foldOutStrategy === strategy.transactionHash && (
-                <TableRow key={`${strategy.transactionHash}-foldout`}>
+                <TableRow>
                   <TableCell colSpan={9} key={strategy.transactionHash}>
                     <FoldOut
                       strategy={strategy}
@@ -136,7 +132,7 @@ export const ActiveTable = memo(function ActiveTable({
                   </TableCell>
                 </TableRow>
               )}
-            </>
+            </React.Fragment>
           ))}
           {loading && (
             <TableRow key="loading">

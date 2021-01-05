@@ -47,3 +47,29 @@ export async function safeAsyncFn<
     return defaultOnFailure;
   }
 }
+
+/**
+ * Function to create cancellable promises
+ *
+ * TS version of https://github.com/wojtekmaj/make-cancellable-promise/blob/master/src/index.js
+ *
+ * @param promise: Promise to make cancellable
+ */
+export function makeCancellablePromise<T>(
+  promise: Promise<T>
+): { promise: Promise<T>; cancel: () => void } {
+  let isCancelled = false;
+
+  const wrappedPromise = new Promise<T>((resolve, reject) => {
+    promise
+      .then((...args) => !isCancelled && resolve(...args))
+      .catch((error) => !isCancelled && reject(error));
+  });
+
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      isCancelled = true;
+    },
+  };
+}

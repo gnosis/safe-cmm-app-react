@@ -1,6 +1,5 @@
 import React, { memo, useState, useCallback } from "react";
 import styled from "styled-components";
-
 import {
   TableContainer,
   Table,
@@ -10,22 +9,16 @@ import {
   TableBody,
   IconButton,
 } from "@material-ui/core";
-
 import ChevronDown from "@material-ui/icons/KeyboardArrowDown";
 import ChevronUp from "@material-ui/icons/KeyboardArrowUp";
-//import { Details } from "./Details";
-import { StrategyState } from "types";
+
 import { Loader } from "@gnosis.pm/safe-react-components";
+
+import { StrategyState } from "types";
+
 import { decimalTruncatedString } from "utils/decimalFormat";
 
-import { Text } from "components/basic/display/Text";
 import { DeployedParams } from "components/basic/display/DeployedParams";
-
-const HideableTableRow = styled(TableRow)`
-  &.hide {
-    display: none;
-  }
-`;
 
 const StyledTableHeader = styled(TableHead)`
   th {
@@ -78,12 +71,8 @@ export const PendingTable = memo(function PendingTable({
         </StyledTableHeader>
         <TableBody>
           {strategies.map((strategy) => (
-            <>
-              <TableRow
-                key={strategy.transactionHash}
-                hover
-                onClick={makeStrategyFoldoutHandler(strategy)}
-              >
+            <React.Fragment key={strategy.transactionHash}>
+              <TableRow hover onClick={makeStrategyFoldoutHandler(strategy)}>
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
                   {strategy.quoteToken && strategy.baseToken
@@ -117,13 +106,13 @@ export const PendingTable = memo(function PendingTable({
                 </TableCell>
               </TableRow>
               {foldOutStrategy === strategy.transactionHash && (
-                <HideableTableRow key={`${strategy.transactionHash}-foldout`}>
+                <TableRow>
                   <TableCell colSpan={7} key={strategy.transactionHash}>
                     <DeployedParams strategy={strategy} />
                   </TableCell>
-                </HideableTableRow>
+                </TableRow>
               )}
-            </>
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>

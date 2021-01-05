@@ -6,6 +6,7 @@ import { useSafeInfo } from "hooks/useSafeInfo";
 import { getPrice, GetPriceParams } from "api/prices";
 
 import { Network } from "utils/constants";
+import { makeCancellablePromise } from "utils/misc";
 
 type Params = Partial<Omit<GetPriceParams, "networkId">>;
 
@@ -30,7 +31,7 @@ export function useGetPrice(params: Params): Result {
 
   const { network } = useSafeInfo();
 
-  useEffect((): void => {
+  useEffect(() => {
     async function updatePrice(): Promise<void> {
       if (!baseToken || !quoteToken) {
         return;
@@ -58,7 +59,9 @@ export function useGetPrice(params: Params): Result {
       setPrice(newPrice);
     }
 
-    updatePrice();
+    const { cancel } = makeCancellablePromise(updatePrice());
+
+    return (): void => cancel();
   }, [source, baseToken, quoteToken, network, sourceOptions]);
 
   return { price, isLoading, error };

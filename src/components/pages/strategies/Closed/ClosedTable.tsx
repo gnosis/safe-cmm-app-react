@@ -31,12 +31,6 @@ const CenteredBox = styled(Box)`
   align-items: center;
 `;
 
-const HideableTableRow = styled(TableRow)`
-  &.hide {
-    display: none;
-  }
-`;
-
 const StyledTableHeader = styled(TableHead)`
   th {
     text-transform: uppercase;
@@ -95,12 +89,8 @@ export const ClosedTable = memo(function ClosedTable({
         </StyledTableHeader>
         <TableBody>
           {strategies.map((strategy) => (
-            <>
-              <TableRow
-                key={strategy.transactionHash}
-                hover
-                onClick={makeStrategyFoldoutHandler(strategy)}
-              >
+            <React.Fragment key={strategy.transactionHash}>
+              <TableRow hover onClick={makeStrategyFoldoutHandler(strategy)}>
                 <TableCell>{strategy.created.toLocaleString()}</TableCell>
                 <TableCell>
                   {strategy.quoteToken && strategy.baseToken
@@ -135,16 +125,16 @@ export const ClosedTable = memo(function ClosedTable({
                 </TableCell>
               </TableRow>
               {foldOutStrategy === strategy.transactionHash && (
-                <HideableTableRow key={`${strategy.transactionHash}-foldout`}>
+                <TableRow>
                   <TableCell colSpan={6} key={strategy.transactionHash}>
                     <FoldOut
                       strategy={strategy}
                       StrategyComponent={StrategyTab}
                     />
                   </TableCell>
-                </HideableTableRow>
+                </TableRow>
               )}
-            </>
+            </React.Fragment>
           ))}
           {loading && (
             <TableRow key="loading">

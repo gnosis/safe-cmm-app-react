@@ -18,7 +18,6 @@ export const marketPriceData: MarketPriceViewerProps = {
   isPriceLoading: false,
   baseTokenAddress: "0x1A5F9352Af8aF974bFC03399e3767DF6370d82e4",
   quoteTokenAddress: "0x0000000000085d4780B73119b644AE5ecd22b376",
-  priceUrl: "https://prices.com.for.real/TKNA/TKNB",
 };
 
 const Template = (args: MarketPriceViewerProps): JSX.Element => (

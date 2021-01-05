@@ -38,7 +38,9 @@ export const TabView = memo(function TabView(): JSX.Element {
 
   const strategyCount = useRecoilValue(strategyCountByStatus("ACTIVE"));
 
-  const [selectedTab, setSelectedTab] = useState(DEFAULT_TAB);
+  const [selectedTab, setSelectedTab] = useState<"deployment" | "strategies">(
+    DEFAULT_TAB
+  );
   const handleChangeTab = useCallback(
     (targetTabId) => {
       setSelectedTab(targetTabId);
@@ -79,7 +81,7 @@ export const TabView = memo(function TabView(): JSX.Element {
         customContent: (
           <RegularCaseText
             size="xl"
-            color={selectedTab === "deploy" ? "primary" : "text"}
+            color={selectedTab === "deployment" ? "primary" : "text"}
           >
             Deploy
           </RegularCaseText>
@@ -92,9 +94,9 @@ export const TabView = memo(function TabView(): JSX.Element {
           <SafeStyleTabHeaderWithCounter
             count={strategyCount}
             hasDot={hasTradingStopped}
-          >
-            Strategies
-          </SafeStyleTabHeaderWithCounter>
+            label="Strategies"
+            active={selectedTab === "strategies"}
+          />
         ),
         component: Strategies,
       },
