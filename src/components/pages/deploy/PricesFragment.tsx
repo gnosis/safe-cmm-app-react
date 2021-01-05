@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from "react";
+import React, { memo, useCallback, useEffect } from "react";
 import { Field, useField, useForm } from "react-final-form";
 import styled from "styled-components";
 import BN from "bn.js";
@@ -63,12 +63,40 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
     input: { value: baseTokenAmount },
   } = useField<string>("baseTokenAmount");
   const {
+    input: { value: baseTokenBrackets },
+  } = useField<string>("baseTokenBrackets");
+  const {
     input: { value: quoteTokenAmount },
   } = useField<string>("quoteTokenAmount");
+  const {
+    input: { value: quoteTokenBrackets },
+  } = useField<string>("quoteTokenBrackets");
 
   const {
     mutators: { setFieldValue },
+    change,
+    resetFieldState,
   } = useForm();
+
+  // Resetting amount fields when they are disabled
+  const resetAmountField = useCallback(
+    (bracketsInput: string, amountFieldName: string): void => {
+      if (!+bracketsInput) {
+        change(amountFieldName, undefined);
+        resetFieldState(amountFieldName);
+      }
+    },
+    [change, resetFieldState]
+  );
+
+  useEffect(() => resetAmountField(baseTokenBrackets, "baseTokenAmount"), [
+    baseTokenBrackets,
+    resetAmountField,
+  ]);
+  useEffect(() => resetAmountField(quoteTokenBrackets, "quoteTokenAmount"), [
+    quoteTokenBrackets,
+    resetAmountField,
+  ]);
 
   const baseTokenDetails = useTokenDetails(baseTokenAddress);
   const quoteTokenDetails = useTokenDetails(quoteTokenAddress);
@@ -131,26 +159,20 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
             />
           )}
         />
-        <Field<string> name="baseTokenBrackets" subscription={{ value: true }}>
-          {({ input: { value } }) => (
-            // Field `baseTokenAmount` is "subscribed" to field `baseTokenBrackets`
-            // `baseTokenBrackets` value is a string storing base brackets value
-            <Field<string>
-              name="baseTokenAmount"
-              // validation done at form level since this field might not be used
-              render={({ input, meta }) => (
-                <FundingInput
-                  {...input}
-                  warn={meta.touched && meta.data?.warn}
-                  error={meta.touched && meta.error}
-                  brackets={+value}
-                  tokenAddress={baseTokenAddress}
-                  onMaxClick={onBaseTokenMaxClick}
-                />
-              )}
+        <Field<string>
+          name="baseTokenAmount"
+          // validation done at form level since this field might not be used
+          render={({ input, meta }) => (
+            <FundingInput
+              {...input}
+              warn={meta.touched && meta.data?.warn}
+              error={meta.touched && meta.error}
+              brackets={+baseTokenBrackets}
+              tokenAddress={baseTokenAddress}
+              onMaxClick={onBaseTokenMaxClick}
             />
           )}
-        </Field>
+        />
       </div>
       <div className="middle">
         <Field<string>
@@ -212,26 +234,20 @@ export const PricesFragment = memo(function PricesFragment(): JSX.Element {
             />
           )}
         />
-        <Field<string> name="quoteTokenBrackets" subscription={{ value: true }}>
-          {({ input: { value } }) => (
-            // Field `quoteTokenAmount` is "subscribed" to field `quoteTokenBrackets`
-            // `quoteTokenBrackets` value is a string storing quote brackets value
-            <Field<string>
-              name="quoteTokenAmount"
-              // validation done at form level since this field might not be used
-              render={({ input, meta }) => (
-                <FundingInput
-                  {...input}
-                  warn={meta.touched && meta.data?.warn}
-                  error={meta.touched && meta.error}
-                  brackets={+value}
-                  tokenAddress={quoteTokenAddress}
-                  onMaxClick={onQuoteTokenMaxClick}
-                />
-              )}
+        <Field<string>
+          name="quoteTokenAmount"
+          // validation done at form level since this field might not be used
+          render={({ input, meta }) => (
+            <FundingInput
+              {...input}
+              warn={meta.touched && meta.data?.warn}
+              error={meta.touched && meta.error}
+              brackets={+quoteTokenBrackets}
+              tokenAddress={quoteTokenAddress}
+              onMaxClick={onQuoteTokenMaxClick}
             />
           )}
-        </Field>
+        />
       </div>
     </Wrapper>
   );
