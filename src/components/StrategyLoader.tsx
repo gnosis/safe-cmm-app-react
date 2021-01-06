@@ -1,25 +1,29 @@
+import { useCallback, useContext, useEffect } from "react";
+import { useRecoilState, useSetRecoilState } from "recoil";
+
+import { StrategyState } from "types";
+
+import { strategiesLoadingState, strategiesState } from "state/atoms";
+
 import { findSafeTransactionsForPendingStrategies } from "api/safe/findSafeTransactionsForPendingStrategies";
 import { findFleetDeployEvents } from "api/web3/findFleetDeployEvents";
+
+import { useNewBlockHeader } from "hooks/useNewBlockHeader";
+
 import { EventStrategy } from "logic/EventStrategy";
 import {
   PendingStrategySafeTransaction,
   SafeStrategy,
 } from "logic/SafeStrategy";
-import { useCallback, useContext, useEffect } from "react";
-import { useRecoilState, useSetRecoilState } from "recoil";
-import { strategiesLoadingState, strategiesState } from "state/atoms";
-import { StrategyState } from "types";
+
 import { ContractInteractionContext } from "components/context/ContractInteractionProvider";
 
 import getLogger from "utils/logger";
-import { debounce } from "lodash";
 
 const logger = getLogger("strategy-loader");
 
-type StatusEnum = "LOADING" | "ERROR" | "SUCCESS";
+let activeStrategyLoadPromise: Promise<void> | null = null;
 
-const addedListeners = false;
-let activeStrategyLoadPromise;
 export const StrategyLoader = (): JSX.Element => {
   const [strategies, setStrategiesState] = useRecoilState(strategiesState);
   const setStrategiesLoadingState = useSetRecoilState(strategiesLoadingState);
@@ -38,6 +42,7 @@ export const StrategyLoader = (): JSX.Element => {
   );
 
   const context = useContext(ContractInteractionContext);
+  const newBlock = useNewBlockHeader();
 
   const loadEventStrategies = useCallback(async () => {
     const events = await findFleetDeployEvents(context);
@@ -126,36 +131,25 @@ export const StrategyLoader = (): JSX.Element => {
     setStrategiesLoadingState,
   ]);
 
-  useEffect(() => {
-    const updater = debounce(() => {
-      if (!activeStrategyLoadPromise) {
-        logger.log(
-          "New block and discovery queue finished, checking for new strategies"
-        );
-        activeStrategyLoadPromise = loadAllStrategies()
-          .then(() => {
-            activeStrategyLoadPromise = null;
-          })
-          .catch((err) => {
-            logger.error(err);
-            activeStrategyLoadPromise = null;
-          });
-      }
-    }, 1000);
-    // Add listener to new block events
-    const subscription = context.web3Instance.eth
-      .subscribe("newBlockHeaders", (error) => {
-        if (error) {
-          logger.error(error);
-        }
-      })
-      .on("data", updater);
+  const updateStrategies = useCallback(() => {
+    if (!activeStrategyLoadPromise) {
+      logger.log(
+        "New block and discovery queue finished, checking for new strategies"
+      );
+      activeStrategyLoadPromise = loadAllStrategies()
+        .then(() => {
+          activeStrategyLoadPromise = null;
+        })
+        .catch((err) => {
+          logger.error(err);
+          activeStrategyLoadPromise = null;
+        });
+    }
+  }, [loadAllStrategies]);
 
-    return () => {
-      subscription.unsubscribe();
-    };
-    // eslint-disable-next-line
-  }, [loadAllStrategies, "hot"]);
+  useEffect(() => {
+    updateStrategies();
+  }, [updateStrategies, newBlock]);
 
   return null;
 };

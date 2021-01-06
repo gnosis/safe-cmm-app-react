@@ -1,14 +1,13 @@
 import React, { memo } from "react";
-import styled from "styled-components";
+import { withStyles } from "@material-ui/core";
 
 import { Button } from "@gnosis.pm/safe-react-components";
 
 import { useFormState } from "react-final-form";
 
-const StyledButton = styled(Button)`
-  border-radius: 16px;
-  font-weight: bold;
-`;
+const StyledButton = withStyles({
+  root: { borderRadius: "16px", fontWeight: "bold" },
+})(Button);
 
 export const DeployStrategyButtonFragment = memo(
   function DeployStrategyButtonFragment(): JSX.Element {

@@ -1,10 +1,12 @@
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, Suspense, useMemo, useState } from "react";
 import styled from "styled-components";
+
+import { Loader } from "@gnosis.pm/safe-react-components";
 
 import { StrategyState } from "types";
 
 import { DeployedParams } from "components/basic/display/DeployedParams";
-import { Text } from "components/basic/display/Text";
+import { Trades } from "components/basic/display/Trades";
 
 import { Header } from "./Header";
 
@@ -31,9 +33,11 @@ export const FoldOut = memo(function FoldOut(props: Props): JSX.Element {
       case "params":
         return <DeployedParams strategy={strategy} />;
       case "trades":
-        return <Text>Feature not yet available.</Text>;
+        return <Trades strategy={strategy} />;
     }
   }, [activeTab, strategy]);
+
+  const loader = useMemo(() => <Loader size="lg" />, []);
 
   return (
     <>
@@ -42,7 +46,9 @@ export const FoldOut = memo(function FoldOut(props: Props): JSX.Element {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
-      <TabContents>{contents}</TabContents>
+      <TabContents>
+        <Suspense fallback={loader}>{contents}</Suspense>
+      </TabContents>
     </>
   );
 });

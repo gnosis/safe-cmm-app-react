@@ -82,7 +82,10 @@ export class EventStrategy extends BaseStrategy implements IStrategy {
     this.block = await context.web3Instance.eth.getBlock(this.startBlockNumber);
     this.created = new Date(this.block.timestamp * 1000);
 
-    this.setState({ created: this.created });
+    this.setState({
+      created: this.created,
+      deploymentBlock: this.startBlockNumber,
+    });
 
     const batchExchangeContract = await context.getDeployed("BatchExchange");
 

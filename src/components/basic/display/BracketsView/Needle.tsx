@@ -45,7 +45,7 @@ export const Needle = memo(function Needle(): JSX.Element {
 
   return (
     <Wrapper needlePosition={needlePosition}>
-      {needlePosition >= lowerThreshold && needlePosition <= upperThreshold && (
+      {needlePosition >= lowerThreshold && needlePosition < upperThreshold && (
         <>
           <NeedleLabel onNeedle />
           {startPrice && (

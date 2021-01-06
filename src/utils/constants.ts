@@ -42,3 +42,5 @@ export const DEPLOY_LOWER_THRESHOLD = 20;
 export const DEPLOY_UPPER_THRESHOLD = 80;
 export const STRATEGY_LOWER_THRESHOLD = 10;
 export const STRATEGY_UPPER_THRESHOLD = 90;
+
+export const TRADES_BATCH_SIZE = 1000000; // # of blocks

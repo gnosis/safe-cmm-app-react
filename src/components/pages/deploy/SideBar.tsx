@@ -128,7 +128,7 @@ export const SideBar = memo(function SideBar(): JSX.Element {
           </Link>
         </Text>
       </div>
-      <StyledAccordion square>
+      <StyledAccordion square defaultExpanded>
         <StyledAccordionSummary
           expandIcon={<Icon type="circleDropdown" size="md" />}
         >

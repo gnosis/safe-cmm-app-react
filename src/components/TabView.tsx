@@ -6,19 +6,29 @@ import React, {
   useContext,
   useEffect,
 } from "react";
+import { Route, Switch, Redirect, useHistory } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import styled from "styled-components";
+
 import { Tab } from "@gnosis.pm/safe-react-components";
 
 import Strategies from "routes/Strategies";
 import Deploy from "routes/Deploy";
 
-import { Route, Switch, Redirect, useHistory } from "react-router-dom";
-import { useRecoilValue } from "recoil";
-
 import { strategyCountByStatus } from "state/selectors/strategyCounter";
+
 import { SafeStyleTabHeaderWithCounter } from "./navigation/tabs/SafeStyleTabHeaderWithCounter";
+
 import { ModalContext } from "./context/ModalProvider";
 
 import storage from "api/storage";
+
+import { Text } from "components/basic/display/Text";
+
+// SafeReactComponents Tab enforces uppercase text for labels
+const RegularCaseText = styled(Text)`
+  text-transform: none;
+`;
 
 const DEFAULT_TAB = "deployment";
 
@@ -28,7 +38,9 @@ export const TabView = memo(function TabView(): JSX.Element {
 
   const strategyCount = useRecoilValue(strategyCountByStatus("ACTIVE"));
 
-  const [selectedTab, setSelectedTab] = useState(DEFAULT_TAB);
+  const [selectedTab, setSelectedTab] = useState<"deployment" | "strategies">(
+    DEFAULT_TAB
+  );
   const handleChangeTab = useCallback(
     (targetTabId) => {
       setSelectedTab(targetTabId);
@@ -66,6 +78,14 @@ export const TabView = memo(function TabView(): JSX.Element {
         id: "deployment",
         label: "Deploy",
         component: Deploy,
+        customContent: (
+          <RegularCaseText
+            size="xl"
+            color={selectedTab === "deployment" ? "primary" : "text"}
+          >
+            Deploy
+          </RegularCaseText>
+        ),
       },
       {
         id: "strategies",
@@ -74,14 +94,14 @@ export const TabView = memo(function TabView(): JSX.Element {
           <SafeStyleTabHeaderWithCounter
             count={strategyCount}
             hasDot={hasTradingStopped}
-          >
-            Strategies
-          </SafeStyleTabHeaderWithCounter>
+            label="Strategies"
+            active={selectedTab === "strategies"}
+          />
         ),
         component: Strategies,
       },
     ],
-    [strategyCount, hasTradingStopped]
+    [selectedTab, strategyCount, hasTradingStopped]
   );
 
   return (
